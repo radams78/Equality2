@@ -1,9 +1,17 @@
 module Univ where
 
-data U : Set
-El : U → Set₁
+postulate U : Set
+postulate El : U → Set
 
-data U where
-  prop : U
+postulate One : U
+postulate TT : El One
 
-El prop = Set
+postulate Prop : U
+postulate ONE : El Prop
+postulate IFF : El Prop → El Prop → El Prop
+
+postulate Sets : U
+postulate PROP : El Sets
+
+postulate EqU : U → U → U
+postulate EqEl : ∀ {A B} → El A → El (EqU A B) → El B → U
