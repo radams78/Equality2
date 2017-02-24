@@ -1,7 +1,3 @@
-{-# OPTIONS --rewriting #-}
-postulate _↦_ : ∀ {i} {A : Set i} → A → A → Set i
-{-# BUILTIN REWRITE _↦_ #-}
-
 module Univ where
 
 postulate U : Set
@@ -34,8 +30,6 @@ _↔_ : Prp → Prp → Set
 φ ↔ ψ = Prf (iff φ ψ)
 
 postulate iff-cong : ∀ {φ φ' ψ ψ'} → φ ↔ φ' → ψ ↔ ψ' → iff φ ψ ↔ iff φ' ψ'
-
-postulate Ref₋₁ : ∀ φ → φ ↔ φ
 
 -- Sets
 

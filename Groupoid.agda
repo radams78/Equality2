@@ -1,5 +1,3 @@
-{-# OPTIONS --rewriting #-}
-
 module Groupoid where
 
 open import Level
@@ -21,7 +19,7 @@ data _⊢_ (Γ : Cx) : Type Γ → Set₁
 ⟦_⟧⊢-cong : ∀ {Γ T} (t : Γ ⊢ T) {γ γ'} (γ* : EQC Γ γ γ') → T ∋ ⟦ t ⟧⊢ γ ∼〈 γ* 〉 ⟦ t ⟧⊢ γ'
 ⟦_⟧⊢-cong₂ : ∀ {Γ T} (t : Γ ⊢ T) {a₁ a₂ b₁ b₂}
   {a* : EQC Γ a₁ a₂} {b* : EQC Γ b₁ b₂} {p₁ : EQC Γ a₁ b₁} {p₂ : EQC Γ a₂ b₂}
-  (sq : EQC₂ a* b* p₁ p₂) → 
+  (sq : EQC₂ {Γ} a* b* p₁ p₂) → 
   ⟦ t ⟧⊢-cong a* ∼〈〈 path-cong (⟦ t ⟧⊢-cong p₁) (Type.obj-cong₂ T sq) (⟦ t ⟧⊢-cong p₂) 〉〉₀ ⟦ t ⟧⊢-cong b*
 
 data _⊢_ Γ where
@@ -55,10 +53,10 @@ data _⊢₀_ (Γ : Cx) : Setover Γ → Set₁ where
 --A substitution or context morphism from Γ to Δ
 data Sub (Γ : Cx) : Cx → Set₁
 ⟦_⟧s : ∀ {Γ Δ} → Sub Γ Δ → ⟦ Γ ⟧C → ⟦ Δ ⟧C
-⟦⟧s-cong : ∀ {Γ Δ} {σ : Sub Γ Δ} {γ γ' : ⟦ Γ ⟧C} → EQC Γ γ γ' → EQC Δ (⟦ σ ⟧s γ) (⟦ σ ⟧s γ')
-⟦⟧s-cong₂ : ∀ {Γ Δ} {σ : Sub Γ Δ} {a₁ a₂ b₁ b₂ : ⟦ Γ ⟧C} 
+⟦_⟧s-cong : ∀ {Γ Δ} (σ : Sub Γ Δ) {γ γ' : ⟦ Γ ⟧C} → EQC Γ γ γ' → EQC Δ (⟦ σ ⟧s γ) (⟦ σ ⟧s γ')
+⟦_⟧s-cong₂ : ∀ {Γ Δ} (σ : Sub Γ Δ) {a₁ a₂ b₁ b₂ : ⟦ Γ ⟧C} 
   {a* : EQC Γ a₁ a₂} {b* : EQC Γ b₁ b₂} {p₁ : EQC Γ a₁ b₁} {p₂ : EQC Γ a₂ b₂} →
-  EQC₂ a* b* p₁ p₂ → EQC₂ {Δ} (⟦⟧s-cong {Γ} {Δ} {σ} a*) (⟦⟧s-cong b*) (⟦⟧s-cong p₁) (⟦⟧s-cong p₂)
+  EQC₂ {Γ} a* b* p₁ p₂ → EQC₂ {Δ} (⟦ σ ⟧s-cong a*) (⟦ σ ⟧s-cong b*) (⟦ σ ⟧s-cong p₁) (⟦ σ ⟧s-cong p₂)
 TypeF : ∀ {Γ Δ} → Sub Γ Δ → Type Δ → Type Γ
 
 data Sub Γ where
@@ -67,17 +65,17 @@ data Sub Γ where
 
 TypeF σ T = record { 
   obj = λ γ → Type.obj T (⟦ σ ⟧s γ) ; 
-  obj-cong = λ γ* → Type.obj-cong T (⟦⟧s-cong γ*) ;
-  obj-cong₂ = λ γ₂ → Type.obj-cong₂ T (⟦⟧s-cong₂ γ₂) }
+  obj-cong = λ γ* → Type.obj-cong T (⟦ σ ⟧s-cong γ*) ;
+  obj-cong₂ = λ γ₂ → Type.obj-cong₂ T (⟦ σ ⟧s-cong₂ γ₂) }
 
 ⟦ • ⟧s γ = lift ⊤.tt
 ⟦ σ ,,, t ⟧s γ = ⟦ σ ⟧s γ , ⟦ t ⟧⊢ γ
 
-⟦⟧s-cong {σ = •} _ = ⊤.tt
-⟦⟧s-cong {σ = σ ,,, t} γ* = (⟦⟧s-cong γ*) , ⟦ t ⟧⊢-cong γ*
+⟦ • ⟧s-cong _ = ⊤.tt
+⟦ σ ,,, t ⟧s-cong γ* = (⟦ σ ⟧s-cong γ*) , ⟦ t ⟧⊢-cong γ*
 
-⟦⟧s-cong₂ {σ = •} _ = ⊤.tt
-⟦⟧s-cong₂ {σ = σ ,,, t} γ₂ = (⟦⟧s-cong₂ γ₂) , ⟦ t ⟧⊢-cong₂ γ₂
+⟦ • ⟧s-cong₂ _ = ⊤.tt
+⟦ σ ,,, t ⟧s-cong₂ γ₂ = (⟦ σ ⟧s-cong₂ γ₂) , ⟦ t ⟧⊢-cong₂ γ₂
 
 ap : ∀ {Γ Δ T} (σ : Sub Γ Δ) → Δ ∋ T → Γ ⊢ TypeF σ T
 ap (_ ,,, t) top = t
@@ -97,9 +95,9 @@ sub-sound {t = VAR x} = ap-sound {x = x}
 sub-sound {t = PRP} = refl
 
 data PathSub : ∀ {Γ Δ} → Sub Γ Δ → Sub Γ Δ → Set₁
-⟦_⟧ps : ∀ {Γ Δ ρ σ} → PathSub ρ σ → (γ : ⟦ Γ ⟧C) → EQC Δ (⟦ ρ ⟧s γ) (⟦ σ ⟧s γ)
+⟦_⟧ps : ∀ {Γ Δ} {ρ σ : Sub Γ Δ} → PathSub ρ σ → (γ : ⟦ Γ ⟧C) → EQC Δ (⟦ ρ ⟧s γ) (⟦ σ ⟧s γ)
 ⟦_⟧ps-cong : ∀ {Γ Δ} {ρ σ : Sub Γ Δ} (τ : PathSub ρ σ) {γ γ'} (γ* : EQC Γ γ γ') →
-  EQC₂ (⟦ τ ⟧ps γ) (⟦ τ ⟧ps γ') (⟦⟧s-cong γ*) (⟦⟧s-cong γ*)
+  EQC₂ {Δ} (⟦ τ ⟧ps γ) (⟦ τ ⟧ps γ') (⟦ ρ ⟧s-cong γ*) (⟦ σ ⟧s-cong γ*)
 
 data PathSub where
   • : ∀ {Γ} → PathSub {Γ} • •
