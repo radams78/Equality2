@@ -11,11 +11,16 @@ open import Context
 K : U → ∀ Γ → Type Γ
 K A _ = record { 
   obj = λ _ → A ; 
-  wd = λ _ → Ref A }
+  wd = λ _ → Ref A ;
+  wd₂ = λ _ → Ref₂ A}
 
 data _⊢_ (Γ : Cx) : Type Γ → Set₁
 ⟦_⟧⊢ : ∀ {Γ T} → Γ ⊢ T → (γ : ⟦ Γ ⟧C) → ⟦ T ⟧T γ
-⟦⟧⊢-cong : ∀ {Γ T} {t : Γ ⊢ T} {γ γ'} (γ* : EQC Γ γ γ') → T ∋ ⟦ t ⟧⊢ γ ∼〈 γ* 〉 ⟦ t ⟧⊢ γ'
+⟦_⟧⊢-cong : ∀ {Γ T} (t : Γ ⊢ T) {γ γ'} (γ* : EQC Γ γ γ') → T ∋ ⟦ t ⟧⊢ γ ∼〈 γ* 〉 ⟦ t ⟧⊢ γ'
+⟦_⟧⊢-cong₂ : ∀ {Γ T} (t : Γ ⊢ T) {a₁ a₂ b₁ b₂}
+  {a* : EQC Γ a₁ a₂} {b* : EQC Γ b₁ b₂} {p₁ : EQC Γ a₁ b₁} {p₂ : EQC Γ a₂ b₂}
+  (sq : EQC₂ a* b* p₁ p₂) → 
+  ⟦ t ⟧⊢-cong a* ∼〈〈 EqEl-cong (⟦ t ⟧⊢-cong p₁) (Type.wd₂ T sq) (⟦ t ⟧⊢-cong p₂) 〉〉 ⟦ t ⟧⊢-cong b*
 
 data _⊢_ Γ where
 
@@ -47,16 +52,25 @@ data _⊢_ Γ where
 ⟦ prop ⟧⊢ _ = PROP
 ⟦ iff φ ψ ⟧⊢ γ = IFF (⟦ φ ⟧⊢ γ) (⟦ ψ ⟧⊢ γ)
 
-⟦⟧⊢-cong {t = var x} γ* = ⟦⟧∋-cong {x = x} γ*
-⟦⟧⊢-cong {t = one} γ* = ref
-⟦⟧⊢-cong {t = tt} γ* = ref
-⟦⟧⊢-cong {t = prop} γ* = ref
-⟦⟧⊢-cong {t = iff t t₁} γ* = IFF-cong (⟦⟧⊢-cong {t = t} γ*) (⟦⟧⊢-cong {t = t₁} γ*)
+⟦ var x ⟧⊢-cong γ* = ⟦ x ⟧∋-cong γ*
+⟦ one ⟧⊢-cong γ* = ref
+⟦ tt ⟧⊢-cong γ* = ref
+⟦ prop ⟧⊢-cong γ* = ref
+⟦ iff φ ψ ⟧⊢-cong γ* = IFF-cong (⟦ φ ⟧⊢-cong γ*) (⟦ ψ ⟧⊢-cong γ*)
+
+⟦ var x ⟧⊢-cong₂ γ₂ = ⟦ x ⟧∋-cong₂ γ₂
+⟦ one ⟧⊢-cong₂ γ₂ = ref₂
+⟦ tt ⟧⊢-cong₂ γ₂ = ref₂
+⟦ prop ⟧⊢-cong₂ γ₂ = ref₂
+⟦ iff φ ψ ⟧⊢-cong₂ γ₂ = IFF-cong₂ (⟦ φ ⟧⊢-cong₂ γ₂) (⟦ ψ ⟧⊢-cong₂ γ₂)
 
  --A substitution or context morphism from Γ to Δ
 data Sub (Γ : Cx) : Cx → Set₁
 ⟦_⟧s : ∀ {Γ Δ} → Sub Γ Δ → ⟦ Γ ⟧C → ⟦ Δ ⟧C
 ⟦⟧s-cong : ∀ {Γ Δ} {σ : Sub Γ Δ} {γ γ' : ⟦ Γ ⟧C} → EQC Γ γ γ' → EQC Δ (⟦ σ ⟧s γ) (⟦ σ ⟧s γ')
+⟦⟧s-cong₂ : ∀ {Γ Δ} {σ : Sub Γ Δ} {a₁ a₂ b₁ b₂ : ⟦ Γ ⟧C} 
+  {a* : EQC Γ a₁ a₂} {b* : EQC Γ b₁ b₂} {p₁ : EQC Γ a₁ b₁} {p₂ : EQC Γ a₂ b₂} →
+  EQC₂ a* b* p₁ p₂ → EQC₂ {Δ} (⟦⟧s-cong {Γ} {Δ} {σ} a*) (⟦⟧s-cong b*) (⟦⟧s-cong p₁) (⟦⟧s-cong p₂)
 TypeF : ∀ {Γ Δ} → Sub Γ Δ → Type Δ → Type Γ
 
 data Sub Γ where
@@ -65,13 +79,17 @@ data Sub Γ where
 
 TypeF σ T = record { 
   obj = λ γ → Type.obj T (⟦ σ ⟧s γ) ; 
-  wd = λ γ* → Type.wd T (⟦⟧s-cong γ*) }
+  wd = λ γ* → Type.wd T (⟦⟧s-cong γ*) ;
+  wd₂ = λ γ₂ → Type.wd₂ T (⟦⟧s-cong₂ γ₂) }
 
 ⟦ • ⟧s γ = lift tt
 ⟦ σ ,,, t ⟧s γ = ⟦ σ ⟧s γ , ⟦ t ⟧⊢ γ
 
 ⟦⟧s-cong {σ = •} _ = tt
-⟦⟧s-cong {σ = σ ,,, t} γ* = (⟦⟧s-cong γ*) , ⟦⟧⊢-cong {t = t} γ*
+⟦⟧s-cong {σ = σ ,,, t} γ* = (⟦⟧s-cong γ*) , ⟦ t ⟧⊢-cong γ*
+
+⟦⟧s-cong₂ {σ = •} _ = tt
+⟦⟧s-cong₂ {σ = σ ,,, t} γ₂ = (⟦⟧s-cong₂ γ₂) , ⟦ t ⟧⊢-cong₂ γ₂
 
 ap : ∀ {Γ Δ T} (σ : Sub Γ Δ) → Δ ∋ T → Γ ⊢ TypeF σ T
 ap (_ ,,, t) top = t
@@ -98,22 +116,22 @@ sub-sound {t = iff φ ψ} = cong₂ IFF (sub-sound {t = φ}) (sub-sound {t = ψ}
 
 data PathSub : ∀ {Γ Δ} → Sub Γ Δ → Sub Γ Δ → Set₁
 ⟦_⟧ps : ∀ {Γ Δ ρ σ} → PathSub ρ σ → (γ : ⟦ Γ ⟧C) → EQC Δ (⟦ ρ ⟧s γ) (⟦ σ ⟧s γ)
-⟦⟧ps-cong : ∀ {Γ Δ ρ σ} (τ : PathSub ρ σ) {γ γ'} (γ* : EQC Γ γ γ') →
-  EQC₂ Δ (⟦ τ ⟧ps γ) (⟦ τ ⟧ps γ') (⟦ ρ ⟧s γ*) (⟦ σ ⟧s γ*)
+⟦_⟧ps-cong : ∀ {Γ Δ} {ρ σ : Sub Γ Δ} (τ : PathSub ρ σ) {γ γ'} (γ* : EQC Γ γ γ') →
+  EQC₂ (⟦ τ ⟧ps γ) (⟦ τ ⟧ps γ') (⟦⟧s-cong γ*) (⟦⟧s-cong γ*)
 
 data PathSub where
   • : ∀ {Γ} → PathSub {Γ} • •
   _,,,_ : ∀ {Γ Δ T} {ρ σ : Sub Γ Δ} {s t} (τ : PathSub ρ σ) → Γ ⊢ record { 
     obj = λ γ → EqEl (⟦ s ⟧⊢ γ) (Type.wd T (⟦ τ ⟧ps γ)) (⟦ t ⟧⊢ γ) ; 
-    wd = λ γ* → EqEl-cong (Type.wd T (⟦⟧s-cong γ*)) (Type.wd T (⟦⟧s-cong γ*)) 
-      (⟦⟧⊢-cong γ*) {!⟦⟧ps-cong!} (⟦⟧⊢-cong γ*) } →
+    wd = λ {γ} {γ'} γ* → EqEl-cong (⟦ s ⟧⊢-cong γ*) (Type.wd₂ T (⟦ τ ⟧ps-cong γ*)) (⟦ t ⟧⊢-cong γ*) ;
+    wd₂ = λ γ₂ → EqEl-cong₂ (⟦ s ⟧⊢-cong₂ γ₂) {!!} (⟦ t ⟧⊢-cong₂ γ₂) } →
 --EqEl (⟦ s ⟧⊢) (Type.wd T (⟦ ρ ⟧s) (⟦ σ ⟧s) (⟦ τ ⟧ps)) (⟦ t ⟧⊢) → 
        PathSub {Δ = Δ ,, T} (ρ ,,, s) (σ ,,, t)
 
 ⟦ • ⟧ps γ = tt
 ⟦ τ ,,, b* ⟧ps γ = (⟦ τ ⟧ps γ) , (⟦ b* ⟧⊢ γ)
 
-⟦⟧ps-cong = {!!}
+⟦ τ ⟧ps-cong = {!!}
 
 {- psap : ∀ {Γ Δ T} {ρ σ : Sub Γ Δ} (t : Δ ⊢ T) (τ : PathSub ρ σ) → Γ ⊢ EqEl (⟦ t ⟧⊢ (⟦ ρ ⟧s )) {!!} (⟦ t ⟧⊢ (⟦ σ ⟧s ))
 psap t τ = {!!} -}
