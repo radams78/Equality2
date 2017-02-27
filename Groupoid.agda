@@ -8,12 +8,6 @@ open import Relation.Binary.PropositionalEquality
 open import Univ
 open import Context
 
-K : U → ∀ Γ → Type Γ
-K A _ = record { 
-  obj = λ _ → A ; 
-  obj-cong = λ _ → Ref A ;
-  obj-cong₂ = λ _ → Ref-cong (Ref A) }
-
 data _⊢_ (Γ : Cx) : Type Γ → Set₁
 ⟦_⟧⊢ : ∀ {Γ T} → Γ ⊢ T → (γ : ⟦ Γ ⟧C) → ⟦ T ⟧T γ
 ⟦_⟧⊢-cong : ∀ {Γ T} (t : Γ ⊢ T) {γ γ'} (γ* : EQC Γ γ γ') → T ∋ ⟦ t ⟧⊢ γ ∼〈 γ* 〉 ⟦ t ⟧⊢ γ'
@@ -62,6 +56,7 @@ TypeF : ∀ {Γ Δ} → Sub Γ Δ → Type Δ → Type Γ
 data Sub Γ where
   • : Sub Γ ε
   _,,,_ : ∀ {Δ T} (σ : Sub Γ Δ) → Γ ⊢ TypeF σ T → Sub Γ (Δ ,, T)
+--TODO Substitutions into sets and propositions
 
 TypeF σ T = record { 
   obj = λ γ → Type.obj T (⟦ σ ⟧s γ) ; 
@@ -78,6 +73,8 @@ TypeF σ T = record {
 ⟦ σ ,,, t ⟧s-cong₂ γ₂ = (⟦ σ ⟧s-cong₂ γ₂) , ⟦ t ⟧⊢-cong₂ γ₂
 
 ap : ∀ {Γ Δ T} (σ : Sub Γ Δ) → Δ ∋ T → Γ ⊢ TypeF σ T
+ap () (pop₀ x)
+ap () (pop₋₁ x)
 ap (_ ,,, t) top = t
 ap (σ ,,, _) (pop x) = ap σ x
 
@@ -111,3 +108,4 @@ data PathSub where
 
 ⟦ • ⟧ps-cong γ* = ⊤.tt
 ⟦ τ ,,, b* ⟧ps-cong γ* = (⟦ τ ⟧ps-cong γ*) , (⟦ b* ⟧⊢₀-cong γ*)
+

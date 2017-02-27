@@ -87,19 +87,36 @@ weak {T = T} S = record {
   obj-cong = weak-obj-cong T S;
   obj-cong₂ = weak-wd₂ T S}
 
+weak₀ : ∀ {Γ S} → Type Γ → Type (Γ ,,₀ S)
+weak₀ {S = S} T = record { 
+  obj = λ {(γ , _) → Type.obj T γ} ; 
+  obj-cong = λ {(γ* , _) → Type.obj-cong T γ*} ; 
+  obj-cong₂ = Type.obj-cong₂ T }
+
+weak₋₁ : ∀ {Γ φ} → Type Γ → Type (Γ ,,₋₁ φ)
+weak₋₁ {φ = φ} T = record { 
+  obj = λ {(γ , _) → Type.obj T γ} ; 
+  obj-cong = Type.obj-cong T ; 
+  obj-cong₂ = Type.obj-cong₂ T }
+
 infix 5 _∋_
 data _∋_ : (Γ : Cx) (T : Type Γ) → Set₁ where
   top : ∀ {Γ T} → Γ ,, T  ∋ weak T
   pop : ∀ {Γ S T} → Γ ∋ T → Γ ,, S ∋ weak T
---TODO Variables in sets and props
+  pop₀ : ∀ {Γ S T} → Γ ∋ T → Γ ,,₀ S ∋ weak₀ T
+  pop₋₁ : ∀ {Γ φ T} → Γ ∋ T → Γ ,,₋₁ φ ∋ weak₋₁ T
 
 ⟦_⟧∋ : ∀ {Γ T} → Γ ∋ T → (γ : ⟦ Γ ⟧C) → ⟦ T ⟧T γ
 ⟦ top ⟧∋ (_ , t) = t
 ⟦ pop i ⟧∋ (γ , _) = ⟦ i ⟧∋ γ
+⟦ pop₀ i ⟧∋ (γ , _) = ⟦ i ⟧∋ γ
+⟦ pop₋₁ i ⟧∋ (γ , _) = ⟦ i ⟧∋ γ
 
 ⟦_⟧∋-cong : ∀ {Γ T} (x : Γ ∋ T) {γ γ'} (γ* : EQC Γ γ γ') → T ∋ ⟦ x ⟧∋ γ ∼〈 γ* 〉 ⟦ x ⟧∋ γ'
 ⟦ top ⟧∋-cong (_ , t*) = t*
 ⟦ pop x ⟧∋-cong (γ* , _) = ⟦ x ⟧∋-cong γ*
+⟦ pop₀ i ⟧∋-cong (γ* , _) = ⟦ i ⟧∋-cong γ*
+⟦ pop₋₁ i ⟧∋-cong γ* = ⟦ i ⟧∋-cong γ*
 
 ⟦_⟧∋-cong₂ : ∀ {Γ T} (x : Γ ∋ T) {a₁ a₂ b₁ b₂} {a* : EQC Γ a₁ a₂} {b* : EQC Γ b₁ b₂} 
   {p₁ : EQC Γ a₁ b₁} {p₂ : EQC Γ a₂ b₂}
@@ -107,3 +124,14 @@ data _∋_ : (Γ : Cx) (T : Type Γ) → Set₁ where
   ⟦ x ⟧∋-cong a* ∼〈〈 path-cong (⟦ x ⟧∋-cong p₁) (Type.obj-cong₂ T sq) (⟦ x ⟧∋-cong p₂) 〉〉₀ ⟦ x ⟧∋-cong b*
 ⟦ top ⟧∋-cong₂ (_ , t₂) = t₂
 ⟦ pop x ⟧∋-cong₂ (γ₂ , _) = ⟦ x ⟧∋-cong₂ γ₂
+⟦ pop₀ i ⟧∋-cong₂ γ₂ = ⟦ i ⟧∋-cong₂ γ₂
+⟦ pop₋₁ i ⟧∋-cong₂ γ₂ = ⟦ i ⟧∋-cong₂ γ₂
+
+--TODO Variables in sets and propositions
+
+K : U → ∀ Γ → Type Γ
+K A _ = record { 
+  obj = λ _ → A ; 
+  obj-cong = λ _ → Ref A ;
+  obj-cong₂ = λ _ → Ref-cong (Ref A) }
+
