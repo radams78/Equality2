@@ -77,16 +77,14 @@ eqn-cong₂ {hminustwo} _ _ = ⊤.tt
 data Cx : Set₁
 ⟦_⟧C : Cx → Set₁
 record Typeover (n : hLevel) (Γ : Cx) : Set₁
+⟦_⟧T : ∀ {n Γ} → Typeover n Γ → ⟦ Γ ⟧C → Set
 Groupoidover : Cx → Set₁
 Setover : Cx → Set₁
-record Propover (Γ : Cx) : Set₁
-⟦_⟧T : ∀ {Γ} → Groupoidover Γ → ⟦ Γ ⟧C → Set
-⟦_⟧T₀ : ∀ {Γ} → Setover Γ → ⟦ Γ ⟧C → Set
-⟦_⟧T₋₁ : ∀ {Γ} → Propover Γ → ⟦ Γ ⟧C → Set
+Propover : Cx → Set₁
 EQC : ∀ Γ → ⟦ Γ ⟧C → ⟦ Γ ⟧C → Set
 EQC₂ : ∀ {Γ} {a₁ a₂ b₁ b₂ : ⟦ Γ ⟧C} → EQC Γ a₁ a₂ → EQC Γ b₁ b₂ → EQC Γ a₁ b₁ → EQC Γ a₂ b₂ → Set
 _∋_∼〈_〉_ : ∀ {Γ} T {γ γ'} → ⟦ T ⟧T γ → EQC Γ γ γ' → ⟦ T ⟧T γ' → Set
-_∋_∼〈_〉₀_ : ∀ {Γ} S {γ γ'} → ⟦ S ⟧T₀ γ → EQC Γ γ γ' → ⟦ S ⟧T₀ γ' → Set
+_∋_∼〈_〉₀_ : ∀ {Γ} S {γ γ'} → ⟦ S ⟧T γ → EQC Γ γ γ' → ⟦ S ⟧T γ' → Set
 
 infix 75 _,,_
 data Cx where
@@ -106,14 +104,18 @@ record Typeover n Γ where
       (γsq : EQC₂ γ₁* γ₂* γₑ γₑ') (δsq : EQC₂ δ₁* δ₂* δₑ δₑ') (sq₁ : EQC₂ γ₁* δ₁* e₁ e₁') (sq₂ : EQC₂ γ₂* δ₂* e₂ e₂') (sqₑ : EQC₂ γₑ δₑ e₁ e₂) (sqₑ' : EQC₂ γₑ' δₑ' e₁' e₂') →
       [ pred n ] obj-cong₂ γsq ∼〈〈 eqTTn-cong {n} (obj-cong₂ sq₁) (eqn-cong₂ {A₁* = obj-cong γₑ} (obj-cong₂ sqₑ) (obj-cong₂ sqₑ')) (obj-cong₂ sq₂) 〉〉 obj-cong₂ δsq
 
+⟦ A ⟧T γ = TT (Typeover.obj A γ)
+
 Groupoidover = Typeover hone
 
-⟦ T ⟧T γ = Obj (Typeover.obj T γ)
+Setover = Typeover hzero
+
+Propover = Typeover hminusone
 
 ⟦ ε ⟧C = Lift ⊤
 ⟦ Γ ,, S ⟧C = Σ[ γ ∈ ⟦ Γ ⟧C ] ⟦ S ⟧T γ
-⟦ Γ ,,₀ S ⟧C = Σ[ γ ∈ ⟦ Γ ⟧C ] ⟦ S ⟧T₀ γ
-⟦ Γ ,,₋₁ φ ⟧C = Σ[ γ ∈ ⟦ Γ ⟧C ] ⟦ φ ⟧T₋₁ γ
+⟦ Γ ,,₀ S ⟧C = Σ[ γ ∈ ⟦ Γ ⟧C ] ⟦ S ⟧T γ
+⟦ Γ ,,₋₁ φ ⟧C = Σ[ γ ∈ ⟦ Γ ⟧C ] ⟦ φ ⟧T γ
 
 T ∋ s ∼〈 γ* 〉 t = s ∼〈〈 Typeover.obj-cong T γ* 〉〉 t
 
@@ -127,16 +129,6 @@ EQC₂ {Γ ,, S} {a₁ , s₁} {a₂ , s₂} {b₁ , t₁} {b₂ , t₂} (a* , s
   Σ[ sq ∈ EQC₂ {Γ} a* b* e₁ e₂ ] s* ∼〈〈 path-cong p₁ (Typeover.obj-cong₂ S sq) p₂ 〉〉₀ t*
 EQC₂ {Γ ,,₀ _} (a* , _) (b* , _) (e₁ , *) (e₂ , _) = EQC₂ {Γ} a* b* e₁ e₂
 EQC₂ {Γ ,,₋₁ φ} = EQC₂ {Γ}
-
-Setover = Typeover hzero
-
-record Propover Γ where
-  field
-    obj : ⟦ Γ ⟧C → Prp
-
-⟦ S ⟧T₀ γ = El (Typeover.obj S γ)
-
-⟦ φ ⟧T₋₁ γ = Prf (Propover.obj φ γ)
 
 S ∋ s ∼〈 γ* 〉₀ t = s ∼〈〈 Typeover.obj-cong S γ* 〉〉₀ t
 
