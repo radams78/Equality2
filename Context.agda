@@ -78,20 +78,14 @@ data Cx : Set₁
 ⟦_⟧C : Cx → Set₁
 record Typeover (n : hLevel) (Γ : Cx) : Set₁
 ⟦_⟧T : ∀ {n Γ} → Typeover n Γ → ⟦ Γ ⟧C → Set
-Groupoidover : Cx → Set₁
-Setover : Cx → Set₁
-Propover : Cx → Set₁
 EQC : ∀ Γ → ⟦ Γ ⟧C → ⟦ Γ ⟧C → Set
 EQC₂ : ∀ {Γ} {a₁ a₂ b₁ b₂ : ⟦ Γ ⟧C} → EQC Γ a₁ a₂ → EQC Γ b₁ b₂ → EQC Γ a₁ b₁ → EQC Γ a₂ b₂ → Set
-_∋_∼〈_〉_ : ∀ {Γ} T {γ γ'} → ⟦ T ⟧T γ → EQC Γ γ γ' → ⟦ T ⟧T γ' → Set
-_∋_∼〈_〉₀_ : ∀ {Γ} S {γ γ'} → ⟦ S ⟧T γ → EQC Γ γ γ' → ⟦ S ⟧T γ' → Set
+_∋_∼〈_〉n_ : ∀ {n Γ} (T : Typeover n Γ) {γ γ'} → ⟦ T ⟧T γ → EQC Γ γ γ' → ⟦ T ⟧T γ' → Set
 
 infix 75 _,,_
 data Cx where
   ε : Cx
-  _,,_ : (Γ : Cx) → Groupoidover Γ → Cx
-  _,,₀_ : ∀ Γ → Setover Γ → Cx
-  _,,₋₁_ : ∀ Γ → Propover Γ → Cx
+  _,,_ : ∀ {n} (Γ : Cx) → Typeover n Γ → Cx
 
 record Typeover n Γ where
   field
@@ -106,95 +100,53 @@ record Typeover n Γ where
 
 ⟦ A ⟧T γ = TT (Typeover.obj A γ)
 
-Groupoidover = Typeover hone
-
-Setover = Typeover hzero
-
-Propover = Typeover hminusone
+T ∋ a ∼〈 γ* 〉n b = [ _ ] a ∼〈〈 Typeover.obj-cong T γ* 〉〉 b
 
 ⟦ ε ⟧C = Lift ⊤
 ⟦ Γ ,, S ⟧C = Σ[ γ ∈ ⟦ Γ ⟧C ] ⟦ S ⟧T γ
-⟦ Γ ,,₀ S ⟧C = Σ[ γ ∈ ⟦ Γ ⟧C ] ⟦ S ⟧T γ
-⟦ Γ ,,₋₁ φ ⟧C = Σ[ γ ∈ ⟦ Γ ⟧C ] ⟦ φ ⟧T γ
-
-T ∋ s ∼〈 γ* 〉 t = s ∼〈〈 Typeover.obj-cong T γ* 〉〉 t
 
 EQC ε (lift tt) (lift tt) = ⊤
-EQC (Γ ,, S) (γ , s) (γ' , s') = Σ[ γ* ∈ EQC Γ γ γ' ] S ∋ s ∼〈 γ* 〉 s'
-EQC (Γ ,,₀ S) (γ , s) (γ' , s') = Σ[ γ* ∈ EQC Γ γ γ' ] S ∋ s ∼〈 γ* 〉₀ s'
-EQC (Γ ,,₋₁ _) (γ , _) (γ' , _) = EQC Γ γ γ'
+EQC (Γ ,, S) (γ , s) (γ' , s') = Σ[ γ* ∈ EQC Γ γ γ' ] S ∋ s ∼〈 γ* 〉n s'
 
 EQC₂ {ε} tt tt tt tt = ⊤
-EQC₂ {Γ ,, S} {a₁ , s₁} {a₂ , s₂} {b₁ , t₁} {b₂ , t₂} (a* , s*) (b* , t*) (e₁ , p₁) (e₂ , p₂) = 
-  Σ[ sq ∈ EQC₂ {Γ} a* b* e₁ e₂ ] s* ∼〈〈 path-cong p₁ (Typeover.obj-cong₂ S sq) p₂ 〉〉₀ t*
-EQC₂ {Γ ,,₀ _} (a* , _) (b* , _) (e₁ , *) (e₂ , _) = EQC₂ {Γ} a* b* e₁ e₂
-EQC₂ {Γ ,,₋₁ φ} = EQC₂ {Γ}
+EQC₂ {_,,_ {n} Γ T} {a₁ , s₁} {a₂ , s₂} {b₁ , t₁} {b₂ , t₂} (a* , s*) (b* , t*) (e₁ , p₁) (e₂ , p₂) = 
+  Σ[ sq ∈ EQC₂ {Γ} a* b* e₁ e₂ ] ([ _ ] s* ∼〈〈 eqTTn-cong {n} p₁ (Typeover.obj-cong₂ T sq) p₂ 〉〉 t*)
 
-S ∋ s ∼〈 γ* 〉₀ t = s ∼〈〈 Typeover.obj-cong S γ* 〉〉₀ t
+Groupoidover : Cx → Set₁
+Groupoidover = Typeover hone
 
-weak-obj : ∀ {Γ} T → Groupoidover Γ → ⟦ Γ ,, T ⟧C → U
-weak-obj _ S (γ , _) = Typeover.obj S γ
+Setover : Cx → Set₁
+Setover = Typeover hzero
 
-weak-obj-cong : ∀ {Γ} T (S : Groupoidover Γ) {γ γ' : ⟦ Γ ,, T ⟧C} → EQC (Γ ,, T) γ γ' → weak-obj T S γ ⇔ weak-obj T S γ'
-weak-obj-cong _ S (γ* , _) = Typeover.obj-cong S γ*
+Propover : Cx → Set₁
+Propover = Typeover hminusone
 
-weak-wd₂ : ∀ {Γ} T (S : Groupoidover Γ) {a₁ a₂ b₁ b₂} {a* : EQC (Γ ,, T) a₁ a₂} {b* p₁ p₂} → 
-  EQC₂ {Γ ,, T} a* b* p₁ p₂ →
-  weak-obj-cong T S {a₁} {a₂} a*
-    ∼〈〈 eqU-cong (weak-obj-cong T S p₁) (weak-obj-cong T S p₂) 〉〉
-    weak-obj-cong T S {b₁} {b₂} b*
-weak-wd₂ T S (γ₂ , _) = Typeover.obj-cong₂ S γ₂
-
-weak : ∀ {Γ T} → Groupoidover Γ → Groupoidover (Γ ,, T)
+weak : ∀ {Γ m n} {T : Typeover m Γ} → Typeover n Γ → Typeover n (Γ ,, T)
 weak {T = T} S = record { 
-  obj = weak-obj T S;
-  obj-cong = weak-obj-cong T S;
-  obj-cong₂ = weak-wd₂ T S;
+  obj = λ {(γ , _) → Typeover.obj S γ};
+  obj-cong = λ {(γ* , _) → Typeover.obj-cong S γ*};
+  obj-cong₂ = λ {(γsq , _) → Typeover.obj-cong₂ S γsq};
   obj-cong₃ = λ {(γsq , _) (δsq , _) (sq₁ , _) (sq₂ , _) (sqₑ , _) (sqₑ' , _) → Typeover.obj-cong₃ S γsq δsq sq₁ sq₂ sqₑ sqₑ'}}
 
-weak₀ : ∀ {Γ S} → Groupoidover Γ → Groupoidover (Γ ,,₀ S)
-weak₀ {S = S} T = record { 
-  obj = λ {(γ , _) → Typeover.obj T γ} ; 
-  obj-cong = λ {(γ* , _) → Typeover.obj-cong T γ*} ; 
-  obj-cong₂ = Typeover.obj-cong₂ T ;
-  obj-cong₃ = Typeover.obj-cong₃ T }
-
-weak₋₁ : ∀ {Γ φ} → Groupoidover Γ → Groupoidover (Γ ,,₋₁ φ)
-weak₋₁ {φ = φ} T = record { 
-  obj = λ {(γ , _) → Typeover.obj T γ} ; 
-  obj-cong = Typeover.obj-cong T ; 
-  obj-cong₂ = Typeover.obj-cong₂ T ;
-  obj-cong₃ = Typeover.obj-cong₃ T }
-
 infix 5 _∋_
-data _∋_ : (Γ : Cx) (T : Groupoidover Γ) → Set₁ where
-  top : ∀ {Γ T} → Γ ,, T  ∋ weak T
-  pop : ∀ {Γ S T} → Γ ∋ T → Γ ,, S ∋ weak T
-  pop₀ : ∀ {Γ S T} → Γ ∋ T → Γ ,,₀ S ∋ weak₀ T
-  pop₋₁ : ∀ {Γ φ T} → Γ ∋ T → Γ ,,₋₁ φ ∋ weak₋₁ T
+data _∋_ : ∀ {n} (Γ : Cx) (T : Typeover n Γ) → Set₁ where
+  top : ∀ {n Γ} {T : Typeover n Γ} → Γ ,, T  ∋ weak T
+  pop : ∀ {m n Γ} {S : Typeover m Γ} {T : Typeover n Γ} → Γ ∋ T → Γ ,, S ∋ weak T
 
-⟦_⟧∋ : ∀ {Γ T} → Γ ∋ T → (γ : ⟦ Γ ⟧C) → ⟦ T ⟧T γ
+⟦_⟧∋ : ∀ {n Γ} {T : Typeover n Γ} → Γ ∋ T → (γ : ⟦ Γ ⟧C) → ⟦ T ⟧T γ
 ⟦ top ⟧∋ (_ , t) = t
 ⟦ pop i ⟧∋ (γ , _) = ⟦ i ⟧∋ γ
-⟦ pop₀ i ⟧∋ (γ , _) = ⟦ i ⟧∋ γ
-⟦ pop₋₁ i ⟧∋ (γ , _) = ⟦ i ⟧∋ γ
 
-⟦_⟧∋-cong : ∀ {Γ T} (x : Γ ∋ T) {γ γ'} (γ* : EQC Γ γ γ') → T ∋ ⟦ x ⟧∋ γ ∼〈 γ* 〉 ⟦ x ⟧∋ γ'
+⟦_⟧∋-cong : ∀ {n Γ} {T : Typeover n Γ} (x : Γ ∋ T) {γ γ'} (γ* : EQC Γ γ γ') → T ∋ ⟦ x ⟧∋ γ ∼〈 γ* 〉n ⟦ x ⟧∋ γ'
 ⟦ top ⟧∋-cong (_ , t*) = t*
 ⟦ pop x ⟧∋-cong (γ* , _) = ⟦ x ⟧∋-cong γ*
-⟦ pop₀ i ⟧∋-cong (γ* , _) = ⟦ i ⟧∋-cong γ*
-⟦ pop₋₁ i ⟧∋-cong γ* = ⟦ i ⟧∋-cong γ*
 
-⟦_⟧∋-cong₂ : ∀ {Γ T} (x : Γ ∋ T) {a₁ a₂ b₁ b₂} {a* : EQC Γ a₁ a₂} {b* : EQC Γ b₁ b₂} 
+⟦_⟧∋-cong₂ : ∀ {n Γ} {T : Typeover n Γ} (x : Γ ∋ T) {a₁ a₂ b₁ b₂} {a* : EQC Γ a₁ a₂} {b* : EQC Γ b₁ b₂} 
   {p₁ : EQC Γ a₁ b₁} {p₂ : EQC Γ a₂ b₂}
   (sq : EQC₂ {Γ} a* b* p₁ p₂) → 
-  ⟦ x ⟧∋-cong a* ∼〈〈 path-cong (⟦ x ⟧∋-cong p₁) (Typeover.obj-cong₂ T sq) (⟦ x ⟧∋-cong p₂) 〉〉₀ ⟦ x ⟧∋-cong b*
+  [ _ ] ⟦ x ⟧∋-cong a* ∼〈〈 eqTTn-cong {n} (⟦ x ⟧∋-cong p₁) (Typeover.obj-cong₂ T sq) (⟦ x ⟧∋-cong p₂) 〉〉 ⟦ x ⟧∋-cong b*
 ⟦ top ⟧∋-cong₂ (_ , t₂) = t₂
 ⟦ pop x ⟧∋-cong₂ (γ₂ , _) = ⟦ x ⟧∋-cong₂ γ₂
-⟦ pop₀ i ⟧∋-cong₂ γ₂ = ⟦ i ⟧∋-cong₂ γ₂
-⟦ pop₋₁ i ⟧∋-cong₂ γ₂ = ⟦ i ⟧∋-cong₂ γ₂
-
---TODO Variables in sets and propositions
 
 K : U → ∀ Γ → Groupoidover Γ
 K A _ = record { 

@@ -4,21 +4,21 @@ open import Level
 open import Function using (_∘_)
 open import Data.Unit
 open import Data.Product
-open import Relation.Binary.PropositionalEquality
+open import Relation.Binary.PropositionalEquality hiding ([_])
 open import Univ
 open import Context
 
-data _⊢_ (Γ : Cx) : Groupoidover Γ → Set₁
-⟦_⟧⊢ : ∀ {Γ T} → Γ ⊢ T → (γ : ⟦ Γ ⟧C) → ⟦ T ⟧T γ
-⟦_⟧⊢-cong : ∀ {Γ T} (t : Γ ⊢ T) {γ γ'} (γ* : EQC Γ γ γ') → T ∋ ⟦ t ⟧⊢ γ ∼〈 γ* 〉 ⟦ t ⟧⊢ γ'
-⟦_⟧⊢-cong₂ : ∀ {Γ T} (t : Γ ⊢ T) {a₁ a₂ b₁ b₂}
+data _⊢_ (Γ : Cx) : ∀ {n} → Typeover n Γ → Set₁
+⟦_⟧⊢ : ∀ {Γ n} {T : Typeover n Γ} → Γ ⊢ T → (γ : ⟦ Γ ⟧C) → ⟦ T ⟧T γ
+⟦_⟧⊢-cong : ∀ {Γ n} {T : Typeover n Γ} (t : Γ ⊢ T) {γ γ'} (γ* : EQC Γ γ γ') → T ∋ ⟦ t ⟧⊢ γ ∼〈 γ* 〉n ⟦ t ⟧⊢ γ'
+⟦_⟧⊢-cong₂ : ∀ {Γ n} {T : Typeover n Γ} (t : Γ ⊢ T) {a₁ a₂ b₁ b₂}
   {a* : EQC Γ a₁ a₂} {b* : EQC Γ b₁ b₂} {p₁ : EQC Γ a₁ b₁} {p₂ : EQC Γ a₂ b₂}
   (sq : EQC₂ {Γ} a* b* p₁ p₂) → 
-  ⟦ t ⟧⊢-cong a* ∼〈〈 path-cong (⟦ t ⟧⊢-cong p₁) (Typeover.obj-cong₂ T sq) (⟦ t ⟧⊢-cong p₂) 〉〉₀ ⟦ t ⟧⊢-cong b*
+  [ pred n ] ⟦ t ⟧⊢-cong a* ∼〈〈 eqTTn-cong {n} (⟦ t ⟧⊢-cong p₁) (Typeover.obj-cong₂ T sq) (⟦ t ⟧⊢-cong p₂) 〉〉 ⟦ t ⟧⊢-cong b*
 
 data _⊢_ Γ where
 
-  VAR : ∀ {T} → 
+  VAR : ∀ {n} {T : Typeover n Γ} → 
       Γ ∋ T →
     ------------
       Γ ⊢ T
@@ -41,7 +41,7 @@ data _⊢₀_ (Γ : Cx) : Setover Γ → Set₁ where
 ⟦_⟧⊢₀ : ∀ {Γ T} → Γ ⊢₀ T → (γ : ⟦ Γ ⟧C) → El (Typeover.obj T γ)
 ⟦ () ⟧⊢₀
 
-⟦_⟧⊢₀-cong : ∀ {Γ T} (t : Γ ⊢₀ T) {γ γ'} (γ* : EQC Γ γ γ') → ⟦ t ⟧⊢₀ γ ∼〈〈 Typeover.obj-cong T γ* 〉〉₀ ⟦ t ⟧⊢₀ γ'
+⟦_⟧⊢₀-cong : ∀ {Γ T} (t : Γ ⊢₀ T) {γ γ'} (γ* : EQC Γ γ γ') → [ _ ] ⟦ t ⟧⊢₀ γ ∼〈〈 Typeover.obj-cong T γ* 〉〉 ⟦ t ⟧⊢₀ γ'
 ⟦ () ⟧⊢₀-cong
 
 --A substitution or context morphism from Γ to Δ
@@ -51,14 +51,14 @@ data Sub (Γ : Cx) : Cx → Set₁
 ⟦_⟧s-cong₂ : ∀ {Γ Δ} (σ : Sub Γ Δ) {a₁ a₂ b₁ b₂ : ⟦ Γ ⟧C} 
   {a* : EQC Γ a₁ a₂} {b* : EQC Γ b₁ b₂} {p₁ : EQC Γ a₁ b₁} {p₂ : EQC Γ a₂ b₂} →
   EQC₂ {Γ} a* b* p₁ p₂ → EQC₂ {Δ} (⟦ σ ⟧s-cong a*) (⟦ σ ⟧s-cong b*) (⟦ σ ⟧s-cong p₁) (⟦ σ ⟧s-cong p₂)
-GroupoidoverF : ∀ {Γ Δ} → Sub Γ Δ → Groupoidover Δ → Groupoidover Γ
+TypeoverF : ∀ {n Γ Δ} → Sub Γ Δ → Typeover n Δ → Typeover n Γ
 
 data Sub Γ where
   • : Sub Γ ε
-  _,,,_ : ∀ {Δ T} (σ : Sub Γ Δ) → Γ ⊢ GroupoidoverF σ T → Sub Γ (Δ ,, T)
+  _,,,_ : ∀ {n Δ} {T : Typeover n Δ} (σ : Sub Γ Δ) → Γ ⊢ TypeoverF σ T → Sub Γ (Δ ,, T)
 --TODO Substitutions into sets and propositions
 
-GroupoidoverF σ T = record { 
+TypeoverF σ T = record { 
   obj = λ γ → Typeover.obj T (⟦ σ ⟧s γ) ; 
   obj-cong = λ γ* → Typeover.obj-cong T (⟦ σ ⟧s-cong γ*) ;
   obj-cong₂ = λ γ₂ → Typeover.obj-cong₂ T (⟦ σ ⟧s-cong₂ γ₂) ;
@@ -73,22 +73,19 @@ GroupoidoverF σ T = record {
 ⟦ • ⟧s-cong₂ _ = ⊤.tt
 ⟦ σ ,,, t ⟧s-cong₂ γ₂ = (⟦ σ ⟧s-cong₂ γ₂) , ⟦ t ⟧⊢-cong₂ γ₂
 
-ap : ∀ {Γ Δ T} (σ : Sub Γ Δ) → Δ ∋ T → Γ ⊢ GroupoidoverF σ T
-ap () (pop₀ x)
-ap () (pop₋₁ x)
+ap : ∀ {Γ Δ n} {T : Typeover n Δ} (σ : Sub Γ Δ) → Δ ∋ T → Γ ⊢ TypeoverF σ T
 ap (_ ,,, t) top = t
 ap (σ ,,, _) (pop x) = ap σ x
 
-ap-sound : ∀ {Γ Δ T} {σ : Sub Γ Δ} {x : Δ ∋ T} {γ} → ⟦ ap σ x ⟧⊢ γ ≡ ⟦ x ⟧∋ (⟦ σ ⟧s γ)
-ap-sound {σ = •} {x = ()}
+ap-sound : ∀ {n Γ Δ} {T : Typeover n Δ} {σ : Sub Γ Δ} {x : Δ ∋ T} {γ} → ⟦ ap σ x ⟧⊢ γ ≡ ⟦ x ⟧∋ (⟦ σ ⟧s γ)
 ap-sound {σ = _ ,,, _} {x = top} = refl
 ap-sound {σ = _ ,,, _} {pop x} = ap-sound {x = x}
 
-sub : ∀ {Γ Δ T} (σ : Sub Γ Δ) → Δ ⊢ T → Γ ⊢ GroupoidoverF σ T
+sub : ∀ {n Γ Δ} {T : Typeover n Δ} (σ : Sub Γ Δ) → Δ ⊢ T → Γ ⊢ TypeoverF σ T
 sub σ (VAR x) = ap σ x
 sub σ PRP = PRP
 
-sub-sound : ∀ {Γ Δ T} {σ : Sub Γ Δ} {t : Δ ⊢ T} {γ} → ⟦ sub σ t ⟧⊢ γ ≡ ⟦ t ⟧⊢ (⟦ σ ⟧s γ)
+sub-sound : ∀ {n Γ Δ} {T : Typeover n Δ} {σ : Sub Γ Δ} {t : Δ ⊢ T} {γ} → ⟦ sub σ t ⟧⊢ γ ≡ ⟦ t ⟧⊢ (⟦ σ ⟧s γ)
 sub-sound {t = VAR x} = ap-sound {x = x}
 sub-sound {t = PRP} = refl
 

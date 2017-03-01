@@ -40,7 +40,7 @@ A ≃ B = El (iso A B)
 postulate iso-cong : ∀ {A A' B B'} → A ≃ A' → B ≃ B' → iso A B ≃ iso A' B'
 
 postulate eq : ∀ {A B} → El A → A ≃ B → El B → Prp
-_∼〈〈_〉〉₀_ : ∀ {A B} → El A → A ≃ B → El B → Set
+private _∼〈〈_〉〉₀_ : ∀ {A B} → El A → A ≃ B → El B → Set
 a ∼〈〈 e 〉〉₀ b = Prf (eq a e b)
 
 postulate iso-cong₂ : ∀ {A₁ A₁' B₁ B₁' A₂ A₂' B₂ B₂'}
@@ -66,7 +66,7 @@ A ⇔ B = Obj (eqU A B)
 postulate eqU-cong : ∀ {A A' B B'} → A ⇔ B → A' ⇔ B' → eqU A A' ⇔ eqU B B'
 
 postulate path : ∀ {A B} → Obj A → A ⇔ B → Obj B → Sets
-_∼〈〈_〉〉_ : ∀ {A B} → Obj A → A ⇔ B → Obj B → Set
+private _∼〈〈_〉〉_ : ∀ {A B} → Obj A → A ⇔ B → Obj B → Set
 a ∼〈〈 φ 〉〉 b = El (path a φ b)
 
 postulate eqU-cong₂ : ∀ {A₁ A₁' B₁ B₁' A₂ A₂' B₂ B₂'}
