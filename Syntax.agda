@@ -1,4 +1,4 @@
-module Groupoid where
+module Syntax where
 
 open import Level
 open import Function using (_∘_)
