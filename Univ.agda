@@ -1,4 +1,5 @@
 module Univ where
+open import Data.Unit
 
 postulate U : Set
 postulate Obj : U → Set
@@ -21,7 +22,7 @@ One = Prf one
 
 -- The Unit
 
-postulate tt : One
+postulate star : One
 
 -- Propositions
 
@@ -30,6 +31,8 @@ _↔_ : Prp → Prp → Set
 φ ↔ ψ = Prf (iff φ ψ)
 
 postulate iff-cong : ∀ {φ φ' ψ ψ'} → φ ↔ φ' → ψ ↔ ψ' → iff φ ψ ↔ iff φ' ψ'
+
+postulate Ref₋₁ : ∀ φ → φ ↔ φ
 
 -- Sets
 
@@ -54,6 +57,8 @@ postulate eq-cong : ∀ {A A' B B' a a' f f' b b'} {A* : A ≃ A'} {B* : B ≃ B
                   eq a f b ↔ eq a' f' b'
 
 postulate Ref₀ : ∀ A → A ≃ A
+
+postulate Ref₀-cong : ∀ {A} {B} (e : A ≃ B) → Ref₀ A ∼〈〈 iso-cong e e 〉〉₀ Ref₀ B
 
 postulate ref₀ : ∀ {A} {a} → a ∼〈〈 Ref₀ A 〉〉₀ a
 
@@ -123,3 +128,97 @@ postulate ref : ∀ {A} a → a ∼〈〈 Ref A 〉〉 a
 
 postulate ref-cong : ∀ {A B a b} {e : A ⇔ B} (p : a ∼〈〈 e 〉〉 b) → ref a ∼〈〈 path-cong p (Ref-cong e) p 〉〉₀ ref b
 
+------------------------------------------------------
+-- The structures that exist at every level
+------------------------------------------------------
+
+data hLevel : Set where
+  hone : hLevel
+  hzero : hLevel
+  hminusone : hLevel
+  hminustwo : hLevel
+
+pred : hLevel → hLevel
+pred hone = hzero
+pred hzero = hminusone
+pred hminusone = hminustwo
+pred hminustwo = hminustwo
+
+Type : hLevel → Set
+Type hone = U
+Type hzero = Sets
+Type hminusone = Prp
+Type hminustwo = ⊤
+
+TT : ∀ {n} → Type n → Set
+TT {hone} = Obj
+TT {hzero} = El
+TT {hminusone} = Prf
+TT {hminustwo} _ = ⊤
+
+eqn : ∀ {n} → Type n → Type n → Type n
+eqn {hone} G H = eqU G H
+eqn {hzero} A B = iso A B
+eqn {hminusone} φ ψ = iff φ ψ
+eqn {hminustwo} _ _ = tt
+
+Eq : ∀ {n} → Type n → Type n → Set
+Eq A B = TT (eqn A B)
+
+eqTTn : ∀ {n} {A B : Type n} → TT A → Eq A B → TT B → Type (pred n)
+eqTTn {hone} = path
+eqTTn {hzero} = eq
+eqTTn {hminusone} _ _ _ = tt
+eqTTn {hminustwo} _ _ _ = tt
+
+[_]_∼〈〈_〉〉_ : ∀ n {A B : Type n} → TT A → Eq A B → TT B → Set
+[ n ] a ∼〈〈 e 〉〉 b = TT (eqTTn a e b)
+
+eqn-cong : ∀ {n} {A₁ A₂ B₁ B₂ : Type n} → Eq A₁ A₂ → Eq B₁ B₂ → Eq (eqn A₁ B₁) (eqn A₂ B₂)
+eqn-cong {hone} = eqU-cong
+eqn-cong {hzero} = iso-cong
+eqn-cong {hminusone} = iff-cong
+eqn-cong {hminustwo} _ _ = tt
+
+eqTTn-cong : {n : hLevel} 
+  {A A' B B' : Type n}
+  {e : Eq A B} {e' : Eq A' B'} {A* : Eq A A'} {B* : Eq B B'}
+  {a : TT A} {a' : TT A'} {b : TT B} {b' : TT B'} → 
+  [ n ] a ∼〈〈 A* 〉〉 a' → [ n ] e ∼〈〈 eqn-cong A* B* 〉〉 e' → [ n ] b ∼〈〈 B* 〉〉 b' →
+  Eq (eqTTn a e b) (eqTTn a' e' b')
+eqTTn-cong {hone} = path-cong
+eqTTn-cong {hzero} = eq-cong
+eqTTn-cong {hminusone} _ _ _ = tt
+eqTTn-cong {hminustwo} _ _ _ = tt
+
+eqn-cong₂ : ∀ {n : hLevel}
+  {A₁ A₁' A₂ A₂' B₁ B₁' B₂ B₂' : Type n}
+  {A₁* : Eq A₁ A₁'} {A₂* : Eq A₂ A₂'} {B₁* : Eq B₁ B₁'} {B₂* : Eq B₂ B₂'} {Aₑ : Eq A₁ A₂} {Aₑ' : Eq A₁' A₂'} {Bₑ : Eq B₁ B₂} {Bₑ' : Eq B₁' B₂'} →
+  [ n ] A₁* ∼〈〈 eqn-cong Aₑ Aₑ' 〉〉 A₂* → [ n ] B₁* ∼〈〈 eqn-cong Bₑ Bₑ' 〉〉 B₂* →
+  [ n ] eqn-cong A₁* B₁* ∼〈〈 eqn-cong (eqn-cong Aₑ Bₑ) (eqn-cong Aₑ' Bₑ') 〉〉 eqn-cong A₂* B₂*
+eqn-cong₂ {hone} = eqU-cong₂
+eqn-cong₂ {hzero} = iso-cong₂
+eqn-cong₂ {hminusone} _ _ = tt
+eqn-cong₂ {hminustwo} _ _ = tt
+
+Refn : ∀ {n} (A : Type n) → Eq A A
+Refn {hone} A = Ref A
+Refn {hzero} A = Ref₀ A
+Refn {hminusone} A = Ref₋₁ A
+Refn {hminustwo} A = tt
+
+Refn-cong : ∀ {n} {A B : Type n} (e : Eq A B) → [ _ ] Refn A ∼〈〈 eqn-cong e e 〉〉 Refn B
+Refn-cong {hone} e = Ref-cong e
+Refn-cong {hzero} e = Ref₀-cong e
+Refn-cong {hminusone} e = tt
+Refn-cong {hminustwo} e = tt
+
+Refn-cong₂ : ∀ {n : hLevel}
+  {A A' B B' : Type n}
+  {e : Eq A B} {e' : Eq A' B'} {A* : Eq A A'} {B* : Eq B B'}
+  (sq : [ _ ] e ∼〈〈 eqn-cong A* B* 〉〉 e') →
+  [ _ ] Refn-cong e ∼〈〈 eqTTn-cong {n} (Refn-cong A*) (eqn-cong₂ {n} sq sq) (Refn-cong B*) 〉〉 Refn-cong e'
+Refn-cong₂ {hone} = Ref-cong₂
+Refn-cong₂ {hzero} _ = tt
+Refn-cong₂ {hminusone} _ = tt
+Refn-cong₂ {hminustwo} _ = tt

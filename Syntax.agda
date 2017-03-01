@@ -10,7 +10,7 @@ open import Context
 
 data _⊢_ (Γ : Cx) : ∀ {n} → Typeover n Γ → Set₁
 ⟦_⟧⊢ : ∀ {Γ n} {T : Typeover n Γ} → Γ ⊢ T → (γ : ⟦ Γ ⟧C) → ⟦ T ⟧T γ
-⟦_⟧⊢-cong : ∀ {Γ n} {T : Typeover n Γ} (t : Γ ⊢ T) {γ γ'} (γ* : EQC Γ γ γ') → T ∋ ⟦ t ⟧⊢ γ ∼〈 γ* 〉n ⟦ t ⟧⊢ γ'
+⟦_⟧⊢-cong : ∀ {Γ n} {T : Typeover n Γ} (t : Γ ⊢ T) {γ γ'} (γ* : EQC Γ γ γ') → T ∋ ⟦ t ⟧⊢ γ ∼〈 γ* 〉 ⟦ t ⟧⊢ γ'
 ⟦_⟧⊢-cong₂ : ∀ {Γ n} {T : Typeover n Γ} (t : Γ ⊢ T) {a₁ a₂ b₁ b₂}
   {a* : EQC Γ a₁ a₂} {b* : EQC Γ b₁ b₂} {p₁ : EQC Γ a₁ b₁} {p₂ : EQC Γ a₂ b₂}
   (sq : EQC₂ {Γ} a* b* p₁ p₂) → 
@@ -24,8 +24,8 @@ data _⊢_ Γ where
       Γ ⊢ T
 
   PRP :
-    ----------------
-      Γ ⊢ K sets Γ
+    --------------------
+      Γ ⊢ K hone Γ sets
 
 ⟦ VAR x ⟧⊢ = ⟦ x ⟧∋
 ⟦ PRP ⟧⊢ _ = prp
@@ -35,14 +35,6 @@ data _⊢_ Γ where
 
 ⟦ VAR x ⟧⊢-cong₂ γ₂ = ⟦ x ⟧∋-cong₂ γ₂
 ⟦ PRP ⟧⊢-cong₂ γ₂ = ref-cong (ref prp)
-
-data _⊢₀_ (Γ : Cx) : Setover Γ → Set₁ where
-
-⟦_⟧⊢₀ : ∀ {Γ T} → Γ ⊢₀ T → (γ : ⟦ Γ ⟧C) → El (Typeover.obj T γ)
-⟦ () ⟧⊢₀
-
-⟦_⟧⊢₀-cong : ∀ {Γ T} (t : Γ ⊢₀ T) {γ γ'} (γ* : EQC Γ γ γ') → [ _ ] ⟦ t ⟧⊢₀ γ ∼〈〈 Typeover.obj-cong T γ* 〉〉 ⟦ t ⟧⊢₀ γ'
-⟦ () ⟧⊢₀-cong
 
 --A substitution or context morphism from Γ to Δ
 data Sub (Γ : Cx) : Cx → Set₁
@@ -96,15 +88,15 @@ data PathSub : ∀ {Γ Δ} → Sub Γ Δ → Sub Γ Δ → Set₁
 
 data PathSub where
   • : ∀ {Γ} → PathSub {Γ} • •
-  _,,,_ : ∀ {Γ Δ T} {ρ σ : Sub Γ Δ} {s t} (τ : PathSub ρ σ) → Γ ⊢₀ record { 
+  _,,,_ : ∀ {Γ Δ T} {ρ σ : Sub Γ Δ} {s t} (τ : PathSub ρ σ) → Γ ⊢ record { 
     obj = λ γ → path (⟦ s ⟧⊢ γ) (Typeover.obj-cong T (⟦ τ ⟧ps γ)) (⟦ t ⟧⊢ γ) ;
     obj-cong = λ {γ} {γ'} γ* → path-cong (⟦ s ⟧⊢-cong γ*) (Typeover.obj-cong₂ T (⟦ τ ⟧ps-cong γ*)) (⟦ t ⟧⊢-cong γ*) ;
     obj-cong₂ = λ γ* → path-cong₂ (⟦ s ⟧⊢-cong₂ γ*) (Typeover.obj-cong₃ T (⟦ τ ⟧ps-cong _) (⟦ τ ⟧ps-cong _) (⟦ τ ⟧ps-cong _) (⟦ τ ⟧ps-cong _) (⟦ ρ ⟧s-cong₂ γ*) (⟦ σ ⟧s-cong₂ γ*)) (⟦ t ⟧⊢-cong₂ γ*) } →
        PathSub {Δ = Δ ,, T} (ρ ,,, s) (σ ,,, t)
 
 ⟦ • ⟧ps γ = ⊤.tt
-⟦ τ ,,, b* ⟧ps γ = (⟦ τ ⟧ps γ) , ⟦ b* ⟧⊢₀ γ
+⟦ τ ,,, b* ⟧ps γ = (⟦ τ ⟧ps γ) , ⟦ b* ⟧⊢ γ
 
 ⟦ • ⟧ps-cong γ* = ⊤.tt
-⟦ τ ,,, b* ⟧ps-cong γ* = (⟦ τ ⟧ps-cong γ*) , (⟦ b* ⟧⊢₀-cong γ*)
+⟦ τ ,,, b* ⟧ps-cong γ* = (⟦ τ ⟧ps-cong γ*) , (⟦ b* ⟧⊢-cong γ*)
 
