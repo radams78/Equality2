@@ -104,6 +104,14 @@ postulate eqU-cong₃ : ∀ {A₁ A₁' A₂ A₂' B₁ B₁' B₂ B₂' C₁ C�
                       Bₑ* ∼〈〈 path-cong K₁* (eqU-cong₂ Kₑ Kₑ') K₂* 〉〉₀ Dₑ* → 
                       eqU-cong₂ Aₑ* Bₑ* ∼〈〈 path-cong (eqU-cong₂ H₁* K₁*) (eqU-cong₂ (eqU-cong₂ Hₑ Kₑ) (eqU-cong₂ Hₑ' Kₑ')) (eqU-cong₂ H₂* K₂*) 〉〉₀ eqU-cong₂ Cₑ* Dₑ*
 
+postulate path-cong₂ : ∀ {A₁ A₁' A₂ A₂' B₁ B₁' B₂ B₂' : U}
+                         {A₁* : A₁ ⇔ A₁'} {A₂* : A₂ ⇔ A₂'} {B₁* : B₁ ⇔ B₁'} {B₂* : B₂ ⇔ B₂'} {φ₁ : A₁ ⇔ B₁} {φ₁' : A₁' ⇔ B₁'} {φ₂ : A₂ ⇔ B₂} {φ₂' : A₂' ⇔ B₂'} {Aₑ : A₁ ⇔ A₂} {Aₑ' : A₁' ⇔ A₂'} {Bₑ : B₁ ⇔ B₂} {Bₑ' : B₁' ⇔ B₂'}
+                         {a₁ : Obj A₁} {a₁' : Obj A₁'} {a₂ : Obj A₂} {a₂' : Obj A₂'} {b₁ : Obj B₁} {b₁' : Obj B₁'} {b₂ : Obj B₂} {b₂' : Obj B₂'}
+                         {a₁* : a₁ ∼〈〈 A₁* 〉〉 a₁'} {a₂* : a₂ ∼〈〈 A₂* 〉〉 a₂'} {b₁* : b₁ ∼〈〈 B₁* 〉〉 b₁'} {b₂* : b₂ ∼〈〈 B₂* 〉〉 b₂'} {aₑ : a₁ ∼〈〈 Aₑ 〉〉 a₂} {aₑ' : a₁' ∼〈〈 Aₑ' 〉〉 a₂'} {φₑ : φ₁ ∼〈〈 eqU-cong Aₑ Bₑ 〉〉 φ₂} {φₑ' : φ₁' ∼〈〈 eqU-cong Aₑ' Bₑ' 〉〉 φ₂'} {bₑ : b₁ ∼〈〈 Bₑ 〉〉 b₂} {bₑ' : b₁' ∼〈〈 Bₑ' 〉〉 b₂'}
+                         {φ₁* : φ₁ ∼〈〈 eqU-cong A₁* B₁* 〉〉 φ₁'} {φ₂* : φ₂ ∼〈〈 eqU-cong A₂* B₂* 〉〉 φ₂'} {Aₑ* : A₁* ∼〈〈 eqU-cong Aₑ Aₑ' 〉〉 A₂*} {Bₑ* : B₁* ∼〈〈 eqU-cong Bₑ Bₑ' 〉〉 B₂*} → 
+                         a₁* ∼〈〈 path-cong aₑ Aₑ* aₑ' 〉〉₀ a₂* → φ₁* ∼〈〈 path-cong φₑ (eqU-cong₂ Aₑ* Bₑ*) φₑ' 〉〉₀ φ₂* → b₁* ∼〈〈 path-cong bₑ Bₑ* bₑ' 〉〉₀ b₂* → 
+                         path-cong a₁* φ₁* b₁* ∼〈〈 iso-cong (path-cong aₑ φₑ bₑ) (path-cong aₑ' φₑ' bₑ') 〉〉₀ path-cong a₂* φ₂* b₂*
+
 postulate Ref : ∀ A → A ⇔ A
 
 postulate Ref-cong : ∀ {A B} (F : A ⇔ B) → Ref A ∼〈〈 eqU-cong F F 〉〉 Ref B
