@@ -191,7 +191,7 @@ eqTTn-cong {hzero} = eq-cong
 eqTTn-cong {hminusone} _ _ _ = tt
 eqTTn-cong {hminustwo} _ _ _ = tt
 
-eqn-cong₂ : ∀ {n : hLevel}
+eqn-cong₂ : ∀ (n : hLevel)
   {A₁ A₁' A₂ A₂' B₁ B₁' B₂ B₂' : Type n}
   {A₁* : Eq A₁ A₁'} {A₂* : Eq A₂ A₂'} {B₁* : Eq B₁ B₁'} {B₂* : Eq B₂ B₂'} {Aₑ : Eq A₁ A₂} {Aₑ' : Eq A₁' A₂'} {Bₑ : Eq B₁ B₂} {Bₑ' : Eq B₁' B₂'} →
   [ n ] A₁* ∼⟪ eqn-cong Aₑ Aₑ' ⟫ A₂* → [ n ] B₁* ∼⟪ eqn-cong Bₑ Bₑ' ⟫ B₂* →
@@ -201,7 +201,6 @@ eqn-cong₂ {hzero} = iso-cong₂
 eqn-cong₂ {hminusone} _ _ = tt
 eqn-cong₂ {hminustwo} _ _ = tt
 
---Make n explicit in eqTTn-cong, eqn-cong₂
 eqTTn-cong₂ : ∀ {n : hLevel}
   {A₁ A₁' A₂ A₂' B₁ B₁' B₂ B₂' : Type n}
   {e₁ : Eq A₁ B₁} {e₁' : Eq A₁' B₁'} {e₂ : Eq A₂ B₂} {e₂' : Eq A₂' B₂'} {A₁* : Eq A₁ A₁'} {B₁* : Eq B₁ B₁'} {A₂* : Eq A₂ A₂'} {B₂* : Eq B₂ B₂'} {Aₑ : Eq A₁ A₂} {Aₑ' : Eq A₁' A₂'} {Bₑ : Eq B₁ B₂} {Bₑ' : Eq B₁' B₂'}
@@ -210,7 +209,7 @@ eqTTn-cong₂ : ∀ {n : hLevel}
   {eₑ : [ n ] e₁ ∼⟪ eqn-cong Aₑ Bₑ ⟫ e₂} {Bₑ* : [ n ] B₁* ∼⟪ eqn-cong Bₑ Bₑ' ⟫ B₂*} {eₑ' : [ n ] e₁' ∼⟪ eqn-cong Aₑ' Bₑ' ⟫ e₂'}
   {a₁* : [ n ] a₁ ∼⟪ A₁* ⟫ a₁'} {a₂* : [ n ] a₂ ∼⟪ A₂* ⟫ a₂'} {b₁* : [ n ] b₁ ∼⟪ B₁* ⟫ b₁'} {b₂* : [ n ] b₂ ∼⟪ B₂* ⟫ b₂'}
   {aₑ : [ n ] a₁ ∼⟪ Aₑ ⟫ a₂} {aₑ' : [ n ] a₁' ∼⟪ Aₑ' ⟫ a₂'} {bₑ : [ n ] b₁ ∼⟪ Bₑ ⟫ b₂} {bₑ' : [ n ] b₁' ∼⟪ Bₑ' ⟫ b₂'} →
-  [ pred n ] a₁* ∼⟪ eqTTn-cong n aₑ Aₑ* aₑ' ⟫ a₂* → [ pred n ] e₁* ∼⟪ eqTTn-cong n eₑ (eqn-cong₂ {n} Aₑ* Bₑ*) eₑ' ⟫ e₂* → [ pred n ] b₁* ∼⟪ eqTTn-cong n bₑ Bₑ* bₑ' ⟫ b₂* →
+  [ pred n ] a₁* ∼⟪ eqTTn-cong n aₑ Aₑ* aₑ' ⟫ a₂* → [ pred n ] e₁* ∼⟪ eqTTn-cong n eₑ (eqn-cong₂ n Aₑ* Bₑ*) eₑ' ⟫ e₂* → [ pred n ] b₁* ∼⟪ eqTTn-cong n bₑ Bₑ* bₑ' ⟫ b₂* →
   [ pred n ] eqTTn-cong n a₁* e₁* b₁* ∼⟪ eqn-cong (eqTTn-cong n aₑ eₑ bₑ) (eqTTn-cong n aₑ' eₑ' bₑ') ⟫ eqTTn-cong n a₂* e₂* b₂*
 eqTTn-cong₂ {hone} = path-cong₂
 eqTTn-cong₂ {hzero} _ _ _ = tt
@@ -233,7 +232,7 @@ Refn-cong₂ : ∀ {n : hLevel}
   {A A' B B' : Type n}
   {e : Eq A B} {e' : Eq A' B'} {A* : Eq A A'} {B* : Eq B B'}
   (sq : [ _ ] e ∼⟪ eqn-cong A* B* ⟫ e') →
-  [ _ ] Refn-cong e ∼⟪ eqTTn-cong n (Refn-cong A*) (eqn-cong₂ {n} sq sq) (Refn-cong B*) ⟫ Refn-cong e'
+  [ _ ] Refn-cong e ∼⟪ eqTTn-cong n (Refn-cong A*) (eqn-cong₂ n sq sq) (Refn-cong B*) ⟫ Refn-cong e'
 Refn-cong₂ {hone} = Ref-cong₂
 Refn-cong₂ {hzero} _ = tt
 Refn-cong₂ {hminusone} _ = tt
