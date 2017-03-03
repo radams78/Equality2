@@ -80,27 +80,3 @@ sub-sound : ∀ {n Γ Δ} {T : Typeover n Δ} {σ : Sub Γ Δ} {t : Δ ⊢ T} {�
 sub-sound {t = VAR x} = ap-sound {x = x}
 sub-sound {t = PRP} = refl
 
-data PathSub : ∀ {Γ Δ} → Sub Γ Δ → Sub Γ Δ → Set₁
-⟦_⟧ps : ∀ {Γ Δ} {ρ σ : Sub Γ Δ} → PathSub ρ σ → (γ : ⟦ Γ ⟧C) → EQC Δ (⟦ ρ ⟧s γ) (⟦ σ ⟧s γ)
-⟦_⟧ps-cong : ∀ {Γ Δ} {ρ σ : Sub Γ Δ} (τ : PathSub ρ σ) {γ γ'} (γ* : EQC Γ γ γ') →
-  EQC₂ {Δ} (⟦ τ ⟧ps γ) (⟦ τ ⟧ps γ') (⟦ ρ ⟧s-cong γ*) (⟦ σ ⟧s-cong γ*)
-
-data PathSub where
-  • : ∀ {Γ} → PathSub {Γ} • •
-  _,,,_ : ∀ {n Γ Δ} {T : Typeover n Δ} {ρ σ : Sub Γ Δ} {s t} (τ : PathSub ρ σ) → Γ ⊢ record { 
-    obj = λ γ → eqTTn {n} (⟦ s ⟧⊢ γ) (Typeover.obj-cong T (⟦ τ ⟧ps γ)) (⟦ t ⟧⊢ γ) ;
-    obj-cong = λ {γ} {γ'} γ* → eqTTn-cong n (⟦ s ⟧⊢-cong γ*) (Typeover.obj-cong₂ T (⟦ τ ⟧ps-cong γ*)) (⟦ t ⟧⊢-cong γ*) ;
-    obj-cong₂ = λ γ* → {!eqTTn-cong₂!} ;
-    obj-cong₃ = {!!}} →
-       PathSub {Δ = Δ ,, T} (ρ ,,, s) (σ ,,, t)
-
-⟦ • ⟧ps γ = ⊤.tt
-⟦ τ ,,, b* ⟧ps γ = (⟦ τ ⟧ps γ) , ⟦ b* ⟧⊢ γ
-
-⟦ • ⟧ps-cong γ* = ⊤.tt
-⟦ τ ,,, b* ⟧ps-cong γ* = (⟦ τ ⟧ps-cong γ*) , (⟦ b* ⟧⊢-cong γ*)
-
-apps : ∀ {n Γ Δ} {T : Typeover n Δ} {ρ σ : Sub Γ Δ} (τ : PathSub ρ σ) (x : Δ ∋ T) →
-  Γ ⊢ record {
-    obj = λ γ → eqTTn {!!} {!!} {!!} ; obj-cong = {!!} ; obj-cong₂ = {!!} ; obj-cong₃ = {!!} }
-apps τ x = {!!}
