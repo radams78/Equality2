@@ -48,7 +48,6 @@ TypeoverF : ∀ {n Γ Δ} → Sub Γ Δ → Typeover n Δ → Typeover n Γ
 data Sub Γ where
   • : Sub Γ ε
   _,,,_ : ∀ {n Δ} {T : Typeover n Δ} (σ : Sub Γ Δ) → Γ ⊢ TypeoverF σ T → Sub Γ (Δ ,, T)
---TODO Substitutions into sets and propositions
 
 TypeoverF σ T = record { 
   obj = λ γ → Typeover.obj T (⟦ σ ⟧s γ) ; 
