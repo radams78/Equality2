@@ -1,4 +1,8 @@
 module PathSub3 where
+open import Context
+open import Syntax
+open import PathSub
+open import PathSub2
 
 --Common pattern with apps
 subps : ∀ {n Γ Δ} {T : Typeover n Δ} {ρ σ : Sub Γ Δ} (τ : PathSub ρ σ) (t : Δ ⊢ T) →
@@ -9,4 +13,5 @@ subps : ∀ {n Γ Δ} {T : Typeover n Δ} {ρ σ : Sub Γ Δ} (τ : PathSub ρ �
     (λ γ → ⟦ t ⟧⊢ (⟦ σ ⟧s γ))
     (λ γ* → ⟦ t ⟧⊢-cong (⟦ σ ⟧s-cong γ*))
     (λ sq-fill → ⟦ t ⟧⊢-cong₂ (⟦ σ ⟧s-cong₂ sq-fill))
-subps τ t = ?
+subps τ (VAR x) = apps τ x
+subps τ PRP = {!!}

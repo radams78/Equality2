@@ -27,14 +27,22 @@ data _⊢_ Γ where
     --------------------
       Γ ⊢ K hone Γ sets
 
+  REF : ∀ {n} {T : Typeover n Γ} →
+      (t : Γ ⊢ T) →
+    -----------------
+      Γ ⊢ record { obj = λ γ → eqTTn (⟦ t ⟧⊢ γ) (Typeover.obj-cong T {!RefC γ!}) {!!} ; obj-cong = {!!} ; obj-cong₂ = {!!} ; obj-cong₃ = {!!} }
+
 ⟦ VAR x ⟧⊢ = ⟦ x ⟧∋
 ⟦ PRP ⟧⊢ _ = prp
+⟦ REF T ⟧⊢ γ = {!!}
 
 ⟦ VAR x ⟧⊢-cong γ* = ⟦ x ⟧∋-cong γ*
 ⟦ PRP ⟧⊢-cong γ* = ref prp
+⟦ REF t ⟧⊢-cong γ* = {!!}
 
 ⟦ VAR x ⟧⊢-cong₂ γ₂ = ⟦ x ⟧∋-cong₂ γ₂
 ⟦ PRP ⟧⊢-cong₂ γ₂ = ref-cong (ref prp)
+⟦ REF t ⟧⊢-cong₂ γ₂ = {!!}
 
 --A substitution or context morphism from Γ to Δ
 data Sub (Γ : Cx) : Cx → Set₁
@@ -75,8 +83,9 @@ ap-sound {σ = _ ,,, _} {pop x} = ap-sound {x = x}
 sub : ∀ {n Γ Δ} {T : Typeover n Δ} (σ : Sub Γ Δ) → Δ ⊢ T → Γ ⊢ TypeoverF σ T
 sub σ (VAR x) = ap σ x
 sub σ PRP = PRP
+sub σ (REF t) = {!!}
 
 sub-sound : ∀ {n Γ Δ} {T : Typeover n Δ} {σ : Sub Γ Δ} {t : Δ ⊢ T} {γ} → ⟦ sub σ t ⟧⊢ γ ≡ ⟦ t ⟧⊢ (⟦ σ ⟧s γ)
 sub-sound {t = VAR x} = ap-sound {x = x}
 sub-sound {t = PRP} = refl
-
+sub-sound {t = REF t} = {!!}

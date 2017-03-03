@@ -37,6 +37,11 @@ record Typeover n Γ where
 EQC ε (lift tt) (lift tt) = ⊤
 EQC (Γ ,, S) (γ , s) (γ' , s') = Σ[ γ* ∈ EQC Γ γ γ' ] S ∋ s ∼〈 γ* 〉 s'
 
+RefC : ∀ {Γ} (γ : ⟦ Γ ⟧C) → EQC Γ γ γ
+RefC {ε} γ = tt
+RefC {Γ ,, T} (γ , t) = RefC γ , refn {!t!}
+--Need: Typeover.obj-cong T (RefC γ) ▷ Refn (Typeover.obj T γ)
+
 T ∋ a ∼〈 γ* 〉 b = [ _ ] a ∼⟪ Typeover.obj-cong T γ* ⟫ b
 
 EQC₂ {ε} tt tt tt tt = ⊤

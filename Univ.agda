@@ -238,6 +238,12 @@ Refn-cong₂ {hzero} _ = tt
 Refn-cong₂ {hminusone} _ = tt
 Refn-cong₂ {hminustwo} _ = tt
 
+refn : ∀ {n : hLevel} {A : Type n} (a : TT A) → [ n ] a ∼⟪ Refn A ⟫ a
+refn {hone} a = ref a
+refn {hzero} _ = ref₀
+refn {hminusone} _ = tt
+refn {hminustwo} _ = tt
+
 trivial : ∀ n {A B : Type (pred (pred n))} {a : TT A} {e : Eq A B} {b : TT B} → [ pred (pred n) ] a ∼⟪ e ⟫ b
 trivial hone = tt
 trivial hzero = tt
