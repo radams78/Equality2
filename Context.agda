@@ -20,10 +20,10 @@ data Cx where
 
 record Typeover n Γ where
   field
-    obj : ⟦ Γ ⟧C → Type n
+    obj : ∀ (γ : ⟦ Γ ⟧C) → Type n
     obj-cong : ∀ {γ γ'} (γ* : EQC Γ γ γ') → Eq (obj γ) (obj γ')
-    obj-cong₂ : ∀ {γ₁ γ₂ δ₁ δ₂} {γ* : EQC Γ γ₁ γ₂} {δ* : EQC Γ δ₁ δ₂} {e₁ : EQC Γ γ₁ δ₁} {e₂ : EQC Γ γ₂ δ₂} →
-      EQC₂ γ* δ* e₁ e₂ → [ n ] obj-cong γ* ∼⟪ eqn-cong (obj-cong e₁) (obj-cong e₂) ⟫ obj-cong δ*
+    obj-cong₂ : ∀ {γ₁ γ₂ δ₁ δ₂} {γ* : EQC Γ γ₁ γ₂} {δ* : EQC Γ δ₁ δ₂} {e₁ : EQC Γ γ₁ δ₁} {e₂ : EQC Γ γ₂ δ₂}
+      (sq-fill : EQC₂ γ* δ* e₁ e₂) → [ n ] obj-cong γ* ∼⟪ eqn-cong (obj-cong e₁) (obj-cong e₂) ⟫ obj-cong δ*
     obj-cong₃ : ∀ {γ₁ γ₁' γ₂ γ₂' δ₁ δ₁' δ₂ δ₂' : ⟦ Γ ⟧C}
       {γ₁* : EQC Γ γ₁ γ₁'} {γ₂* : EQC Γ γ₂ γ₂'} {γₑ : EQC Γ γ₁ γ₂} {γₑ' : EQC Γ γ₁' γ₂'} {δ₁* : EQC Γ δ₁ δ₁'} {δ₂* : EQC Γ δ₂ δ₂'} {δₑ : EQC Γ δ₁ δ₂} {δₑ' : EQC Γ δ₁' δ₂'} {e₁ : EQC Γ γ₁ δ₁} {e₁' : EQC Γ γ₁' δ₁'} {e₂ : EQC Γ γ₂ δ₂} {e₂' : EQC Γ γ₂' δ₂'}
       (γsq : EQC₂ γ₁* γ₂* γₑ γₑ') (δsq : EQC₂ δ₁* δ₂* δₑ δₑ') (sq₁ : EQC₂ γ₁* δ₁* e₁ e₁') (sq₂ : EQC₂ γ₂* δ₂* e₂ e₂') (sqₑ : EQC₂ γₑ δₑ e₁ e₂) (sqₑ' : EQC₂ γₑ' δₑ' e₁' e₂') →
