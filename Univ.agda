@@ -201,7 +201,7 @@ eqn-cong₂ {hzero} = iso-cong₂
 eqn-cong₂ {hminusone} _ _ = tt
 eqn-cong₂ {hminustwo} _ _ = tt
 
-eqTTn-cong₂ : ∀ {n : hLevel}
+eqTTn-cong₂ : ∀ (n : hLevel)
   {A₁ A₁' A₂ A₂' B₁ B₁' B₂ B₂' : Type n}
   {e₁ : Eq A₁ B₁} {e₁' : Eq A₁' B₁'} {e₂ : Eq A₂ B₂} {e₂' : Eq A₂' B₂'} {A₁* : Eq A₁ A₁'} {B₁* : Eq B₁ B₁'} {A₂* : Eq A₂ A₂'} {B₂* : Eq B₂ B₂'} {Aₑ : Eq A₁ A₂} {Aₑ' : Eq A₁' A₂'} {Bₑ : Eq B₁ B₂} {Bₑ' : Eq B₁' B₂'}
   {a₁ : TT A₁} {a₁' : TT A₁'} {a₂ : TT A₂} {a₂' : TT A₂'} {b₁ : TT B₁} {b₁' : TT B₁'} {b₂ : TT B₂} {b₂' : TT B₂'}
