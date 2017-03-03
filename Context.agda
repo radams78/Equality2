@@ -27,7 +27,7 @@ record Typeover n Γ where
     obj-cong₃ : ∀ {γ₁ γ₁' γ₂ γ₂' δ₁ δ₁' δ₂ δ₂' : ⟦ Γ ⟧C}
       {γ₁* : EQC Γ γ₁ γ₁'} {γ₂* : EQC Γ γ₂ γ₂'} {γₑ : EQC Γ γ₁ γ₂} {γₑ' : EQC Γ γ₁' γ₂'} {δ₁* : EQC Γ δ₁ δ₁'} {δ₂* : EQC Γ δ₂ δ₂'} {δₑ : EQC Γ δ₁ δ₂} {δₑ' : EQC Γ δ₁' δ₂'} {e₁ : EQC Γ γ₁ δ₁} {e₁' : EQC Γ γ₁' δ₁'} {e₂ : EQC Γ γ₂ δ₂} {e₂' : EQC Γ γ₂' δ₂'}
       (γsq : EQC₂ γ₁* γ₂* γₑ γₑ') (δsq : EQC₂ δ₁* δ₂* δₑ δₑ') (sq₁ : EQC₂ γ₁* δ₁* e₁ e₁') (sq₂ : EQC₂ γ₂* δ₂* e₂ e₂') (sqₑ : EQC₂ γₑ δₑ e₁ e₂) (sqₑ' : EQC₂ γₑ' δₑ' e₁' e₂') →
-      [ pred n ] obj-cong₂ γsq ∼⟪ eqTTn-cong {n} (obj-cong₂ sq₁) (eqn-cong₂ {A₁* = obj-cong γₑ} (obj-cong₂ sqₑ) (obj-cong₂ sqₑ')) (obj-cong₂ sq₂) ⟫ obj-cong₂ δsq
+      [ pred n ] obj-cong₂ γsq ∼⟪ eqTTn-cong n (obj-cong₂ sq₁) (eqn-cong₂ {A₁* = obj-cong γₑ} (obj-cong₂ sqₑ) (obj-cong₂ sqₑ')) (obj-cong₂ sq₂) ⟫ obj-cong₂ δsq
 
 ⟦ ε ⟧C = Lift ⊤
 ⟦ Γ ,, S ⟧C = Σ[ γ ∈ ⟦ Γ ⟧C ] ⟦ S ⟧T γ
@@ -41,7 +41,7 @@ T ∋ a ∼〈 γ* 〉 b = [ _ ] a ∼⟪ Typeover.obj-cong T γ* ⟫ b
 
 EQC₂ {ε} tt tt tt tt = ⊤
 EQC₂ {_,,_ {n} Γ T} {a₁ , s₁} {a₂ , s₂} {b₁ , t₁} {b₂ , t₂} (a* , s*) (b* , t*) (e₁ , p₁) (e₂ , p₂) = 
-  Σ[ sq ∈ EQC₂ {Γ} a* b* e₁ e₂ ] ([ _ ] s* ∼⟪ eqTTn-cong {n} p₁ (Typeover.obj-cong₂ T sq) p₂ ⟫ t*)
+  Σ[ sq ∈ EQC₂ {Γ} a* b* e₁ e₂ ] ([ _ ] s* ∼⟪ eqTTn-cong n p₁ (Typeover.obj-cong₂ T sq) p₂ ⟫ t*)
 
 weak : ∀ {Γ m n} {T : Typeover m Γ} → Typeover n Γ → Typeover n (Γ ,, T)
 weak {T = T} S = record { 
@@ -66,7 +66,7 @@ data _∋_ : ∀ {n} (Γ : Cx) (T : Typeover n Γ) → Set₁ where
 ⟦_⟧∋-cong₂ : ∀ {n Γ} {T : Typeover n Γ} (x : Γ ∋ T) {a₁ a₂ b₁ b₂} {a* : EQC Γ a₁ a₂} {b* : EQC Γ b₁ b₂} 
   {p₁ : EQC Γ a₁ b₁} {p₂ : EQC Γ a₂ b₂}
   (sq : EQC₂ {Γ} a* b* p₁ p₂) → 
-  [ _ ] ⟦ x ⟧∋-cong a* ∼⟪ eqTTn-cong {n} (⟦ x ⟧∋-cong p₁) (Typeover.obj-cong₂ T sq) (⟦ x ⟧∋-cong p₂) ⟫ ⟦ x ⟧∋-cong b*
+  [ _ ] ⟦ x ⟧∋-cong a* ∼⟪ eqTTn-cong n (⟦ x ⟧∋-cong p₁) (Typeover.obj-cong₂ T sq) (⟦ x ⟧∋-cong p₂) ⟫ ⟦ x ⟧∋-cong b*
 ⟦ top ⟧∋-cong₂ (_ , t₂) = t₂
 ⟦ pop x ⟧∋-cong₂ (γ₂ , _) = ⟦ x ⟧∋-cong₂ γ₂
 

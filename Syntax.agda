@@ -14,7 +14,7 @@ data _⊢_ (Γ : Cx) : ∀ {n} → Typeover n Γ → Set₁
 ⟦_⟧⊢-cong₂ : ∀ {Γ n} {T : Typeover n Γ} (t : Γ ⊢ T) {a₁ a₂ b₁ b₂}
   {a* : EQC Γ a₁ a₂} {b* : EQC Γ b₁ b₂} {p₁ : EQC Γ a₁ b₁} {p₂ : EQC Γ a₂ b₂}
   (sq : EQC₂ {Γ} a* b* p₁ p₂) → 
-  [ pred n ] ⟦ t ⟧⊢-cong a* ∼⟪ eqTTn-cong {n} (⟦ t ⟧⊢-cong p₁) (Typeover.obj-cong₂ T sq) (⟦ t ⟧⊢-cong p₂) ⟫ ⟦ t ⟧⊢-cong b*
+  [ pred n ] ⟦ t ⟧⊢-cong a* ∼⟪ eqTTn-cong n (⟦ t ⟧⊢-cong p₁) (Typeover.obj-cong₂ T sq) (⟦ t ⟧⊢-cong p₂) ⟫ ⟦ t ⟧⊢-cong b*
 
 data _⊢_ Γ where
 
@@ -89,7 +89,7 @@ data PathSub where
   • : ∀ {Γ} → PathSub {Γ} • •
   _,,,_ : ∀ {n Γ Δ} {T : Typeover n Δ} {ρ σ : Sub Γ Δ} {s t} (τ : PathSub ρ σ) → Γ ⊢ record { 
     obj = λ γ → eqTTn {n} (⟦ s ⟧⊢ γ) (Typeover.obj-cong T (⟦ τ ⟧ps γ)) (⟦ t ⟧⊢ γ) ;
-    obj-cong = λ {γ} {γ'} γ* → eqTTn-cong {n} (⟦ s ⟧⊢-cong γ*) (Typeover.obj-cong₂ T (⟦ τ ⟧ps-cong γ*)) (⟦ t ⟧⊢-cong γ*) ;
+    obj-cong = λ {γ} {γ'} γ* → eqTTn-cong n (⟦ s ⟧⊢-cong γ*) (Typeover.obj-cong₂ T (⟦ τ ⟧ps-cong γ*)) (⟦ t ⟧⊢-cong γ*) ;
     obj-cong₂ = λ γ* → {!eqTTn-cong₂!} ;
     obj-cong₃ = {!!}} →
        PathSub {Δ = Δ ,, T} (ρ ,,, s) (σ ,,, t)
