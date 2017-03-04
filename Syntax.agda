@@ -36,46 +36,43 @@ postulate ap₃'-ref : ∀ {Γ Δ F F-cong γ γ'} (F-cong₂ : Functor₂' {Γ}
                    ap₃' F-cong₂ (RefC-cong γ*) ▷ RefC-cong (ap₂' F-cong γ*)
 {-# REWRITE ap₃'-ref #-}
 
-data _⊢_ (Γ : Cx) : ∀ {n} → Typeover n Γ → Set₁
-⟦_⟧⊢ : ∀ {Γ n} {T : Typeover n Γ} → Γ ⊢ T → (γ : ⟦ Γ ⟧C) → ⟦ T ⟧T γ
-⟦_⟧⊢-cong : ∀ {Γ n} {T : Typeover n Γ} (t : Γ ⊢ T) {γ γ'} (γ* : EQC Γ γ γ') → T ∋ ⟦ t ⟧⊢ γ ∼〈 γ* 〉 ⟦ t ⟧⊢ γ'
-⟦_⟧⊢-cong₂ : ∀ {Γ n} {T : Typeover n Γ} (t : Γ ⊢ T) {a₁ a₂ b₁ b₂}
-  {a* : EQC Γ a₁ a₂} {b* : EQC Γ b₁ b₂} {p₁ : EQC Γ a₁ b₁} {p₂ : EQC Γ a₂ b₂}
-  (sq : EQC₂ {Γ} a* b* p₁ p₂) → 
-  [ pred n ] ⟦ t ⟧⊢-cong a* ∼⟪ eqTTn-cong n (⟦ t ⟧⊢-cong p₁) (ap₃ (Typeover.obj-cong₂ T) _ _ _ _ sq) (⟦ t ⟧⊢-cong p₂) ⟫ ⟦ t ⟧⊢-cong b*
+data _⊢_ (Γ : Cx) : ∀ {n} (T : Typeover n Γ)
+  (t⊢ : (γ : ⟦ Γ ⟧C) → ⟦ T ⟧T γ)
+  (t⊢-cong : ∀ {γ γ'} (γ* : EQC Γ γ γ') → T ∋ t⊢ γ ∼⟨ γ* ⟩ t⊢ γ')
+  (t⊢-cong₂ : ∀ {γ₁ γ₁' γ₂ γ₂'} {γ₁* : EQC Γ γ₁ γ₁'} {γ₂* : EQC Γ γ₂ γ₂'}
+    {γₑ : EQC Γ γ₁ γ₂} {γₑ' : EQC Γ γ₁' γ₂'} (sq-fill : EQC₂ γ₁* γ₂* γₑ γₑ') →
+    [ pred n ] t⊢-cong γ₁* ∼⟪ eqTTn-cong n (t⊢-cong γₑ) (ap₃ (Typeover.obj-cong₂ T) _ _ _ _ sq-fill) (t⊢-cong γₑ') ⟫ t⊢-cong γ₂*) →
+    Set₁
 
 data _⊢_ Γ where
 
   VAR : ∀ {n} {T : Typeover n Γ} → 
-      Γ ∋ T →
+      (x : Γ ∋ T) →
     ------------
-      Γ ⊢ T
+      (Γ ⊢ T) ⟦ x ⟧∋ ⟦ x ⟧∋-cong ⟦ x ⟧∋-cong₂
 
   PRP :
     --------------------
-      Γ ⊢ K hone Γ sets
+      (Γ ⊢ K hone Γ sets) (λ γ → prp) (λ γ* → ref prp) (λ sq-fill → ref-cong (ref prp))
 
+--TODO Better notation
 --TODO Extract the type below
-  REF : ∀ {n} {T : Typeover n Γ} →
-      (t : Γ ⊢ T) →
+  REF : ∀ {n} {T : Typeover n Γ} {t⊢}
+    {t⊢-cong : ∀ {γ γ'} (γ* : EQC Γ γ γ') → T ∋ t⊢ γ ∼⟨ γ* ⟩ t⊢ γ'}
+    {t⊢-cong₂ : ∀ {γ₁ γ₁' γ₂ γ₂'} {γ₁* : EQC Γ γ₁ γ₁'} {γ₂* : EQC Γ γ₂ γ₂'}
+      {γₑ : EQC Γ γ₁ γ₂} {γₑ' : EQC Γ γ₁' γ₂'} (sq-fill : EQC₂ γ₁* γ₂* γₑ γₑ') →
+      [ pred n ] t⊢-cong γ₁* ∼⟪ eqTTn-cong n (t⊢-cong γₑ) (ap₃ (Typeover.obj-cong₂ T) _ _ _ _ sq-fill) (t⊢-cong γₑ') ⟫ t⊢-cong γ₂*}
+      (t : (Γ ⊢ T) t⊢ t⊢-cong t⊢-cong₂) →
     -----------------
-      Γ ⊢ record { obj = λ γ → eqTTn (⟦ t ⟧⊢ γ) (ap₂ (Typeover.obj-cong T) (RefC γ)) (⟦ t ⟧⊢ γ) ;
-                   obj-cong = make-Functor (λ γ* → eqTTn-cong n (⟦ t ⟧⊢-cong γ*) (ap₃ (Typeover.obj-cong₂ T) _ _ _ _ (RefC-cong γ*)) (⟦ t ⟧⊢-cong γ*)) ;
-                   obj-cong₂ = make-Functor₂ (λ γ₁* γ₂* γₑ γₑ' sq-fill → eqTTn-cong₂ n (⟦ t ⟧⊢-cong₂ sq-fill) (Typeover.obj-cong₃ T (RefC-cong γ₁*) (RefC-cong γ₂*) (RefC-cong γₑ) (RefC-cong γₑ') sq-fill sq-fill) (⟦ t ⟧⊢-cong₂ sq-fill)) ;
-                   obj-cong₃ = λ _ _ _ _ _ _ → trivial n }
+      (Γ ⊢ record { obj = λ γ → eqTTn (t⊢ γ) (ap₂ (Typeover.obj-cong T) (RefC γ)) (t⊢ γ) ;
+                   obj-cong = make-Functor (λ γ* → eqTTn-cong n (t⊢-cong γ*) (ap₃ (Typeover.obj-cong₂ T) _ _ _ _ (RefC-cong γ*)) (t⊢-cong γ*)) ;
+                   obj-cong₂ = make-Functor₂ (λ γ₁* γ₂* γₑ γₑ' sq-fill → eqTTn-cong₂ n (t⊢-cong₂ sq-fill) (Typeover.obj-cong₃ T (RefC-cong γ₁*) (RefC-cong γ₂*) (RefC-cong γₑ) (RefC-cong γₑ') sq-fill sq-fill) (t⊢-cong₂ sq-fill)) ;
+                   obj-cong₃ = λ _ _ _ _ _ _ → trivial n })
+           (λ γ → refn (t⊢ γ))
+           (λ γ* → refn-cong {n} (t⊢-cong γ*))
+           (λ _ → trivial n)
 
 --TODO Make n explicit in refn, refn-cong
-⟦ VAR x ⟧⊢ = ⟦ x ⟧∋
-⟦ PRP ⟧⊢ _ = prp
-⟦ REF {n} t ⟧⊢ γ = refn {n} (⟦ t ⟧⊢ γ)
-
-⟦ VAR x ⟧⊢-cong γ* = ⟦ x ⟧∋-cong γ*
-⟦ PRP ⟧⊢-cong γ* = ref prp
-⟦ REF {n} t ⟧⊢-cong γ* = refn-cong {n} (⟦ t ⟧⊢-cong γ*)
-
-⟦ VAR x ⟧⊢-cong₂ γ₂ = ⟦ x ⟧∋-cong₂ γ₂
-⟦ PRP ⟧⊢-cong₂ γ₂ = ref-cong (ref prp)
-⟦ REF {n} _ ⟧⊢-cong₂ _ = trivial n
 
 --TODO Extract notion of functor between Γ and Δ
 TypeoverF : ∀ {n} {Γ Δ} (σs : (γ : ⟦ Γ ⟧C) → ⟦ Δ ⟧C)
@@ -96,25 +93,35 @@ data Sub Γ : ∀ (Δ : Cx)
 data Sub Γ where
   • : Sub Γ ε (λ _ → lift tt) (make-Functor' (λ _ → tt)) (make-Functor₂' (λ _ → tt)) 
   _,,,_ : ∀ {n Δ} {T : Typeover n Δ} {σs} {σs-cong} {σs-cong₂} (σ : Sub Γ Δ σs σs-cong σs-cong₂)
-    (t : Γ ⊢ TypeoverF σs σs-cong σs-cong₂ T) →
-    Sub Γ (Δ ,, T) (λ γ → σs γ , ⟦ t ⟧⊢ γ)
-      (make-Functor' (λ γ* → ap₂' σs-cong γ* , ⟦ t ⟧⊢-cong γ*))
-      (make-Functor₂' (λ sq-fill → ap₃' σs-cong₂ sq-fill , ⟦ t ⟧⊢-cong₂ sq-fill))
+    {t⊢ : ∀ (γ : ⟦ Γ ⟧C) → ⟦ T ⟧T (σs γ)}
+    {t⊢-cong : ∀ {γ γ'} (γ* : EQC Γ γ γ') → T ∋ t⊢ γ ∼⟨ ap₂' σs-cong γ* ⟩ t⊢ γ'}
+    {t⊢-cong₂ : ∀ {γ₁ γ₁' γ₂ γ₂'} {γ₁* : EQC Γ γ₁ γ₁'} {γ₂* : EQC Γ γ₂ γ₂'}
+      {γₑ : EQC Γ γ₁ γ₂} {γₑ' : EQC Γ γ₁' γ₂'} (sq-fill : EQC₂ γ₁* γ₂* γₑ γₑ') →
+      [ pred n ] t⊢-cong γ₁* ∼⟪ eqTTn-cong n (t⊢-cong γₑ) (ap₃ (Typeover.obj-cong₂ T) _ _ _ _ (ap₃' σs-cong₂ sq-fill)) (t⊢-cong γₑ') ⟫ t⊢-cong γ₂*}
+    (t : (Γ ⊢ TypeoverF σs σs-cong σs-cong₂ T) t⊢ t⊢-cong t⊢-cong₂) →
+    Sub Γ (Δ ,, T) (λ γ → σs γ , t⊢ γ)
+      (make-Functor' (λ γ* → ap₂' σs-cong γ* , t⊢-cong γ*))
+      (make-Functor₂' (λ sq-fill → ap₃' σs-cong₂ sq-fill , t⊢-cong₂ sq-fill))
 
-ap : ∀ {Γ Δ n} {T : Typeover n Δ} {σs} {σs-cong} {σs-cong₂} (σ : Sub Γ Δ σs σs-cong σs-cong₂) → Δ ∋ T → Γ ⊢ TypeoverF σs σs-cong σs-cong₂ T
+ap : ∀ {Γ Δ n} {T : Typeover n Δ} {σs} {σs-cong} {σs-cong₂} (σ : Sub Γ Δ σs σs-cong σs-cong₂) (x : Δ ∋ T) →
+  (Γ ⊢ TypeoverF σs σs-cong σs-cong₂ T)
+    (λ γ → ⟦ x ⟧∋ (σs γ))
+    (λ {γ γ'} (γ* : EQC Γ γ γ') → ⟦ x ⟧∋-cong (ap₂' σs-cong γ*))
+    (λ {γ₁ γ₁' γ₂ γ₂'} {γ₁* : EQC Γ γ₁ γ₁'} {γ₂* : EQC Γ γ₂ γ₂'} {γₑ : EQC Γ γ₁ γ₂} {γₑ' : EQC Γ γ₁' γ₂'}
+      (sq-fill : EQC₂ γ₁* γ₂* γₑ γₑ') → ⟦ x ⟧∋-cong₂ (ap₃' σs-cong₂ sq-fill))
 ap (_ ,,, t) top = t
 ap (σ ,,, _) (pop x) = ap σ x
 
-ap-sound : ∀ {n Γ Δ} {T : Typeover n Δ} {σs} {σs-cong} {σs-cong₂} {σ : Sub Γ Δ σs σs-cong σs-cong₂} {x : Δ ∋ T} {γ} → ⟦ ap σ x ⟧⊢ γ ≡ ⟦ x ⟧∋ (σs γ)
-ap-sound {σ = _ ,,, _} {x = top} = refl
-ap-sound {σ = _ ,,, _} {pop x} = ap-sound {x = x}
-
-sub : ∀ {n Γ Δ} {T : Typeover n Δ} {σs} {σs-cong} {σs-cong₂} (σ : Sub Γ Δ σs σs-cong σs-cong₂) → Δ ⊢ T → Γ ⊢ TypeoverF σs σs-cong σs-cong₂ T
+sub : ∀ {n Γ Δ} {T : Typeover n Δ} {σs} {σs-cong} {σs-cong₂} (σ : Sub Γ Δ σs σs-cong σs-cong₂)
+  {t⊢}
+  {t⊢-cong : ∀ {γ γ'} (γ* : EQC Δ γ γ') → T ∋ t⊢ γ ∼⟨ γ* ⟩ t⊢ γ'}
+  {t⊢-cong₂ : ∀ {γ₁ γ₁' γ₂ γ₂'} {γ₁* : EQC Δ γ₁ γ₁'} {γ₂* : EQC Δ γ₂ γ₂'}
+      {γₑ : EQC Δ γ₁ γ₂} {γₑ' : EQC Δ γ₁' γ₂'} (sq-fill : EQC₂ γ₁* γ₂* γₑ γₑ') →
+      [ pred n ] t⊢-cong γ₁* ∼⟪ eqTTn-cong n (t⊢-cong γₑ) (ap₃ (Typeover.obj-cong₂ T) _ _ _ _ sq-fill) (t⊢-cong γₑ') ⟫ t⊢-cong γ₂*}
+  (t : (Δ ⊢ T) t⊢ t⊢-cong t⊢-cong₂) → (Γ ⊢ TypeoverF σs σs-cong σs-cong₂ T)
+    (λ γ → t⊢ (σs γ))
+    (λ γ* → t⊢-cong (ap₂' σs-cong γ*))
+    (λ sq-fill → t⊢-cong₂ (ap₃' σs-cong₂ sq-fill))
 sub σ (VAR x) = ap σ x
 sub σ PRP = PRP
-sub .{pred n} {Γ} {_} σ (REF {n} {T} t) = {!REF!}
-
-sub-sound : ∀ {n Γ Δ} {T : Typeover n Δ} {σs} {σs-cong} {σs-cong₂} {σ : Sub Γ Δ σs σs-cong σs-cong₂} {t : Δ ⊢ T} {γ} → ⟦ sub σ t ⟧⊢ γ ≡ ⟦ t ⟧⊢ (σs γ)
-sub-sound {t = VAR x} = ap-sound {x = x}
-sub-sound {t = PRP} = refl
-sub-sound {t = REF t} = {!!}
+sub σ (REF t) = REF (sub σ t)

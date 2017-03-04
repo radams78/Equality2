@@ -19,7 +19,7 @@ EQC : ∀ Γ → ⟦ Γ ⟧C → ⟦ Γ ⟧C → Set
 EQC₂ : ∀ {Γ} {a₁ a₂ b₁ b₂ : ⟦ Γ ⟧C} → EQC Γ a₁ a₂ → EQC Γ b₁ b₂ → EQC Γ a₁ b₁ → EQC Γ a₂ b₂ → Set
 RefC : ∀ {Γ} (γ : ⟦ Γ ⟧C) → EQC Γ γ γ
 RefC-cong : ∀ {Γ} {γ γ' : ⟦ Γ ⟧C} (γ* : EQC Γ γ γ') → EQC₂ (RefC γ) (RefC γ') γ* γ*
-_∋_∼〈_〉_ : ∀ {n Γ} (T : Typeover n Γ) {γ γ'} → ⟦ T ⟧T γ → EQC Γ γ γ' → ⟦ T ⟧T γ' → Set
+_∋_∼⟨_⟩_ : ∀ {n Γ} (T : Typeover n Γ) {γ γ'} → ⟦ T ⟧T γ → EQC Γ γ γ' → ⟦ T ⟧T γ' → Set
 
 
 infix 75 _,,_
@@ -65,9 +65,9 @@ record Typeover n Γ where
 ⟦ A ⟧T γ = TT (Typeover.obj A γ)
 
 EQC ε (lift tt) (lift tt) = ⊤
-EQC (Γ ,, S) (γ , s) (γ' , s') = Σ[ γ* ∈ EQC Γ γ γ' ] S ∋ s ∼〈 γ* 〉 s'
+EQC (Γ ,, S) (γ , s) (γ' , s') = Σ[ γ* ∈ EQC Γ γ γ' ] S ∋ s ∼⟨ γ* ⟩ s'
 
-T ∋ a ∼〈 γ* 〉 b = [ _ ] a ∼⟪ ap₂ (Typeover.obj-cong T) γ* ⟫ b
+T ∋ a ∼⟨ γ* ⟩ b = [ _ ] a ∼⟪ ap₂ (Typeover.obj-cong T) γ* ⟫ b
 
 RefC {ε} γ = tt
 RefC {Γ ,, T} (γ , t) = RefC γ , refn t
@@ -95,7 +95,7 @@ data _∋_ : ∀ {n} (Γ : Cx) (T : Typeover n Γ) → Set₁ where
 ⟦ top ⟧∋ (_ , t) = t
 ⟦ pop i ⟧∋ (γ , _) = ⟦ i ⟧∋ γ
 
-⟦_⟧∋-cong : ∀ {n Γ} {T : Typeover n Γ} (x : Γ ∋ T) {γ γ'} (γ* : EQC Γ γ γ') → T ∋ ⟦ x ⟧∋ γ ∼〈 γ* 〉 ⟦ x ⟧∋ γ'
+⟦_⟧∋-cong : ∀ {n Γ} {T : Typeover n Γ} (x : Γ ∋ T) {γ γ'} (γ* : EQC Γ γ γ') → T ∋ ⟦ x ⟧∋ γ ∼⟨ γ* ⟩ ⟦ x ⟧∋ γ'
 ⟦ top ⟧∋-cong (_ , t*) = t*
 ⟦ pop x ⟧∋-cong (γ* , _) = ⟦ x ⟧∋-cong γ*
 
