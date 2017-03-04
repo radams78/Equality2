@@ -15,7 +15,7 @@ open import Context
 
 --TODO Common pattern with Functor
 data Functor' (Γ Δ : Cx) (F : ⟦ Γ ⟧C → ⟦ Δ ⟧C) : Set₁ where
-  make-Functor' : (∀ {γ γ'} → EQC Γ γ γ' → EQC Δ (F γ) (F γ')) → Functor' Γ Δ F
+  make-Functor' : (∀ {γ γ'} (γ* : EQC Γ γ γ') → EQC Δ (F γ) (F γ')) → Functor' Γ Δ F
 
 ap₂' : ∀ {Γ Δ F γ γ'} → Functor' Γ Δ F → EQC Γ γ γ' → EQC Δ (F γ) (F γ')
 ap₂' (make-Functor' F-cong) γ* = F-cong γ*
@@ -24,8 +24,8 @@ postulate ap₂'-ref : ∀ {Γ Δ F γ} (F-cong : Functor' Γ Δ F) → ap₂' F
 {-# REWRITE ap₂'-ref #-}
 
 data Functor₂' {Γ Δ : Cx} {F : ⟦ Γ ⟧C → ⟦ Δ ⟧C} (F-cong : Functor' Γ Δ F) : Set₁ where
-  make-Functor₂' : (∀ {γ₁ γ₁' γ₂ γ₂'} {γ₁* : EQC Γ γ₁ γ₁'} {γ₂* : EQC Γ γ₂ γ₂'} {γₑ : EQC Γ γ₁ γ₂} {γₑ' : EQC Γ γ₁' γ₂'} →
-    EQC₂ {Γ} γ₁* γ₂* γₑ γₑ' → EQC₂ {Δ} (ap₂' F-cong γ₁*) (ap₂' F-cong γ₂*) (ap₂' F-cong γₑ) (ap₂' F-cong γₑ')) →
+  make-Functor₂' : (∀ {γ₁ γ₁' γ₂ γ₂'} {γ₁* : EQC Γ γ₁ γ₁'} {γ₂* : EQC Γ γ₂ γ₂'} {γₑ : EQC Γ γ₁ γ₂} {γₑ' : EQC Γ γ₁' γ₂'}
+    (sq-fill : EQC₂ {Γ} γ₁* γ₂* γₑ γₑ') → EQC₂ {Δ} (ap₂' F-cong γ₁*) (ap₂' F-cong γ₂*) (ap₂' F-cong γₑ) (ap₂' F-cong γₑ')) →
     Functor₂' F-cong
 
 ap₃' : ∀ {Γ Δ F F-cong γ₁ γ₁' γ₂ γ₂'} {γ₁* : EQC Γ γ₁ γ₁'} {γ₂* : EQC Γ γ₂ γ₂'} {γₑ : EQC Γ γ₁ γ₂} {γₑ' : EQC Γ γ₁' γ₂'} →
@@ -77,46 +77,44 @@ data _⊢_ Γ where
 ⟦ PRP ⟧⊢-cong₂ γ₂ = ref-cong (ref prp)
 ⟦ REF {n} _ ⟧⊢-cong₂ _ = trivial n
 
+--TODO Extract notion of functor between Γ and Δ
+TypeoverF : ∀ {n} {Γ Δ} (σs : (γ : ⟦ Γ ⟧C) → ⟦ Δ ⟧C)
+  (σs-cong : Functor' Γ Δ σs) (σs-cong₂ : Functor₂' σs-cong) (T : Typeover n Δ) → Typeover n Γ
+TypeoverF σs σs-cong σs-cong₂ T = record {
+  obj = λ γ → Typeover.obj T (σs γ) ;
+  obj-cong = make-Functor (λ γ* → ap₂ (Typeover.obj-cong T) (ap₂' σs-cong γ*)) ;
+  obj-cong₂ = make-Functor₂ (λ γ₁* γ₂* γₑ γₑ' sq-fill → ap₃ (Typeover.obj-cong₂ T) (ap₂' σs-cong γ₁*) (ap₂' σs-cong γ₂*) (ap₂' σs-cong γₑ) (ap₂' σs-cong γₑ') (ap₃' σs-cong₂ sq-fill)) ;
+  obj-cong₃ = λ γsq δsq sq₁ sq₂ sqₑ sqₑ' → Typeover.obj-cong₃ T (ap₃' σs-cong₂ γsq) (ap₃' σs-cong₂ δsq) (ap₃' σs-cong₂ sq₁) (ap₃' σs-cong₂ sq₂) (ap₃' σs-cong₂ sqₑ) (ap₃' σs-cong₂ sqₑ') }
+
 --A substitution or context morphism from Γ to Δ
-data Sub (Γ : Cx) : Cx → Set₁
-⟦_⟧s : ∀ {Γ Δ} → Sub Γ Δ → ⟦ Γ ⟧C → ⟦ Δ ⟧C
-⟦_⟧s-cong : ∀ {Γ Δ} (σ : Sub Γ Δ) → Functor' Γ Δ ⟦ σ ⟧s
-⟦_⟧s-cong₂ : ∀ {Γ Δ} (σ : Sub Γ Δ) → Functor₂' ⟦ σ ⟧s-cong
-TypeoverF : ∀ {n Γ Δ} → Sub Γ Δ → Typeover n Δ → Typeover n Γ
+data Sub Γ : ∀ (Δ : Cx)
+  (map₁ : (γ : ⟦ Γ ⟧C) → ⟦ Δ ⟧C)
+  (map₂ : Functor' Γ Δ map₁) →
+  Functor₂' map₂ → Set₁
+--TypeoverF : ∀ {n Γ Δ} → Sub Γ Δ → Typeover n Δ → Typeover n Γ
 
 data Sub Γ where
-  • : Sub Γ ε
-  _,,,_ : ∀ {n Δ} {T : Typeover n Δ} (σ : Sub Γ Δ) → Γ ⊢ TypeoverF σ T → Sub Γ (Δ ,, T)
+  • : Sub Γ ε (λ _ → lift tt) (make-Functor' (λ _ → tt)) (make-Functor₂' (λ _ → tt)) 
+  _,,,_ : ∀ {n Δ} {T : Typeover n Δ} {σs} {σs-cong} {σs-cong₂} (σ : Sub Γ Δ σs σs-cong σs-cong₂)
+    (t : Γ ⊢ TypeoverF σs σs-cong σs-cong₂ T) →
+    Sub Γ (Δ ,, T) (λ γ → σs γ , ⟦ t ⟧⊢ γ)
+      (make-Functor' (λ γ* → ap₂' σs-cong γ* , ⟦ t ⟧⊢-cong γ*))
+      (make-Functor₂' (λ sq-fill → ap₃' σs-cong₂ sq-fill , ⟦ t ⟧⊢-cong₂ sq-fill))
 
-TypeoverF σ T = record { 
-  obj = λ γ → Typeover.obj T (⟦ σ ⟧s γ) ; 
-  obj-cong = make-Functor (λ γ* → ap₂ (Typeover.obj-cong T) (ap₂' ⟦ σ ⟧s-cong γ*)) ;
-  obj-cong₂ = make-Functor₂ λ _ _ _ _ γ₂ → ap₃ (Typeover.obj-cong₂ T) _ _ _ _  (ap₃' ⟦ σ ⟧s-cong₂ γ₂) ;
-  obj-cong₃ = λ γsq δsq sq₁ sq₂ sqₑ sqₑ' → Typeover.obj-cong₃ T (ap₃' ⟦ σ ⟧s-cong₂ γsq) (ap₃' ⟦ σ ⟧s-cong₂ δsq) (ap₃' ⟦ σ ⟧s-cong₂ sq₁) (ap₃' ⟦ σ ⟧s-cong₂ sq₂) (ap₃' ⟦ σ ⟧s-cong₂ sqₑ) (ap₃' ⟦ σ ⟧s-cong₂ sqₑ')}
-
-⟦ • ⟧s γ = lift ⊤.tt
-⟦ σ ,,, t ⟧s γ = ⟦ σ ⟧s γ , ⟦ t ⟧⊢ γ
-
-⟦ • ⟧s-cong = make-Functor' (λ _ → ⊤.tt)
-⟦ σ ,,, t ⟧s-cong = make-Functor' (λ γ* → ap₂' ⟦ σ ⟧s-cong γ* , ⟦ t ⟧⊢-cong γ*)
-
-⟦ • ⟧s-cong₂ = make-Functor₂' (λ _ → ⊤.tt)
-⟦ σ ,,, t ⟧s-cong₂ = make-Functor₂' (λ γ₂ → (ap₃' ⟦ σ ⟧s-cong₂ γ₂) , ⟦ t ⟧⊢-cong₂ γ₂)
-
-ap : ∀ {Γ Δ n} {T : Typeover n Δ} (σ : Sub Γ Δ) → Δ ∋ T → Γ ⊢ TypeoverF σ T
+ap : ∀ {Γ Δ n} {T : Typeover n Δ} {σs} {σs-cong} {σs-cong₂} (σ : Sub Γ Δ σs σs-cong σs-cong₂) → Δ ∋ T → Γ ⊢ TypeoverF σs σs-cong σs-cong₂ T
 ap (_ ,,, t) top = t
 ap (σ ,,, _) (pop x) = ap σ x
 
-ap-sound : ∀ {n Γ Δ} {T : Typeover n Δ} {σ : Sub Γ Δ} {x : Δ ∋ T} {γ} → ⟦ ap σ x ⟧⊢ γ ≡ ⟦ x ⟧∋ (⟦ σ ⟧s γ)
+ap-sound : ∀ {n Γ Δ} {T : Typeover n Δ} {σs} {σs-cong} {σs-cong₂} {σ : Sub Γ Δ σs σs-cong σs-cong₂} {x : Δ ∋ T} {γ} → ⟦ ap σ x ⟧⊢ γ ≡ ⟦ x ⟧∋ (σs γ)
 ap-sound {σ = _ ,,, _} {x = top} = refl
 ap-sound {σ = _ ,,, _} {pop x} = ap-sound {x = x}
 
-sub : ∀ {n Γ Δ} {T : Typeover n Δ} (σ : Sub Γ Δ) → Δ ⊢ T → Γ ⊢ TypeoverF σ T
+sub : ∀ {n Γ Δ} {T : Typeover n Δ} {σs} {σs-cong} {σs-cong₂} (σ : Sub Γ Δ σs σs-cong σs-cong₂) → Δ ⊢ T → Γ ⊢ TypeoverF σs σs-cong σs-cong₂ T
 sub σ (VAR x) = ap σ x
 sub σ PRP = PRP
-sub .{pred n} {Γ} {_} σ (REF {n} {T} t) = {!REF (sub σ t)!}
+sub .{pred n} {Γ} {_} σ (REF {n} {T} t) = {!REF!}
 
-sub-sound : ∀ {n Γ Δ} {T : Typeover n Δ} {σ : Sub Γ Δ} {t : Δ ⊢ T} {γ} → ⟦ sub σ t ⟧⊢ γ ≡ ⟦ t ⟧⊢ (⟦ σ ⟧s γ)
+sub-sound : ∀ {n Γ Δ} {T : Typeover n Δ} {σs} {σs-cong} {σs-cong₂} {σ : Sub Γ Δ σs σs-cong σs-cong₂} {t : Δ ⊢ T} {γ} → ⟦ sub σ t ⟧⊢ γ ≡ ⟦ t ⟧⊢ (σs γ)
 sub-sound {t = VAR x} = ap-sound {x = x}
 sub-sound {t = PRP} = refl
 sub-sound {t = REF t} = {!!}
