@@ -2,41 +2,50 @@ module PathSub where
 open import Data.Unit
 open import Data.Product
 open import Univ
+open import Univ.HLevel
 open import Context
 open import Syntax
 
-data PathSub {Γ} : ∀ {Δ} → Sub Γ Δ → Sub Γ Δ → Set₁
-Typeover-eq : ∀ {n Γ Δ} {ρ σ : Sub Γ Δ} (τ : PathSub ρ σ) (T : Typeover n Δ)
-  (F : ∀ γ → ⟦ T ⟧T (⟦ ρ ⟧s γ))
-  (F-cong : ∀ {γ γ'} (γ* : EQC Γ γ γ') → [ n ] F γ ∼⟪ Typeover.obj-cong T (⟦ ρ ⟧s-cong γ*) ⟫ F γ')
+data PathSub {Γ} : ∀ {Δ ρs ρs-cong ρs-cong₂ σs σs-cong σs-cong₂}
+  (ρ : Sub Γ Δ ρs ρs-cong ρs-cong₂) (σ : Sub Γ Δ σs σs-cong σs-cong₂)
+  (τs : ∀ γ → EQC Δ (ρs γ) (σs γ))
+  (τs-cong : ∀ {γ γ'} (γ* : EQC Γ γ γ') → EQC₂ (τs γ) (τs γ') (ap₂' ρs-cong γ*) (ap₂' σs-cong γ*))
+  → Set₁
+Typeover-eq : ∀ {n Γ Δ ρs ρs-cong ρs-cong₂ σs σs-cong σs-cong₂ τs}
+  {τs-cong : ∀ {γ γ'} (γ* : EQC Γ γ γ') → EQC₂ (τs γ) (τs γ') (ap₂' ρs-cong γ*) (ap₂' σs-cong γ*)}
+  {ρ : Sub Γ Δ ρs ρs-cong ρs-cong₂} {σ : Sub Γ Δ σs σs-cong σs-cong₂}
+  (τ : PathSub ρ σ τs τs-cong) (T : Typeover n Δ)
+  (F : ∀ γ → ⟦ T ⟧T (ρs γ))
+  (F-cong : ∀ {γ γ'} (γ* : EQC Γ γ γ') → [ n ] F γ ∼⟪ ap₂ (Typeover.obj-cong T) (ap₂' ρs-cong γ*) ⟫ F γ')
   (F-cong₂ : ∀ {γ₁ γ₁' γ₂ γ₂'} {γ₁* : EQC Γ γ₁ γ₁'} {γ₂* : EQC Γ γ₂ γ₂'} {γₑ : EQC Γ γ₁ γ₂} {γₑ' : EQC Γ γ₁' γ₂'}
     (sq-fill : EQC₂ γ₁* γ₂* γₑ γₑ') →
-    [ pred n ] F-cong γ₁* ∼⟪ eqTTn-cong n (F-cong γₑ) (Typeover.obj-cong₂ T (⟦ ρ ⟧s-cong₂ sq-fill)) (F-cong γₑ') ⟫ F-cong γ₂*)
-  (G : ∀ γ → ⟦ T ⟧T (⟦ σ ⟧s γ))
-  (G-cong : ∀ {γ γ'} (γ* : EQC Γ γ γ') → [ n ] G γ ∼⟪ Typeover.obj-cong T (⟦ σ ⟧s-cong γ*) ⟫ G γ') →
+    [ pred n ] F-cong γ₁* ∼⟪ eqTTn-cong n (F-cong γₑ) (ap₃ (Typeover.obj-cong₂ T) _ _ _ _ (ap₃' ρs-cong₂ sq-fill)) (F-cong γₑ') ⟫ F-cong γ₂*)
+  (G : ∀ γ → ⟦ T ⟧T (σs γ))
+  (G-cong : ∀ {γ γ'} (γ* : EQC Γ γ γ') → [ n ] G γ ∼⟪ ap₂ (Typeover.obj-cong T) (ap₂' σs-cong γ*) ⟫ G γ') →
   (G-cong₂ : ∀ {γ₁ γ₁' γ₂ γ₂'} {γ₁* : EQC Γ γ₁ γ₁'} {γ₂* : EQC Γ γ₂ γ₂'} {γₑ : EQC Γ γ₁ γ₂} {γₑ' : EQC Γ γ₁' γ₂'}
     (sq-fill : EQC₂ γ₁* γ₂* γₑ γₑ') →
-    [ pred n ] G-cong γ₁* ∼⟪ eqTTn-cong n (G-cong γₑ) (Typeover.obj-cong₂ T (⟦ σ ⟧s-cong₂ sq-fill)) (G-cong γₑ') ⟫ G-cong γ₂*) →
+    [ pred n ] G-cong γ₁* ∼⟪ eqTTn-cong n (G-cong γₑ) (ap₃ (Typeover.obj-cong₂ T) _ _ _ _ (ap₃' σs-cong₂ sq-fill)) (G-cong γₑ') ⟫ G-cong γ₂*) →
   Typeover (pred n) Γ
-⟦_⟧ps : ∀ {Γ Δ} {ρ σ : Sub Γ Δ} → PathSub ρ σ → (γ : ⟦ Γ ⟧C) → EQC Δ (⟦ ρ ⟧s γ) (⟦ σ ⟧s γ)
-⟦_⟧ps-cong : ∀ {Γ Δ} {ρ σ : Sub Γ Δ} (τ : PathSub ρ σ) {γ γ'} (γ* : EQC Γ γ γ') →
-  EQC₂ {Δ} (⟦ τ ⟧ps γ) (⟦ τ ⟧ps γ') (⟦ ρ ⟧s-cong γ*) (⟦ σ ⟧s-cong γ*)
+
+Typeover-eq {n} {Γ} {Δ} {ρs} {ρs-cong} {ρs-cong₂} {σs} {σs-cong} {σs-cong₂} {τs} {τs-cong}
+  τ T F F-cong F-cong₂ G G-cong G-cong₂ = record {
+  obj = λ γ → eqTTn (F γ) (ap₂ (Typeover.obj-cong T) (τs γ)) (G γ) ;
+  obj-cong = make-Functor (λ γ* → eqTTn-cong n (F-cong γ*) (ap₃ (Typeover.obj-cong₂ T) _ _ _ _ (τs-cong γ*)) (G-cong γ*)) ;
+  obj-cong₂ = make-Functor₂ (λ γ₁* γ₂* γₑ γₑ' sq-fill → eqTTn-cong₂ n (F-cong₂ sq-fill) (Typeover.obj-cong₃ T _ _ _ _ (ap₃' ρs-cong₂ sq-fill) (ap₃' σs-cong₂ sq-fill)) (G-cong₂ sq-fill)) ;
+  obj-cong₃ = λ _ _ _ _ _ _ → trivial n }
 
 --Make n explicit in eqTTn-cong₂
 --Extract notion of section
 data PathSub {Γ} where
-  • : PathSub • •
-  _,,,_ : ∀ {n Δ} {T : Typeover n Δ} {ρ σ : Sub Γ Δ} {s t} (τ : PathSub ρ σ) → Γ ⊢ Typeover-eq τ T ⟦ s ⟧⊢ ⟦ s ⟧⊢-cong ⟦ s ⟧⊢-cong₂ ⟦ t ⟧⊢ ⟦ t ⟧⊢-cong ⟦ t ⟧⊢-cong₂ →
-       PathSub {Δ = Δ ,, T} (ρ ,,, s) (σ ,,, t)
+  • : PathSub • • (λ _ → tt) (λ _ → tt)
+  _,,,_ : ∀ {n Δ ρs ρs-cong ρs-cong₂ σs σs-cong σs-cong₂ τs}
+    {τs-cong : ∀ {γ γ'} (γ* : EQC Γ γ γ') → EQC₂ (τs γ) (τs γ') (ap₂' ρs-cong γ*) (ap₂' σs-cong γ*)}
+    {T : Typeover n Δ}
+    {ρ : Sub Γ Δ ρs ρs-cong ρs-cong₂} {σ : Sub Γ Δ σs σs-cong σs-cong₂}
+    {⟦s⟧ : Section (TypeoverF ρs ρs-cong ρs-cong₂ T)} {⟦t⟧ : Section (TypeoverF σs σs-cong σs-cong₂ T)}
+    (s : Γ ⊢ _ ∋ ⟦s⟧) (t : Γ ⊢ _ ∋ ⟦t⟧)
+    (τ : PathSub ρ σ τs τs-cong)
+    (s-is-t : Section (Typeover-eq τ T (Section.vertex ⟦s⟧) (Section.edge ⟦s⟧) (Section.face ⟦s⟧) (Section.vertex ⟦t⟧) (Section.edge ⟦t⟧) (Section.face ⟦t⟧))) →
+      Γ ⊢ Typeover-eq τ T (Section.vertex ⟦s⟧) (Section.edge ⟦s⟧) (Section.face ⟦s⟧) (Section.vertex ⟦t⟧) (Section.edge ⟦t⟧) (Section.face ⟦t⟧) ∋ s-is-t →
+      PathSub {Δ = Δ ,, T} (ρ ,,, s) (σ ,,, t) (λ γ → (τs γ) , (Section.vertex s-is-t γ)) (λ γ* → (τs-cong γ*) , (Section.edge s-is-t γ*))
 
-Typeover-eq {n} {Γ} {Δ} {ρ} {σ} τ T F F-cong F-cong₂ G G-cong G-cong₂ = record {
-  obj = λ γ → eqTTn (F γ) (Typeover.obj-cong T (⟦ τ ⟧ps γ)) (G γ) ;
-  obj-cong = λ γ* → eqTTn-cong n (F-cong γ*) (Typeover.obj-cong₂ T (⟦ τ ⟧ps-cong γ*)) (G-cong γ*) ;
-  obj-cong₂ = λ γ₂ → eqTTn-cong₂ n (F-cong₂ γ₂) (Typeover.obj-cong₃ T (⟦ τ ⟧ps-cong _) (⟦ τ ⟧ps-cong _) (⟦ τ ⟧ps-cong _) (⟦ τ ⟧ps-cong _) (⟦ ρ ⟧s-cong₂ γ₂) (⟦ σ ⟧s-cong₂ γ₂)) (G-cong₂ γ₂) ;
-  obj-cong₃ = λ _ _ _ _ _ _ → trivial n }
-
-⟦ • ⟧ps γ = ⊤.tt
-⟦ τ ,,, b* ⟧ps γ = (⟦ τ ⟧ps γ) , ⟦ b* ⟧⊢ γ
-
-⟦ • ⟧ps-cong γ* = ⊤.tt
-⟦ τ ,,, b* ⟧ps-cong γ* = (⟦ τ ⟧ps-cong γ*) , (⟦ b* ⟧⊢-cong γ*)
