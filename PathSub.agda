@@ -43,9 +43,10 @@ data PathSub {Γ} where
     {T : Typeover n Δ}
     {ρ : Sub Γ Δ ρs ρs-cong ρs-cong₂} {σ : Sub Γ Δ σs σs-cong σs-cong₂}
     {⟦s⟧ : Section (TypeoverF ρs ρs-cong ρs-cong₂ T)} {⟦t⟧ : Section (TypeoverF σs σs-cong σs-cong₂ T)}
-    (s : Γ ⊢ _ ∋ ⟦s⟧) (t : Γ ⊢ _ ∋ ⟦t⟧)
     (τ : PathSub ρ σ τs τs-cong)
-    (s-is-t : Section (Typeover-eq τ T (Section.vertex ⟦s⟧) (Section.edge ⟦s⟧) (Section.face ⟦s⟧) (Section.vertex ⟦t⟧) (Section.edge ⟦t⟧) (Section.face ⟦t⟧))) →
-      Γ ⊢ Typeover-eq τ T (Section.vertex ⟦s⟧) (Section.edge ⟦s⟧) (Section.face ⟦s⟧) (Section.vertex ⟦t⟧) (Section.edge ⟦t⟧) (Section.face ⟦t⟧) ∋ s-is-t →
-      PathSub {Δ = Δ ,, T} (ρ ,,, s) (σ ,,, t) (λ γ → (τs γ) , (Section.vertex s-is-t γ)) (λ γ* → (τs-cong γ*) , (Section.edge s-is-t γ*))
+    {s : Γ ⊢ _ ∋ ⟦s⟧} {t : Γ ⊢ _ ∋ ⟦t⟧}
+    {s-is-t : ∀ γ → [ n ] Section.vertex ⟦s⟧ γ ∼⟪ ap₂ (Typeover.obj-cong T) (τs γ) ⟫ Section.vertex ⟦t⟧ γ }
+    {s-is-t-cong : ∀ {γ γ'} (γ* : EQC Γ γ γ') → [ pred n ] s-is-t γ ∼⟪ eqTTn-cong n (Section.edge ⟦s⟧ γ*) (ap₃ (Typeover.obj-cong₂ T) _ _ _ _ (τs-cong γ*)) (Section.edge ⟦t⟧ γ*) ⟫ s-is-t γ'} →
+      Γ ⊢ Typeover-eq τ T (Section.vertex ⟦s⟧) (Section.edge ⟦s⟧) (Section.face ⟦s⟧) (Section.vertex ⟦t⟧) (Section.edge ⟦t⟧) (Section.face ⟦t⟧) ∋ record { vertex = s-is-t; edge = s-is-t-cong; face = λ _ → trivial n } →
+      PathSub {Δ = Δ ,, T} (ρ ,,, s) (σ ,,, t) (λ γ → (τs γ) , s-is-t γ) (λ γ* → (τs-cong γ*) , s-is-t-cong γ*)
 
