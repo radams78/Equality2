@@ -36,41 +36,74 @@ postulate ap₃'-ref : ∀ {Γ Δ F F-cong γ γ'} (F-cong₂ : Functor₂' {Γ}
                    ap₃' F-cong₂ (RefC-cong γ*) ▷ RefC-cong (ap₂' F-cong γ*)
 {-# REWRITE ap₃'-ref #-}
 
-data _⊢_ (Γ : Cx) : ∀ {n} (T : Typeover n Γ)
-  (t⊢ : (γ : ⟦ Γ ⟧C) → ⟦ T ⟧T γ)
-  (t⊢-cong : ∀ {γ γ'} (γ* : EQC Γ γ γ') → T ∋ t⊢ γ ∼⟨ γ* ⟩ t⊢ γ')
-  (t⊢-cong₂ : ∀ {γ₁ γ₁' γ₂ γ₂'} {γ₁* : EQC Γ γ₁ γ₁'} {γ₂* : EQC Γ γ₂ γ₂'}
-    {γₑ : EQC Γ γ₁ γ₂} {γₑ' : EQC Γ γ₁' γ₂'} (sq-fill : EQC₂ γ₁* γ₂* γₑ γₑ') →
-    [ pred n ] t⊢-cong γ₁* ∼⟪ eqTTn-cong n (t⊢-cong γₑ) (ap₃ (Typeover.obj-cong₂ T) _ _ _ _ sq-fill) (t⊢-cong γₑ') ⟫ t⊢-cong γ₂*) →
-    Set₁
+--TODO Move to Context.agda?
+--TODO Make arguments to ap₃ (Typeover.obj-cong₂ T) implicit
+record Section {n Γ} (T : Typeover n Γ) : Set₁ where
+  field
+    vertex : ∀ (γ : ⟦ Γ ⟧C) → ⟦ T ⟧T γ
+    edge   : ∀ {γ γ'} (γ* : EQC Γ γ γ') → T ∋ vertex γ ∼⟨ γ* ⟩ vertex γ'
+    face   : ∀ {γ₁ γ₁' γ₂ γ₂'} {γ₁* : EQC Γ γ₁ γ₁'} {γ₂* : EQC Γ γ₂ γ₂'}
+      {γₑ : EQC Γ γ₁ γ₂} {γₑ' : EQC Γ γ₁' γ₂'} (sq-fill : EQC₂ γ₁* γ₂* γₑ γₑ') →
+      [ pred n ] edge γ₁* ∼⟪ eqTTn-cong n (edge γₑ) (ap₃ (Typeover.obj-cong₂ T) _ _ _ _ sq-fill) (edge γₑ') ⟫ edge γ₂*
 
-data _⊢_ Γ where
+⟦_⟧V : ∀ {n Γ} {T : Typeover n Γ} → (Γ ∋ T) → Section T
+⟦ x ⟧V = record { vertex = ⟦ x ⟧∋ ; edge = ⟦ x ⟧∋-cong ; face = ⟦ x ⟧∋-cong₂ }
+
+const : ∀ {n Γ} {A : Type n} (a : TT A) → Section (K n Γ A)
+const {n} a = record {
+  vertex = λ _ → a ;
+  edge = λ _ → refn a ;
+  face = λ _ → refn-cong {n} (refn a) }
+
+record EqT {n Γ} (S T : Typeover n Γ) : Set₁ where
+  field
+    vertex : ∀ γ → Eq (Typeover.obj S γ) (Typeover.obj T γ)
+    edge   : ∀ {γ γ'} (γ* : EQC Γ γ γ') →
+      [ n ] vertex γ ∼⟪ eqn-cong (ap₂ (Typeover.obj-cong S) γ*) (ap₂ (Typeover.obj-cong T) γ*) ⟫ vertex γ'
+    face   : ∀ {γ₁ γ₁' γ₂ γ₂'} {γ₁* : EQC Γ γ₁ γ₁'} {γ₂* : EQC Γ γ₂ γ₂'}
+      {γₑ : EQC Γ γ₁ γ₂} {γₑ' : EQC Γ γ₁' γ₂'} (sq-fill : EQC₂ γ₁* γ₂* γₑ γₑ') →
+      [ pred n ] edge γ₁* ∼⟪ eqTTn-cong n (edge γₑ) (eqn-cong₂ n (ap₃ (Typeover.obj-cong₂ S) γ₁* γ₂* γₑ γₑ' sq-fill)
+        (ap₃ (Typeover.obj-cong₂ T) γ₁* γ₂* γₑ γₑ' sq-fill)) (edge γₑ') ⟫
+        edge γ₂*
+
+refT : ∀ {n Γ} (T : Typeover n Γ) → EqT T T
+refT {n} {Γ} T = record {
+  vertex = λ γ → Refn (Typeover.obj T γ) ;
+  edge = λ γ* → Refn-cong (ap₂ (Typeover.obj-cong T) γ*) ;
+  face = λ sq-fill → Refn-cong₂ {n} (ap₃ (Typeover.obj-cong₂ T) _ _ _ _ sq-fill) }
+
+eqS : ∀ {n Γ} {S T : Typeover n Γ} → Section S → EqT S T → Section T → Typeover (pred n) Γ
+eqS {n} {Γ} {S} {T} s e t = record {
+  obj = λ γ → eqTTn (Section.vertex s γ) (EqT.vertex e γ) (Section.vertex t γ) ;
+  obj-cong = make-Functor (λ γ* → eqTTn-cong n (Section.edge s γ*) (EqT.edge e γ*) (Section.edge t γ*)) ;
+  obj-cong₂ = make-Functor₂ (λ γ₁* γ₂* γₑ γₑ' sq-fill → eqTTn-cong₂ n (Section.face s sq-fill) (EqT.face e sq-fill) (Section.face t sq-fill)) ;
+  obj-cong₃ = λ _ _ _ _ _ _ → trivial n }
+
+refS : ∀ {n Γ} {T : Typeover n Γ} (s : Section T) → Section (eqS s (refT T) s)
+refS {n} {Γ} {T} s = record {
+  vertex = λ γ → refn (Section.vertex s γ) ;
+  edge = λ γ* → refn-cong {n} (Section.edge s γ*) ;
+  face = λ _ → trivial n }
+
+data _⊢_∋_ (Γ : Cx) : ∀ {n} (T : Typeover n Γ) (t : Section T) → Set₁
+
+data _⊢_∋_ Γ where
 
   VAR : ∀ {n} {T : Typeover n Γ} → 
       (x : Γ ∋ T) →
-    ------------
-      (Γ ⊢ T) ⟦ x ⟧∋ ⟦ x ⟧∋-cong ⟦ x ⟧∋-cong₂
+    -----------------
+      Γ ⊢ T ∋ ⟦ x ⟧V
 
   PRP :
-    --------------------
-      (Γ ⊢ K hone Γ sets) (λ γ → prp) (λ γ* → ref prp) (λ sq-fill → ref-cong (ref prp))
+    ---------------------------------
+      Γ ⊢ K hone Γ sets ∋ const prp
 
 --TODO Better notation
 --TODO Extract the type below
-  REF : ∀ {n} {T : Typeover n Γ} {t⊢}
-    {t⊢-cong : ∀ {γ γ'} (γ* : EQC Γ γ γ') → T ∋ t⊢ γ ∼⟨ γ* ⟩ t⊢ γ'}
-    {t⊢-cong₂ : ∀ {γ₁ γ₁' γ₂ γ₂'} {γ₁* : EQC Γ γ₁ γ₁'} {γ₂* : EQC Γ γ₂ γ₂'}
-      {γₑ : EQC Γ γ₁ γ₂} {γₑ' : EQC Γ γ₁' γ₂'} (sq-fill : EQC₂ γ₁* γ₂* γₑ γₑ') →
-      [ pred n ] t⊢-cong γ₁* ∼⟪ eqTTn-cong n (t⊢-cong γₑ) (ap₃ (Typeover.obj-cong₂ T) _ _ _ _ sq-fill) (t⊢-cong γₑ') ⟫ t⊢-cong γ₂*}
-      (t : (Γ ⊢ T) t⊢ t⊢-cong t⊢-cong₂) →
+  REF : ∀ {n} {T : Typeover n Γ} {⟦t⟧}
+      (t : Γ ⊢ T ∋ ⟦t⟧) →
     -----------------
-      (Γ ⊢ record { obj = λ γ → eqTTn (t⊢ γ) (ap₂ (Typeover.obj-cong T) (RefC γ)) (t⊢ γ) ;
-                   obj-cong = make-Functor (λ γ* → eqTTn-cong n (t⊢-cong γ*) (ap₃ (Typeover.obj-cong₂ T) _ _ _ _ (RefC-cong γ*)) (t⊢-cong γ*)) ;
-                   obj-cong₂ = make-Functor₂ (λ γ₁* γ₂* γₑ γₑ' sq-fill → eqTTn-cong₂ n (t⊢-cong₂ sq-fill) (Typeover.obj-cong₃ T (RefC-cong γ₁*) (RefC-cong γ₂*) (RefC-cong γₑ) (RefC-cong γₑ') sq-fill sq-fill) (t⊢-cong₂ sq-fill)) ;
-                   obj-cong₃ = λ _ _ _ _ _ _ → trivial n })
-           (λ γ → refn (t⊢ γ))
-           (λ γ* → refn-cong {n} (t⊢-cong γ*))
-           (λ _ → trivial n)
+      Γ ⊢ eqS ⟦t⟧ (refT T) ⟦t⟧ ∋ refS ⟦t⟧
 
 --TODO Make n explicit in refn, refn-cong
 
@@ -92,36 +125,26 @@ data Sub Γ : ∀ (Δ : Cx)
 
 data Sub Γ where
   • : Sub Γ ε (λ _ → lift tt) (make-Functor' (λ _ → tt)) (make-Functor₂' (λ _ → tt)) 
-  _,,,_ : ∀ {n Δ} {T : Typeover n Δ} {σs} {σs-cong} {σs-cong₂} (σ : Sub Γ Δ σs σs-cong σs-cong₂)
-    {t⊢ : ∀ (γ : ⟦ Γ ⟧C) → ⟦ T ⟧T (σs γ)}
-    {t⊢-cong : ∀ {γ γ'} (γ* : EQC Γ γ γ') → T ∋ t⊢ γ ∼⟨ ap₂' σs-cong γ* ⟩ t⊢ γ'}
-    {t⊢-cong₂ : ∀ {γ₁ γ₁' γ₂ γ₂'} {γ₁* : EQC Γ γ₁ γ₁'} {γ₂* : EQC Γ γ₂ γ₂'}
-      {γₑ : EQC Γ γ₁ γ₂} {γₑ' : EQC Γ γ₁' γ₂'} (sq-fill : EQC₂ γ₁* γ₂* γₑ γₑ') →
-      [ pred n ] t⊢-cong γ₁* ∼⟪ eqTTn-cong n (t⊢-cong γₑ) (ap₃ (Typeover.obj-cong₂ T) _ _ _ _ (ap₃' σs-cong₂ sq-fill)) (t⊢-cong γₑ') ⟫ t⊢-cong γ₂*}
-    (t : (Γ ⊢ TypeoverF σs σs-cong σs-cong₂ T) t⊢ t⊢-cong t⊢-cong₂) →
-    Sub Γ (Δ ,, T) (λ γ → σs γ , t⊢ γ)
-      (make-Functor' (λ γ* → ap₂' σs-cong γ* , t⊢-cong γ*))
-      (make-Functor₂' (λ sq-fill → ap₃' σs-cong₂ sq-fill , t⊢-cong₂ sq-fill))
+  _,,,_ : ∀ {n Δ} {T : Typeover n Δ} {σs} {σs-cong} {σs-cong₂} (σ : Sub Γ Δ σs σs-cong σs-cong₂) {⟦t⟧}
+    (t : Γ ⊢ TypeoverF σs σs-cong σs-cong₂ T ∋ ⟦t⟧) →
+    Sub Γ (Δ ,, T) (λ γ → σs γ , Section.vertex ⟦t⟧ γ)
+      (make-Functor' (λ γ* → ap₂' σs-cong γ* , Section.edge ⟦t⟧ γ*))
+      (make-Functor₂' (λ sq-fill → ap₃' σs-cong₂ sq-fill , Section.face ⟦t⟧ sq-fill))
 
 ap : ∀ {Γ Δ n} {T : Typeover n Δ} {σs} {σs-cong} {σs-cong₂} (σ : Sub Γ Δ σs σs-cong σs-cong₂) (x : Δ ∋ T) →
-  (Γ ⊢ TypeoverF σs σs-cong σs-cong₂ T)
-    (λ γ → ⟦ x ⟧∋ (σs γ))
-    (λ {γ γ'} (γ* : EQC Γ γ γ') → ⟦ x ⟧∋-cong (ap₂' σs-cong γ*))
-    (λ {γ₁ γ₁' γ₂ γ₂'} {γ₁* : EQC Γ γ₁ γ₁'} {γ₂* : EQC Γ γ₂ γ₂'} {γₑ : EQC Γ γ₁ γ₂} {γₑ' : EQC Γ γ₁' γ₂'}
-      (sq-fill : EQC₂ γ₁* γ₂* γₑ γₑ') → ⟦ x ⟧∋-cong₂ (ap₃' σs-cong₂ sq-fill))
+  Γ ⊢ TypeoverF σs σs-cong σs-cong₂ T ∋
+    record { vertex = λ γ → ⟦ x ⟧∋ (σs γ);
+    edge = λ {γ γ'} (γ* : EQC Γ γ γ') → ⟦ x ⟧∋-cong (ap₂' σs-cong γ*);
+    face = λ {γ₁ γ₁' γ₂ γ₂'} {γ₁* : EQC Γ γ₁ γ₁'} {γ₂* : EQC Γ γ₂ γ₂'} {γₑ : EQC Γ γ₁ γ₂} {γₑ' : EQC Γ γ₁' γ₂'}
+      (sq-fill : EQC₂ γ₁* γ₂* γₑ γₑ') → ⟦ x ⟧∋-cong₂ (ap₃' σs-cong₂ sq-fill) }
 ap (_ ,,, t) top = t
 ap (σ ,,, _) (pop x) = ap σ x
 
-sub : ∀ {n Γ Δ} {T : Typeover n Δ} {σs} {σs-cong} {σs-cong₂} (σ : Sub Γ Δ σs σs-cong σs-cong₂)
-  {t⊢}
-  {t⊢-cong : ∀ {γ γ'} (γ* : EQC Δ γ γ') → T ∋ t⊢ γ ∼⟨ γ* ⟩ t⊢ γ'}
-  {t⊢-cong₂ : ∀ {γ₁ γ₁' γ₂ γ₂'} {γ₁* : EQC Δ γ₁ γ₁'} {γ₂* : EQC Δ γ₂ γ₂'}
-      {γₑ : EQC Δ γ₁ γ₂} {γₑ' : EQC Δ γ₁' γ₂'} (sq-fill : EQC₂ γ₁* γ₂* γₑ γₑ') →
-      [ pred n ] t⊢-cong γ₁* ∼⟪ eqTTn-cong n (t⊢-cong γₑ) (ap₃ (Typeover.obj-cong₂ T) _ _ _ _ sq-fill) (t⊢-cong γₑ') ⟫ t⊢-cong γ₂*}
-  (t : (Δ ⊢ T) t⊢ t⊢-cong t⊢-cong₂) → (Γ ⊢ TypeoverF σs σs-cong σs-cong₂ T)
-    (λ γ → t⊢ (σs γ))
-    (λ γ* → t⊢-cong (ap₂' σs-cong γ*))
-    (λ sq-fill → t⊢-cong₂ (ap₃' σs-cong₂ sq-fill))
+sub : ∀ {n Γ Δ} {T : Typeover n Δ} {σs} {σs-cong} {σs-cong₂} (σ : Sub Γ Δ σs σs-cong σs-cong₂) {⟦t⟧}
+  (t : Δ ⊢ T ∋ ⟦t⟧) → Γ ⊢ TypeoverF σs σs-cong σs-cong₂ T ∋
+    record { vertex = λ γ → Section.vertex ⟦t⟧ (σs γ) ;
+    edge = λ γ* → Section.edge ⟦t⟧ (ap₂' σs-cong γ*) ;
+    face = λ sq-fill → Section.face ⟦t⟧ (ap₃' σs-cong₂ sq-fill) }
 sub σ (VAR x) = ap σ x
 sub σ PRP = PRP
-sub σ (REF t) = REF (sub σ t)
+sub {Γ = Γ} {Δ} {σs = σs} {σs-cong} {σs-cong₂} σ (REF {n} {T = T} {⟦t⟧} t) = REF (sub σ t)
