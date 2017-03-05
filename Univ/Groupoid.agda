@@ -1,4 +1,5 @@
 module Univ.Groupoid where
+open import FibSetoid
 open import Univ.Univ
 open import Univ.Sets
 
@@ -15,48 +16,43 @@ private _∼⟪_⟫_ : ∀ {A B} → Obj A → A ⇔ B → Obj B → Set
 a ∼⟪ φ ⟫ b = El (path a φ b)
 
 --TODO Common pattern with Square
-record SquareG : Set where
-  field
-    nw : U
-    ne : U
-    sw : U
-    se : U
-    north : nw ⇔ ne
-    south : sw ⇔ se
-    west  : nw ⇔ sw
-    east  : ne ⇔ se
+GROUPOID : FibSetoid
+GROUPOID = record {
+  Dom = U ;
+  Fib = Obj ;
+  eqG = eqU ;
+  eqG-cong = eqU-cong ;
+  EqFib = _∼⟪_⟫_ }
 
-postulate eqU-cong₂ : ∀ {top bottom : SquareG} →
-                    SquareG.north top ∼⟪ eqU-cong (SquareG.west top) (SquareG.east top) ⟫ SquareG.south top →
-                    SquareG.north bottom ∼⟪ eqU-cong (SquareG.west bottom) (SquareG.east bottom) ⟫ SquareG.south bottom →
-                    eqU-cong (SquareG.north top) (SquareG.north bottom) ∼⟪ eqU-cong (eqU-cong (SquareG.west top) (SquareG.west bottom)) (eqU-cong (SquareG.east top) (SquareG.east bottom)) ⟫ eqU-cong (SquareG.south top) (SquareG.south bottom)
+--TODO Common pattern
+postulate eqU-cong₂ : FibSetoid.HasCong₂ GROUPOID
 
 postulate path-cong : ∀ {A A' B B' a a' b b' φ φ'} {A* : A ⇔ A'} {B* : B ⇔ B'} → 
                     a ∼⟪ A* ⟫ a' → φ ∼⟪ eqU-cong A* B* ⟫ φ' → b ∼⟪ B* ⟫ b' → 
                     path a φ b ≃ path a' φ' b'
 
 --TODO Extract cube type
-postulate eqU-cong₃ : ∀ {A₁ A₁' A₂ A₂' B₁ B₁' B₂ B₂' C₁ C₁' C₂ C₂' D₁ D₁' D₂ D₂' : U} 
-                      {A₁* : A₁ ⇔ A₁'} {A₂* : A₂ ⇔ A₂'} {Aₑ : A₁ ⇔ A₂} {Aₑ' : A₁' ⇔ A₂'} 
-                      {B₁* : B₁ ⇔ B₁'} {B₂* : B₂ ⇔ B₂'} {Bₑ : B₁ ⇔ B₂} {Bₑ' : B₁' ⇔ B₂'} 
-                      {C₁* : C₁ ⇔ C₁'} {C₂* : C₂ ⇔ C₂'} {Cₑ : C₁ ⇔ C₂} {Cₑ' : C₁' ⇔ C₂'} 
-                      {D₁* : D₁ ⇔ D₁'} {D₂* : D₂ ⇔ D₂'} {Dₑ : D₁ ⇔ D₂} {Dₑ' : D₁' ⇔ D₂'} 
-                      {F₁ : A₁ ⇔ B₁} {F₁' : A₁' ⇔ B₁'} {F₂ : A₂ ⇔ B₂} {F₂' : A₂' ⇔ B₂'}
-                      {G₁ : C₁ ⇔ D₁} {G₁' : C₁' ⇔ D₁'} {G₂ : C₂ ⇔ D₂} {G₂' : C₂' ⇔ D₂'}
-                      {H₁ : A₁ ⇔ C₁} {H₁' : A₁' ⇔ C₁'} {H₂ : A₂ ⇔ C₂} {H₂' : A₂' ⇔ C₂'}
-                      {K₁ : B₁ ⇔ D₁} {K₁' : B₁' ⇔ D₁'} {K₂ : B₂ ⇔ D₂} {K₂' : B₂' ⇔ D₂'}
-                      {Aₑ* : A₁* ∼⟪ eqU-cong Aₑ Aₑ' ⟫ A₂*}
-                      {Bₑ* : B₁* ∼⟪ eqU-cong Bₑ Bₑ' ⟫ B₂*}
-                      {Cₑ* : C₁* ∼⟪ eqU-cong Cₑ Cₑ' ⟫ C₂*}
-                      {Dₑ* : D₁* ∼⟪ eqU-cong Dₑ Dₑ' ⟫ D₂*}
-                      {H₁* : A₁* ∼⟪ eqU-cong H₁ H₁' ⟫ C₁*}
-                      {H₂* : A₂* ∼⟪ eqU-cong H₂ H₂' ⟫ C₂*}
-                      {Hₑ : Aₑ ∼⟪ eqU-cong H₁ H₂ ⟫ Cₑ}
-                      {Hₑ' : Aₑ' ∼⟪ eqU-cong H₁' H₂' ⟫ Cₑ'}
-                      {K₁* : B₁* ∼⟪ eqU-cong K₁ K₁' ⟫ D₁*}
-                      {K₂* : B₂* ∼⟪ eqU-cong K₂ K₂' ⟫ D₂*}
-                      {Kₑ : Bₑ ∼⟪ eqU-cong K₁ K₂ ⟫ Dₑ}
-                      {Kₑ' : Bₑ' ∼⟪ eqU-cong K₁' K₂' ⟫ Dₑ'} → 
+postulate eqU-cong₃ : ∀ {A B C D : FibSetoid.Square GROUPOID}
+                      {F₁ : FibSetoid.Square.nw A ⇔ FibSetoid.Square.nw B} {F₁' : FibSetoid.Square.ne A ⇔ FibSetoid.Square.ne B}
+                      {F₂ : FibSetoid.Square.sw A ⇔ FibSetoid.Square.sw B} {F₂' : FibSetoid.Square.se A ⇔ FibSetoid.Square.se B}
+                      {G₁ : FibSetoid.Square.nw C ⇔ FibSetoid.Square.nw D} {G₁' : FibSetoid.Square.ne C ⇔ FibSetoid.Square.ne D}
+                      {G₂ : FibSetoid.Square.sw C ⇔ FibSetoid.Square.sw D} {G₂' : FibSetoid.Square.se C ⇔ FibSetoid.Square.se D}
+                      {H₁ : FibSetoid.Square.nw A ⇔ FibSetoid.Square.nw C} {H₁' : FibSetoid.Square.ne A ⇔ FibSetoid.Square.ne C}
+                      {H₂ : FibSetoid.Square.sw A ⇔ FibSetoid.Square.sw C} {H₂' : FibSetoid.Square.se A ⇔ FibSetoid.Square.se C}
+                      {K₁ : FibSetoid.Square.nw B ⇔ FibSetoid.Square.nw D} {K₁' : FibSetoid.Square.ne B ⇔ FibSetoid.Square.ne D}
+                      {K₂ : FibSetoid.Square.sw B ⇔ FibSetoid.Square.sw D} {K₂' : FibSetoid.Square.se B ⇔ FibSetoid.Square.se D}
+                      {Aₑ* : FibSetoid.Square.Fill A}
+                      {Bₑ* : FibSetoid.Square.Fill B}
+                      {Cₑ* : FibSetoid.Square.Fill C}
+                      {Dₑ* : FibSetoid.Square.Fill D}
+                      {H₁* : FibSetoid.Square.north A ∼⟪ eqU-cong H₁ H₁' ⟫ FibSetoid.Square.north C}
+                      {H₂* : FibSetoid.Square.south A ∼⟪ eqU-cong H₂ H₂' ⟫ FibSetoid.Square.south C}
+                      {Hₑ : FibSetoid.Square.west A ∼⟪ eqU-cong H₁ H₂ ⟫ FibSetoid.Square.west C}
+                      {Hₑ' : FibSetoid.Square.east A ∼⟪ eqU-cong H₁' H₂' ⟫ FibSetoid.Square.east C}
+                      {K₁* : FibSetoid.Square.north B ∼⟪ eqU-cong K₁ K₁' ⟫ FibSetoid.Square.north D}
+                      {K₂* : FibSetoid.Square.south B ∼⟪ eqU-cong K₂ K₂' ⟫ FibSetoid.Square.south D}
+                      {Kₑ : FibSetoid.Square.west B ∼⟪ eqU-cong K₁ K₂ ⟫ FibSetoid.Square.west D}
+                      {Kₑ' : FibSetoid.Square.east B ∼⟪ eqU-cong K₁' K₂' ⟫ FibSetoid.Square.east D} → 
                       Aₑ* ∼⟪ path-cong H₁* (eqU-cong₂ Hₑ Hₑ') H₂* ⟫₀ Cₑ* → 
                       Bₑ* ∼⟪ path-cong K₁* (eqU-cong₂ Kₑ Kₑ') K₂* ⟫₀ Dₑ* → 
                       eqU-cong₂ Aₑ* Bₑ* ∼⟪ path-cong (eqU-cong₂ H₁* K₁*) (eqU-cong₂ (eqU-cong₂ Hₑ Kₑ) (eqU-cong₂ Hₑ' Kₑ')) (eqU-cong₂ H₂* K₂*) ⟫₀ eqU-cong₂ Cₑ* Dₑ*
@@ -79,4 +75,3 @@ postulate Ref-cong₂ : ∀ {A A' B B'} {F : A ⇔ B} {F' : A' ⇔ B'} {A* : A �
 postulate ref : ∀ {A} a → a ∼⟪ Ref A ⟫ a
 
 postulate ref-cong : ∀ {A B a b} {e : A ⇔ B} (p : a ∼⟪ e ⟫ b) → ref a ∼⟪ path-cong p (Ref-cong e) p ⟫₀ ref b
-

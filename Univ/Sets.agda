@@ -1,4 +1,5 @@
 module Univ.Sets where
+open import FibSetoid
 open import Univ.Univ
 open import Univ.Prp
 
@@ -14,29 +15,17 @@ postulate eq : ∀ {A B} → El A → A ≃ B → El B → Prp
 _∼⟪_⟫₀_ : ∀ {A B} → El A → A ≃ B → El B → Set
 a ∼⟪ e ⟫₀ b = Prf (eq a e b)
 
-record Square : Set where
-  field
-    nw : Sets
-    ne : Sets
-    sw : Sets
-    se : Sets
-    north : nw ≃ ne
-    south : sw ≃ se
-    west  : nw ≃ sw
-    east  : ne ≃ se
+SETS : FibSetoid
+SETS = record { Dom = Sets ; Fib = El ; eqG = iso ; eqG-cong = iso-cong ; EqFib = _∼⟪_⟫₀_ }
 
-  Fill : Set
-  Fill = north ∼⟪ iso-cong west east ⟫₀ south
-
---TODO Refactor
-postulate iso-cong₂' : ∀ {top bottom : Square} →
-                     Square.Fill top →
-                     Square.Fill bottom →
-                     iso-cong (Square.north top) (Square.north bottom) ∼⟪ iso-cong (iso-cong (Square.west top) (Square.west bottom)) (iso-cong (Square.east top) (Square.east bottom)) ⟫₀ iso-cong (Square.south top) (Square.south bottom)
-                     
-postulate eq-cong : ∀ {A A' B B' a a' f f' b b'} {A* : A ≃ A'} {B* : B ≃ B'} → 
-                  a ∼⟪ A* ⟫₀ a' → f ∼⟪ iso-cong A* B* ⟫₀ f' → b ∼⟪ B* ⟫₀ b' → 
-                  eq a f b ↔ eq a' f' b'
+postulate eq-cong : ∀
+                  {A A' B B' : Sets}
+                  {e : A ≃ B} {e' : A' ≃ B'} {A* : A ≃ A'} {B* : B ≃ B'}
+                  {a : El A} {a' : El A'} {b : El B} {b' : El B'} →
+                  a ∼⟪ A* ⟫₀ a' → e ∼⟪ iso-cong A* B* ⟫₀ e' → b ∼⟪ B* ⟫₀ b' →
+                  eq a e b ↔ eq a' e' b'
+                  
+postulate iso-cong₂' : FibSetoid.HasCong₂ SETS
 
 postulate Ref₀ : ∀ A → A ≃ A
 

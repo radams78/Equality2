@@ -5,7 +5,7 @@ open import Syntax
 open import PathSub
 open import PathSub2
 
---Common pattern with apps
+--TODO Common pattern with apps
 subps : ∀ {n Γ Δ} {T : Typeover n Δ} {ρs ρs-cong ρs-cong₂ σs σs-cong σs-cong₂ τs}
   {τs-cong : ∀ {γ γ'} (γ* : EQC Γ γ γ') → EQC₂ (τs γ) (τs γ') (ap₂' ρs-cong γ*) (ap₂' σs-cong γ*)}
   {ρ : Sub Γ Δ ρs ρs-cong ρs-cong₂} {σ : Sub Γ Δ σs σs-cong σs-cong₂} (τ : PathSub ρ σ τs τs-cong)
