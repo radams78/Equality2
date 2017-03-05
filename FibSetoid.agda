@@ -1,34 +1,61 @@
 module FibSetoid where
+open import Level
 
-record FibSetoid : Set₁ where
+record Graph i j : Set (suc (i ⊔ j)) where
   field
-    Dom  : Set
-    Fib  : Dom → Set
+    Vertex  : Set i
+    Path    : Vertex → Vertex → Set j
+
+  record Square : Set (i ⊔ j) where
+    field
+      nw : Vertex
+      ne : Vertex
+      sw : Vertex
+      se : Vertex
+      north : Path nw ne
+      south : Path sw se
+      west  : Path nw sw
+      east  : Path ne se
+  
+  record IsOneType k : Set (i ⊔ j ⊔ suc k) where
+    field
+      Fill : Square → Set k
+
+record OneType i j k : Set (suc (i ⊔ j ⊔ k)) where
+  field
+    graph : Graph i j
+    isOneType : Graph.IsOneType graph k
+
+  open Graph graph public
+  open IsOneType isOneType public
+
+record FibSetoid i j k : Set (suc (i ⊔ j ⊔ k)) where
+  field
+    Dom  : Set i
+    Fib  : Dom → Set j
     eqG  : Dom → Dom → Dom
     eqG-cong : ∀ {A A' B B'} → Fib (eqG A A') → Fib (eqG B B') → Fib (eqG (eqG A B) (eqG A' B'))
-    EqFib : ∀ {A B} → Fib A → Fib (eqG A B) → Fib B → Set
+    EqFib : ∀ {A B} → Fib A → Fib (eqG A B) → Fib B → Set k
 
-  Eq : Dom → Dom → Set
-  Eq A B = Fib (eqG A B)
+  FS2OneType : OneType i j k
+  FS2OneType = record {
+    graph = record {
+      Vertex = Dom ;
+      Path = λ A B → Fib (eqG A B) } ;
+    isOneType = record {
+      Fill = λ square → EqFib (Graph.Square.north square) (eqG-cong (Graph.Square.west square) (Graph.Square.east square)) (Graph.Square.south square) } }
 
-  record Square : Set where
-    field
-      nw : Dom
-      ne : Dom
-      sw : Dom
-      se : Dom
-      north : Eq nw ne
-      south : Eq sw se
-      west  : Eq nw sw
-      east  : Eq ne se
+  --TODO Inline?
+  Eq : Dom → Dom → Set j
+  Eq = OneType.Path FS2OneType
 
-    Fill : Set
-    Fill = EqFib north (eqG-cong west east) south
+  Square : Set (i ⊔ j)
+  Square = OneType.Square FS2OneType
 
-  HasCong₂ : Set
+  HasCong₂ : Set (i ⊔ j ⊔ k)
   HasCong₂ = ∀ {top bottom : Square} →
-        Square.Fill top → Square.Fill bottom →
-        EqFib (eqG-cong (Square.north top) (Square.north bottom))
-          (eqG-cong (eqG-cong (Square.west top) (Square.west bottom))
-            (eqG-cong (Square.east top) (Square.east bottom)))
-          (eqG-cong (Square.south top) (Square.south bottom))
+        OneType.Fill FS2OneType top → OneType.Fill FS2OneType bottom →
+        EqFib (eqG-cong (OneType.Square.north FS2OneType top) (OneType.Square.north FS2OneType bottom))
+          (eqG-cong (eqG-cong (OneType.Square.west FS2OneType top) (OneType.Square.west FS2OneType bottom))
+            (eqG-cong (OneType.Square.east FS2OneType top) (OneType.Square.east FS2OneType bottom)))
+          (eqG-cong (OneType.Square.south FS2OneType top) (OneType.Square.south FS2OneType bottom))

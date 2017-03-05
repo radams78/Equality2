@@ -1,4 +1,5 @@
 module Univ.Sets where
+open import Level
 open import FibSetoid
 open import Univ.Univ
 open import Univ.Prp
@@ -15,7 +16,7 @@ postulate eq : ∀ {A B} → El A → A ≃ B → El B → Prp
 _∼⟪_⟫₀_ : ∀ {A B} → El A → A ≃ B → El B → Set
 a ∼⟪ e ⟫₀ b = Prf (eq a e b)
 
-SETS : FibSetoid
+SETS : FibSetoid zero zero zero
 SETS = record { Dom = Sets ; Fib = El ; eqG = iso ; eqG-cong = iso-cong ; EqFib = _∼⟪_⟫₀_ }
 
 postulate eq-cong : ∀

@@ -5,6 +5,7 @@ open import Level
 open import Function hiding (_∋_)
 open import Data.Unit
 open import Data.Product
+open import FibSetoid
 open import Univ.HLevel
 
 postulate _▷_ : ∀ {i} {A : Set i} → A → A → Set
@@ -20,7 +21,6 @@ EQC₂ : ∀ {Γ} {a₁ a₂ b₁ b₂ : ⟦ Γ ⟧C} → EQC Γ a₁ a₂ → E
 RefC : ∀ {Γ} (γ : ⟦ Γ ⟧C) → EQC Γ γ γ
 RefC-cong : ∀ {Γ} {γ γ' : ⟦ Γ ⟧C} (γ* : EQC Γ γ γ') → EQC₂ (RefC γ) (RefC γ') γ* γ*
 _∋_∼⟨_⟩_ : ∀ {n Γ} (T : Typeover n Γ) {γ γ'} → ⟦ T ⟧T γ → EQC Γ γ γ' → ⟦ T ⟧T γ' → Set
-
 
 infix 75 _,,_
 data Cx where
