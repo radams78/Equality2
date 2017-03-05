@@ -14,11 +14,22 @@ postulate path : ∀ {A B} → Obj A → A ⇔ B → Obj B → Sets
 private _∼⟪_⟫_ : ∀ {A B} → Obj A → A ⇔ B → Obj B → Set
 a ∼⟪ φ ⟫ b = El (path a φ b)
 
-postulate eqU-cong₂ : ∀ {A₁ A₁' B₁ B₁' A₂ A₂' B₂ B₂'}
-                    {A₁* : A₁ ⇔ A₁'} {B₁* : B₁ ⇔ B₁'} {A₂* B₂*}
-                    {A* : A₁ ⇔ A₂} {A'* : A₁' ⇔ A₂'} {B* : B₁ ⇔ B₂} {B'* : B₁' ⇔ B₂'} → 
-                    A₁* ∼⟪ eqU-cong A* A'* ⟫ A₂* → B₁* ∼⟪ eqU-cong B* B'* ⟫ B₂* → 
-                    eqU-cong A₁* B₁* ∼⟪ eqU-cong (eqU-cong A* B*) (eqU-cong A'* B'*) ⟫ eqU-cong A₂* B₂*
+--TODO Common pattern with Square
+record SquareG : Set where
+  field
+    nw : U
+    ne : U
+    sw : U
+    se : U
+    north : nw ⇔ ne
+    south : sw ⇔ se
+    west  : nw ⇔ sw
+    east  : ne ⇔ se
+
+postulate eqU-cong₂ : ∀ {top bottom : SquareG} →
+                    SquareG.north top ∼⟪ eqU-cong (SquareG.west top) (SquareG.east top) ⟫ SquareG.south top →
+                    SquareG.north bottom ∼⟪ eqU-cong (SquareG.west bottom) (SquareG.east bottom) ⟫ SquareG.south bottom →
+                    eqU-cong (SquareG.north top) (SquareG.north bottom) ∼⟪ eqU-cong (eqU-cong (SquareG.west top) (SquareG.west bottom)) (eqU-cong (SquareG.east top) (SquareG.east bottom)) ⟫ eqU-cong (SquareG.south top) (SquareG.south bottom)
 
 postulate path-cong : ∀ {A A' B B' a a' b b' φ φ'} {A* : A ⇔ A'} {B* : B ⇔ B'} → 
                     a ∼⟪ A* ⟫ a' → φ ∼⟪ eqU-cong A* B* ⟫ φ' → b ∼⟪ B* ⟫ b' → 
