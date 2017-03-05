@@ -1,6 +1,9 @@
 module Univ.HLevel where
 open import Data.Unit
-open import Univ
+open import Univ.Univ
+open import Univ.Prp
+open import Univ.Sets
+open import Univ.Groupoid
 
 --TODO Enforce variable conventions
 

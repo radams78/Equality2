@@ -2,7 +2,6 @@ module PathSub where
 open import Data.Unit
 open import Data.Product
 open import Univ
-open import Univ.HLevel
 open import Context
 open import Syntax
 

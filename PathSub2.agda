@@ -2,7 +2,6 @@ module PathSub2 where
 open import Relation.Binary.PropositionalEquality
 open import Data.Unit
 open import Univ
-open import Univ.HLevel
 open import Context
 open import Syntax
 open import PathSub
