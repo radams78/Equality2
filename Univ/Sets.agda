@@ -25,10 +25,13 @@ record Square : Set where
     west  : nw ≃ sw
     east  : ne ≃ se
 
+  Fill : Set
+  Fill = north ∼⟪ iso-cong west east ⟫₀ south
+
 --TODO Refactor
 postulate iso-cong₂' : ∀ {top bottom : Square} →
-                     Square.north top ∼⟪ iso-cong (Square.west top) (Square.east top) ⟫₀ Square.south top →
-                     Square.north bottom ∼⟪ iso-cong (Square.west bottom) (Square.east bottom) ⟫₀ Square.south bottom →
+                     Square.Fill top →
+                     Square.Fill bottom →
                      iso-cong (Square.north top) (Square.north bottom) ∼⟪ iso-cong (iso-cong (Square.west top) (Square.west bottom)) (iso-cong (Square.east top) (Square.east bottom)) ⟫₀ iso-cong (Square.south top) (Square.south bottom)
                      
 postulate eq-cong : ∀ {A A' B B' a a' f f' b b'} {A* : A ≃ A'} {B* : B ≃ B'} → 
