@@ -73,7 +73,7 @@ eqn-cong₂ : ∀ (n : hLevel)
   [ n ] A₁* ∼⟪ eqn-cong Aₑ Aₑ' ⟫ A₂* → [ n ] B₁* ∼⟪ eqn-cong Bₑ Bₑ' ⟫ B₂* →
   [ n ] eqn-cong A₁* B₁* ∼⟪ eqn-cong (eqn-cong Aₑ Bₑ) (eqn-cong Aₑ' Bₑ') ⟫ eqn-cong A₂* B₂*
 eqn-cong₂ {hone} = eqU-cong₂
-eqn-cong₂ {hzero} = iso-cong₂
+eqn-cong₂ {hzero} = iso-cong₂'
 eqn-cong₂ {hminusone} _ _ = tt
 eqn-cong₂ {hminustwo} _ _ = tt
 

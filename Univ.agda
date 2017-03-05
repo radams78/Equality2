@@ -1,51 +1,11 @@
 module Univ where
 open import Data.Unit
 open import Univ.Univ public
+open import Univ.Unit public
+open import Univ.Prp public
+open import Univ.Sets public
 
 --TODO Divide into separate modules for props, sets, groupoids
-
--- The Unit
-
-postulate star : One
-
--- Propositions
-
-postulate iff : Prp → Prp → Prp
-_↔_ : Prp → Prp → Set
-φ ↔ ψ = Prf (iff φ ψ)
-
-postulate iff-cong : ∀ {φ φ' ψ ψ'} → φ ↔ φ' → ψ ↔ ψ' → iff φ ψ ↔ iff φ' ψ'
-
-postulate Ref₋₁ : ∀ φ → φ ↔ φ
-
--- Sets
-
-postulate iso : Sets → Sets → Sets
-_≃_ : Sets → Sets → Set
-A ≃ B = El (iso A B)
-
-postulate iso-cong : ∀ {A A' B B'} → A ≃ A' → B ≃ B' → iso A B ≃ iso A' B'
-
-postulate eq : ∀ {A B} → El A → A ≃ B → El B → Prp
-private _∼⟪_⟫₀_ : ∀ {A B} → El A → A ≃ B → El B → Set
-a ∼⟪ e ⟫₀ b = Prf (eq a e b)
-
---TODO Extract Square type
-postulate iso-cong₂ : ∀ {A₁ A₁' B₁ B₁' A₂ A₂' B₂ B₂'}
-                    {A₁* : A₁ ≃ A₁'} {B₁* : B₁ ≃ B₁'} {A₂* : A₂ ≃ A₂'} {B₂* : B₂ ≃ B₂'}
-                    {Aₑ : A₁ ≃ A₂} {Aₑ' : A₁' ≃ A₂'} {Bₑ : B₁ ≃ B₂} {Bₑ' : B₁' ≃ B₂'} →
-                    A₁* ∼⟪ iso-cong Aₑ Aₑ' ⟫₀ A₂* → B₁* ∼⟪ iso-cong Bₑ Bₑ' ⟫₀ B₂* →
-                    iso-cong A₁* B₁* ∼⟪ iso-cong (iso-cong Aₑ Bₑ) (iso-cong Aₑ' Bₑ') ⟫₀ iso-cong A₂* B₂*
-
-postulate eq-cong : ∀ {A A' B B' a a' f f' b b'} {A* : A ≃ A'} {B* : B ≃ B'} → 
-                  a ∼⟪ A* ⟫₀ a' → f ∼⟪ iso-cong A* B* ⟫₀ f' → b ∼⟪ B* ⟫₀ b' → 
-                  eq a f b ↔ eq a' f' b'
-
-postulate Ref₀ : ∀ A → A ≃ A
-
-postulate Ref₀-cong : ∀ {A} {B} (e : A ≃ B) → Ref₀ A ∼⟪ iso-cong e e ⟫₀ Ref₀ B
-
-postulate ref₀ : ∀ {A} {a} → a ∼⟪ Ref₀ A ⟫₀ a
 
 -- Groupoids
 
