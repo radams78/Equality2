@@ -77,7 +77,7 @@ eqS {n} {Γ} {S} {T} s e t = record {
   obj = λ γ → eqTTn (Section.vertex s γ) (EqT.vertex e γ) (Section.vertex t γ) ;
   obj-cong = make-Functor (λ γ* → eqTTn-cong n (Section.edge s γ*) (EqT.edge e γ*) (Section.edge t γ*)) ;
   obj-cong₂ = make-Functor₂ (λ γ₁* γ₂* γₑ γₑ' sq-fill → eqTTn-cong₂ n (Section.face s sq-fill) (EqT.face e sq-fill) (Section.face t sq-fill)) ;
-  obj-cong₃ = λ _ _ _ _ _ _ → trivial n }
+  obj-cong₃' = trivial n }
 
 refS : ∀ {n Γ} {T : Typeover n Γ} (s : Section T) → Section (eqS s (refT T) s)
 refS {n} {Γ} {T} s = record {
@@ -114,7 +114,7 @@ TypeoverF σs σs-cong σs-cong₂ T = record {
   obj = λ γ → Typeover.obj T (σs γ) ;
   obj-cong = make-Functor (λ γ* → ap₂ (Typeover.obj-cong T) (ap₂' σs-cong γ*)) ;
   obj-cong₂ = make-Functor₂ (λ γ₁* γ₂* γₑ γₑ' sq-fill → ap₃ (Typeover.obj-cong₂ T) (ap₂' σs-cong γ₁*) (ap₂' σs-cong γ₂*) (ap₂' σs-cong γₑ) (ap₂' σs-cong γₑ') (ap₃' σs-cong₂ sq-fill)) ;
-  obj-cong₃ = λ γsq δsq sq₁ sq₂ sqₑ sqₑ' → Typeover.obj-cong₃ T (ap₃' σs-cong₂ γsq) (ap₃' σs-cong₂ δsq) (ap₃' σs-cong₂ sq₁) (ap₃' σs-cong₂ sq₂) (ap₃' σs-cong₂ sqₑ) (ap₃' σs-cong₂ sqₑ') }
+  obj-cong₃' = λ {γ} {δ} {_} {_} {_} {_} {γsq} {δsq} {sq₁} {sq₂} {sqₑ} {sqₑ'} → Typeover.obj-cong₃ T (ap₃' σs-cong₂ γsq) (ap₃' σs-cong₂ δsq) (ap₃' σs-cong₂ sq₁) (ap₃' σs-cong₂ sq₂) (ap₃' σs-cong₂ sqₑ) (ap₃' σs-cong₂ sqₑ') }
 
 --A substitution or context morphism from Γ to Δ
 data Sub Γ : ∀ (Δ : Cx)

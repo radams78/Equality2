@@ -18,6 +18,7 @@ record Typeover (n : hLevel) (Γ : Cx) : Set₁
 ⟦_⟧T : ∀ {n Γ} → Typeover n Γ → ⟦ Γ ⟧C → Set
 EQC : ∀ Γ → ⟦ Γ ⟧C → ⟦ Γ ⟧C → Set
 EQC₂ : ∀ {Γ} {a₁ a₂ b₁ b₂ : ⟦ Γ ⟧C} → EQC Γ a₁ a₂ → EQC Γ b₁ b₂ → EQC Γ a₁ b₁ → EQC Γ a₂ b₂ → Set
+CONTEXT : Cx → OneType (suc zero) zero zero
 RefC : ∀ {Γ} (γ : ⟦ Γ ⟧C) → EQC Γ γ γ
 RefC-cong : ∀ {Γ} {γ γ' : ⟦ Γ ⟧C} (γ* : EQC Γ γ γ') → EQC₂ (RefC γ) (RefC γ') γ* γ*
 _∋_∼⟨_⟩_ : ∀ {n Γ} (T : Typeover n Γ) {γ γ'} → ⟦ T ⟧T γ → EQC Γ γ γ' → ⟦ T ⟧T γ' → Set
@@ -26,6 +27,13 @@ infix 75 _,,_
 data Cx where
   ε : Cx
   _,,_ : ∀ {n} (Γ : Cx) → Typeover n Γ → Cx
+
+CONTEXT Γ = record {
+  graph = record {
+    Vertex = ⟦ Γ ⟧C ;
+    Path = EQC Γ } ;
+  isOneType = record {
+    Fill = λ γ* → EQC₂ (Graph.Square.north γ*) (Graph.Square.south γ*) (Graph.Square.west γ*) (Graph.Square.east γ*) }}
 
 data Functor Γ n F where
   make-Functor : (∀ {γ γ'} (γ* : EQC Γ γ γ') → Eq (F γ) (F γ')) → Functor Γ n F
@@ -49,16 +57,67 @@ postulate ap₃-ref : ∀ {Γ n F F-cong} (F-cong₂ : Functor₂ Γ n F F-cong)
                     ap₃ F-cong₂ (RefC γ) (RefC γ') γ* γ* (RefC-cong γ*) ▷ Refn-cong {n} (ap₂ F-cong γ*)
 {-# REWRITE ap₃-ref #-}
 
+--TODO Refactor
 record Typeover n Γ where
   field
     obj : ∀ (γ : ⟦ Γ ⟧C) → Type n
     obj-cong : Functor Γ n obj
     obj-cong₂ : Functor₂ Γ n obj obj-cong
-    obj-cong₃ : ∀ {γ₁ γ₁' γ₂ γ₂' δ₁ δ₁' δ₂ δ₂' : ⟦ Γ ⟧C}
+    obj-cong₃' : ∀ {γ δ : OneType.Square (CONTEXT Γ)}
+      {enw : EQC Γ (OneType.Square.nw (CONTEXT Γ) γ) (OneType.Square.nw (CONTEXT Γ) δ)}
+      {ene : EQC Γ (OneType.Square.ne (CONTEXT Γ) γ) (OneType.Square.ne (CONTEXT Γ) δ)}
+      {esw : EQC Γ (OneType.Square.sw (CONTEXT Γ) γ) (OneType.Square.sw (CONTEXT Γ) δ)}
+      {ese : EQC Γ (OneType.Square.se (CONTEXT Γ) γ) (OneType.Square.se (CONTEXT Γ) δ)}
+      {γsq : OneType.Fill (CONTEXT Γ) γ} {δsq : OneType.Fill (CONTEXT Γ) δ}
+      {sq₁ : OneType.Fill (CONTEXT Γ) (record
+                                         { nw = OneType.Square.nw (CONTEXT Γ) γ
+                                         ; ne = OneType.Square.ne (CONTEXT Γ) γ
+                                         ; sw = OneType.Square.nw (CONTEXT Γ) δ
+                                         ; se = OneType.Square.ne (CONTEXT Γ) δ
+                                         ; north = OneType.Square.north (CONTEXT Γ) γ
+                                         ; south = OneType.Square.north (CONTEXT Γ) δ
+                                         ; west = enw
+                                         ; east = ene
+                                         })}
+      {sq₂ : OneType.Fill (CONTEXT Γ) (record
+                                         { nw = _
+                                         ; ne = _
+                                         ; sw = _
+                                         ; se = _
+                                         ; north = OneType.Square.south (CONTEXT Γ) γ
+                                         ; south = OneType.Square.south (CONTEXT Γ) δ
+                                         ; west = esw
+                                         ; east = ese
+                                         })}
+      {sqₑ : OneType.Fill (CONTEXT Γ) (record
+                                         { nw = _
+                                         ; ne = _
+                                         ; sw = _
+                                         ; se = _
+                                         ; north = OneType.Square.west (CONTEXT Γ) γ
+                                         ; south = OneType.Square.west (CONTEXT Γ) δ
+                                         ; west = enw
+                                         ; east = esw
+                                         })}
+      {sqₑ' : OneType.Fill (CONTEXT Γ) (record
+                                          { nw = _
+                                          ; ne = _
+                                          ; sw = _
+                                          ; se = _
+                                          ; north = OneType.Square.east (CONTEXT Γ) γ
+                                          ; south = OneType.Square.east (CONTEXT Γ) δ
+                                          ; west = ene
+                                          ; east = ese
+                                          })} →
+      [ pred n ] ap₃ obj-cong₂ _ _ _ _ γsq ∼⟪ eqTTn-cong n (ap₃ obj-cong₂ _ _ _ _ sq₁) (eqn-cong₂ n (ap₃ obj-cong₂ _ _ _ _ sqₑ) (ap₃ obj-cong₂ _ _ _ _ sqₑ')) (ap₃ obj-cong₂ _ _ _ _ sq₂) ⟫ ap₃ obj-cong₂ _ _ _ _ δsq
+
+--TODO Inline
+  obj-cong₃ : ∀ {γ₁ γ₁' γ₂ γ₂' δ₁ δ₁' δ₂ δ₂' : ⟦ Γ ⟧C}
       {γ₁* : EQC Γ γ₁ γ₁'} {γ₂* : EQC Γ γ₂ γ₂'} {γₑ : EQC Γ γ₁ γ₂} {γₑ' : EQC Γ γ₁' γ₂'} {δ₁* : EQC Γ δ₁ δ₁'} {δ₂* : EQC Γ δ₂ δ₂'} {δₑ : EQC Γ δ₁ δ₂} {δₑ' : EQC Γ δ₁' δ₂'} {e₁ : EQC Γ γ₁ δ₁} {e₁' : EQC Γ γ₁' δ₁'} {e₂ : EQC Γ γ₂ δ₂} {e₂' : EQC Γ γ₂' δ₂'}
       (γsq : EQC₂ γ₁* γ₂* γₑ γₑ') (δsq : EQC₂ δ₁* δ₂* δₑ δₑ') (sq₁ : EQC₂ γ₁* δ₁* e₁ e₁') (sq₂ : EQC₂ γ₂* δ₂* e₂ e₂') (sqₑ : EQC₂ γₑ δₑ e₁ e₂) (sqₑ' : EQC₂ γₑ' δₑ' e₁' e₂') →
       [ pred n ] ap₃ obj-cong₂ _ _ _ _ γsq ∼⟪ eqTTn-cong n (ap₃ obj-cong₂ _ _ _ _ sq₁) (eqn-cong₂ n {A₁* = ap₂ obj-cong γₑ} (ap₃ obj-cong₂ _ _ _ _ sqₑ) (ap₃ obj-cong₂ _ _ _ _ sqₑ')) (ap₃ obj-cong₂ _ _ _ _ sq₂) ⟫ ap₃ obj-cong₂ _ _ _ _ δsq
-
+  obj-cong₃ = λ _ _ _ _ _ _ → obj-cong₃'
+  
 ⟦ ε ⟧C = Lift ⊤
 ⟦ Γ ,, S ⟧C = Σ[ γ ∈ ⟦ Γ ⟧C ] ⟦ S ⟧T γ
 
@@ -84,7 +143,8 @@ weak {T = T} S = record {
   obj = λ {(γ , _) → Typeover.obj S γ};
   obj-cong = make-Functor λ {(γ* , _) → ap₂ (Typeover.obj-cong S) γ*};
   obj-cong₂ = make-Functor₂ λ {_ _ _ _ (γsq , _) → ap₃ (Typeover.obj-cong₂ S) _ _ _ _ γsq};
-  obj-cong₃ = λ {(γsq , _) (δsq , _) (sq₁ , _) (sq₂ , _) (sqₑ , _) (sqₑ' , _) → Typeover.obj-cong₃ S γsq δsq sq₁ sq₂ sqₑ sqₑ'}}
+  obj-cong₃' = λ {γ} {δ} {enw} {ene} {esw} {ese} {γsq} {δsq} {sq₁} {sq₂} {sqₑ} {sqₑ'} →
+               Typeover.obj-cong₃ S (proj₁ γsq) (proj₁ δsq) (proj₁ sq₁) (proj₁ sq₂) (proj₁ sqₑ) (proj₁ sqₑ') }
 
 infix 5 _∋_
 data _∋_ : ∀ {n} (Γ : Cx) (T : Typeover n Γ) → Set₁ where
@@ -111,5 +171,5 @@ K n _ A = record {
   obj = λ _ → A ; 
   obj-cong = make-Functor (λ _ → Refn A) ;
   obj-cong₂ = make-Functor₂ (λ _ _ _ _ _ → Refn-cong (Refn A)) ;
-  obj-cong₃ = λ _ _ _ _ _ _ → Refn-cong₂ {n} (Refn-cong (Refn A))}
+  obj-cong₃' = Refn-cong₂ {n} (Refn-cong (Refn A)) }
 

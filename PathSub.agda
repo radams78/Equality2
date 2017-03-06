@@ -31,7 +31,7 @@ Typeover-eq {n} {Γ} {Δ} {ρs} {ρs-cong} {ρs-cong₂} {σs} {σs-cong} {σs-c
   obj = λ γ → eqTTn (F γ) (ap₂ (Typeover.obj-cong T) (τs γ)) (G γ) ;
   obj-cong = make-Functor (λ γ* → eqTTn-cong n (F-cong γ*) (ap₃ (Typeover.obj-cong₂ T) _ _ _ _ (τs-cong γ*)) (G-cong γ*)) ;
   obj-cong₂ = make-Functor₂ (λ γ₁* γ₂* γₑ γₑ' sq-fill → eqTTn-cong₂ n (F-cong₂ sq-fill) (Typeover.obj-cong₃ T _ _ _ _ (ap₃' ρs-cong₂ sq-fill) (ap₃' σs-cong₂ sq-fill)) (G-cong₂ sq-fill)) ;
-  obj-cong₃ = λ _ _ _ _ _ _ → trivial n }
+  obj-cong₃' = trivial n }
 
 --Make n explicit in eqTTn-cong₂
 --Extract notion of section
