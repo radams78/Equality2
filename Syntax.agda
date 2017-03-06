@@ -116,35 +116,36 @@ TypeoverF σs σs-cong σs-cong₂ T = record {
   obj-cong₂ = make-Functor₂ (λ γ₁* γ₂* γₑ γₑ' sq-fill → ap₃ (Typeover.obj-cong₂ T) (ap₂' σs-cong γ₁*) (ap₂' σs-cong γ₂*) (ap₂' σs-cong γₑ) (ap₂' σs-cong γₑ') (ap₃' σs-cong₂ sq-fill)) ;
   obj-cong₃' = λ {γ} {δ} {_} {_} {_} {_} {γsq} {δsq} {sq₁} {sq₂} {sqₑ} {sqₑ'} → Typeover.obj-cong₃ T (ap₃' σs-cong₂ γsq) (ap₃' σs-cong₂ δsq) (ap₃' σs-cong₂ sq₁) (ap₃' σs-cong₂ sq₂) (ap₃' σs-cong₂ sqₑ) (ap₃' σs-cong₂ sqₑ') }
 
+--TODO Common pattern with Section?
+record OneTypeMap (Γ Δ : Cx) : Set₁ where
+  field
+    vertex : ⟦ Γ ⟧C → ⟦ Δ ⟧C
+    edge   : Functor' Γ Δ vertex
+    face   : Functor₂' edge
+
 --A substitution or context morphism from Γ to Δ
-data Sub Γ : ∀ (Δ : Cx)
-  (map₁ : (γ : ⟦ Γ ⟧C) → ⟦ Δ ⟧C)
-  (map₂ : Functor' Γ Δ map₁) →
-  Functor₂' map₂ → Set₁
---TypeoverF : ∀ {n Γ Δ} → Sub Γ Δ → Typeover n Δ → Typeover n Γ
+--TODO Refactor
+data Sub Γ : ∀ (Δ : Cx) (⟦σ⟧ : OneTypeMap Γ Δ) → Set₁ where
+  • : Sub Γ ε (record { vertex = λ _ → lift tt ; edge = make-Functor' (λ _ → tt) ; face = make-Functor₂' (λ _ → tt) })
+  _,,,_ : ∀ {n Δ} {T : Typeover n Δ} {⟦σ⟧} (σ : Sub Γ Δ ⟦σ⟧) {⟦t⟧} (t : Γ ⊢ TypeoverF (OneTypeMap.vertex ⟦σ⟧) (OneTypeMap.edge ⟦σ⟧) (OneTypeMap.face ⟦σ⟧) T ∋ ⟦t⟧) → Sub Γ (Δ ,, T) (record {
+    vertex = λ γ → OneTypeMap.vertex ⟦σ⟧ γ , Section.vertex ⟦t⟧ γ ;
+    edge = make-Functor' (λ γ* → ap₂' (OneTypeMap.edge ⟦σ⟧) γ* , Section.edge ⟦t⟧ γ*) ;
+    face = make-Functor₂' (λ sq-fill → (ap₃' (OneTypeMap.face ⟦σ⟧) sq-fill) , (Section.face ⟦t⟧ sq-fill))})
 
-data Sub Γ where
-  • : Sub Γ ε (λ _ → lift tt) (make-Functor' (λ _ → tt)) (make-Functor₂' (λ _ → tt)) 
-  _,,,_ : ∀ {n Δ} {T : Typeover n Δ} {σs} {σs-cong} {σs-cong₂} (σ : Sub Γ Δ σs σs-cong σs-cong₂) {⟦t⟧}
-    (t : Γ ⊢ TypeoverF σs σs-cong σs-cong₂ T ∋ ⟦t⟧) →
-    Sub Γ (Δ ,, T) (λ γ → σs γ , Section.vertex ⟦t⟧ γ)
-      (make-Functor' (λ γ* → ap₂' σs-cong γ* , Section.edge ⟦t⟧ γ*))
-      (make-Functor₂' (λ sq-fill → ap₃' σs-cong₂ sq-fill , Section.face ⟦t⟧ sq-fill))
-
-ap : ∀ {Γ Δ n} {T : Typeover n Δ} {σs} {σs-cong} {σs-cong₂} (σ : Sub Γ Δ σs σs-cong σs-cong₂) (x : Δ ∋ T) →
-  Γ ⊢ TypeoverF σs σs-cong σs-cong₂ T ∋
-    record { vertex = λ γ → ⟦ x ⟧∋ (σs γ);
-    edge = λ {γ γ'} (γ* : EQC Γ γ γ') → ⟦ x ⟧∋-cong (ap₂' σs-cong γ*);
+ap : ∀ {Γ Δ n} {T : Typeover n Δ} {⟦σ⟧} (σ : Sub Γ Δ ⟦σ⟧) (x : Δ ∋ T) →
+  Γ ⊢ TypeoverF (OneTypeMap.vertex ⟦σ⟧) (OneTypeMap.edge ⟦σ⟧) (OneTypeMap.face ⟦σ⟧) T ∋
+    record { vertex = λ γ → ⟦ x ⟧∋ (OneTypeMap.vertex ⟦σ⟧ γ);
+    edge = λ {γ γ'} (γ* : EQC Γ γ γ') → ⟦ x ⟧∋-cong (ap₂' (OneTypeMap.edge ⟦σ⟧) γ*);
     face = λ {γ₁ γ₁' γ₂ γ₂'} {γ₁* : EQC Γ γ₁ γ₁'} {γ₂* : EQC Γ γ₂ γ₂'} {γₑ : EQC Γ γ₁ γ₂} {γₑ' : EQC Γ γ₁' γ₂'}
-      (sq-fill : EQC₂ γ₁* γ₂* γₑ γₑ') → ⟦ x ⟧∋-cong₂ (ap₃' σs-cong₂ sq-fill) }
-ap (_ ,,, t) top = t
-ap (σ ,,, _) (pop x) = ap σ x
+      (sq-fill : EQC₂ γ₁* γ₂* γₑ γₑ') → ⟦ x ⟧∋-cong₂ (ap₃' (OneTypeMap.face ⟦σ⟧) sq-fill) }
+ap (σ ,,, t) top = t
+ap (σ ,,, t) (pop x) = ap σ x
 
-sub : ∀ {n Γ Δ} {T : Typeover n Δ} {σs} {σs-cong} {σs-cong₂} (σ : Sub Γ Δ σs σs-cong σs-cong₂) {⟦t⟧}
-  (t : Δ ⊢ T ∋ ⟦t⟧) → Γ ⊢ TypeoverF σs σs-cong σs-cong₂ T ∋
-    record { vertex = λ γ → Section.vertex ⟦t⟧ (σs γ) ;
-    edge = λ γ* → Section.edge ⟦t⟧ (ap₂' σs-cong γ*) ;
-    face = λ sq-fill → Section.face ⟦t⟧ (ap₃' σs-cong₂ sq-fill) }
+sub : ∀ {n Γ Δ} {T : Typeover n Δ} {⟦σ⟧} (σ : Sub Γ Δ ⟦σ⟧) {⟦t⟧}
+  (t : Δ ⊢ T ∋ ⟦t⟧) → Γ ⊢ TypeoverF (OneTypeMap.vertex ⟦σ⟧) (OneTypeMap.edge ⟦σ⟧) (OneTypeMap.face ⟦σ⟧) T ∋
+    record { vertex = λ γ → Section.vertex ⟦t⟧ (OneTypeMap.vertex ⟦σ⟧ γ) ;
+    edge = λ γ* → Section.edge ⟦t⟧ (ap₂' (OneTypeMap.edge ⟦σ⟧) γ*) ;
+    face = λ sq-fill → Section.face ⟦t⟧ (ap₃' (OneTypeMap.face ⟦σ⟧) sq-fill) }
 sub σ (VAR x) = ap σ x
 sub σ PRP = PRP
-sub {Γ = Γ} {Δ} {σs = σs} {σs-cong} {σs-cong₂} σ (REF {n} {T = T} {⟦t⟧} t) = REF (sub σ t)
+sub σ (REF t) = REF (sub σ t)
