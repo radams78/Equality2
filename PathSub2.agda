@@ -9,7 +9,7 @@ open import PathSub
 --Put in section
 apps : ∀ {n Γ Δ} {T : Typeover n Δ} {⟦ρ⟧ ⟦σ⟧ ⟦τ⟧}
   {ρ : Sub Γ Δ ⟦ρ⟧} {σ : Sub Γ Δ ⟦σ⟧} (τ : PathSub ρ σ ⟦τ⟧) (x : Δ ∋ T) →
-  Γ ⊢ Typeover-eq {⟦ρ⟧ = ⟦ρ⟧} {⟦σ⟧} {OneTypeMapEq.vertex ⟦τ⟧} {OneTypeMapEq.edge ⟦τ⟧} T (record {
+  Γ ⊢ Typeover-eq {⟦ρ⟧ = ⟦ρ⟧} {⟦σ⟧} T ⟦τ⟧ (record {
     vertex = λ γ → ⟦ x ⟧∋ (OneTypeMap.vertex ⟦ρ⟧ γ) ;
     edge = λ γ* → ⟦ x ⟧∋-cong (ap₂' (OneTypeMap.edge ⟦ρ⟧) γ*) ;
     face = λ sq-fill → ⟦ x ⟧∋-cong₂ (ap₃' (OneTypeMap.face ⟦ρ⟧) sq-fill) })
