@@ -114,13 +114,18 @@ record OneTypeMap (Γ Δ : Cx) : Set₁ where
     edge   : Functor' Γ Δ vertex
     face   : Functor₂' edge
 
---TODO Extract notion of functor between Γ and Δ
 TypeoverF : ∀ {n} {Γ Δ} → OneTypeMap Γ Δ → Typeover n Δ → Typeover n Γ
 TypeoverF F T = record {
   obj = λ γ → Typeover.obj T (OneTypeMap.vertex F γ) ;
   obj-cong = make-Functor (λ γ* → ap₂ (Typeover.obj-cong T) (ap₂' (OneTypeMap.edge F) γ*)) ;
   obj-cong₂ = make-Functor₂ (λ γ₁* γ₂* γₑ γₑ' sq-fill → ap₃ (Typeover.obj-cong₂ T) (ap₂' (OneTypeMap.edge F) γ₁*) (ap₂' (OneTypeMap.edge F) γ₂*) (ap₂' (OneTypeMap.edge F) γₑ) (ap₂' (OneTypeMap.edge F) γₑ') (ap₃' (OneTypeMap.face F) sq-fill)) ;
   obj-cong₃' = λ {γ} {δ} {_} {_} {_} {_} {γsq} {δsq} {sq₁} {sq₂} {sqₑ} {sqₑ'} → Typeover.obj-cong₃ T (ap₃' (OneTypeMap.face F) γsq) (ap₃' (OneTypeMap.face F) δsq) (ap₃' (OneTypeMap.face F) sq₁) (ap₃' (OneTypeMap.face F) sq₂) (ap₃' (OneTypeMap.face F) sqₑ) (ap₃' (OneTypeMap.face F) sqₑ') }
+
+SectionF : ∀ {n Γ Δ} {T : Typeover n Δ} (F : OneTypeMap Γ Δ) → Section T → Section (TypeoverF F T)
+SectionF F s = record {
+  vertex = λ γ → Section.vertex s (OneTypeMap.vertex F γ) ;
+  edge = λ γ* → Section.edge s (ap₂' (OneTypeMap.edge F) γ*) ;
+  face = λ sq-fill → Section.face s (ap₃' (OneTypeMap.face F) sq-fill) }
 
 --A substitution or context morphism from Γ to Δ
 --TODO Refactor
@@ -140,11 +145,8 @@ ap : ∀ {Γ Δ n} {T : Typeover n Δ} {⟦σ⟧} (σ : Sub Γ Δ ⟦σ⟧) (x :
 ap (σ ,,, t) top = t
 ap (σ ,,, t) (pop x) = ap σ x
 
-sub : ∀ {n Γ Δ} {T : Typeover n Δ} {⟦σ⟧} (σ : Sub Γ Δ ⟦σ⟧) {⟦t⟧}
-  (t : Δ ⊢ T ∋ ⟦t⟧) → Γ ⊢ TypeoverF ⟦σ⟧ T ∋
-    record { vertex = λ γ → Section.vertex ⟦t⟧ (OneTypeMap.vertex ⟦σ⟧ γ) ;
-    edge = λ γ* → Section.edge ⟦t⟧ (ap₂' (OneTypeMap.edge ⟦σ⟧) γ*) ;
-    face = λ sq-fill → Section.face ⟦t⟧ (ap₃' (OneTypeMap.face ⟦σ⟧) sq-fill) }
+sub : ∀ {n Γ Δ} {T : Typeover n Δ} {⟦σ⟧} (σ : Sub Γ Δ ⟦σ⟧) {⟦t⟧} →
+  Δ ⊢ T ∋ ⟦t⟧ → Γ ⊢ TypeoverF ⟦σ⟧ T ∋ SectionF ⟦σ⟧ ⟦t⟧
 sub σ (VAR x) = ap σ x
 sub σ PRP = PRP
 sub σ (REF t) = REF (sub σ t)
