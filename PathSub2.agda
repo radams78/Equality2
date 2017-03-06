@@ -6,20 +6,15 @@ open import Context
 open import Syntax
 open import PathSub
 
---Put in section
 apps : ∀ {n Γ Δ} {T : Typeover n Δ} {⟦ρ⟧ ⟦σ⟧ ⟦τ⟧}
   {ρ : Sub Γ Δ ⟦ρ⟧} {σ : Sub Γ Δ ⟦σ⟧} (τ : PathSub ρ σ ⟦τ⟧) (x : Δ ∋ T) →
-  Γ ⊢ Typeover-eq {⟦ρ⟧ = ⟦ρ⟧} {⟦σ⟧} T ⟦τ⟧ (record {
-    vertex = λ γ → ⟦ x ⟧∋ (OneTypeMap.vertex ⟦ρ⟧ γ) ;
-    edge = λ γ* → ⟦ x ⟧∋-cong (ap₂' (OneTypeMap.edge ⟦ρ⟧) γ*) ;
-    face = λ sq-fill → ⟦ x ⟧∋-cong₂ (ap₃' (OneTypeMap.face ⟦ρ⟧) sq-fill) })
-    (record {
-    vertex = λ γ → ⟦ x ⟧∋ (OneTypeMap.vertex ⟦σ⟧ γ) ;
-    edge = λ γ* → ⟦ x ⟧∋-cong (ap₂' (OneTypeMap.edge ⟦σ⟧) γ*) ;
-    face = λ sq-fill → ⟦ x ⟧∋-cong₂ (ap₃' (OneTypeMap.face ⟦σ⟧) sq-fill) }) ∋ 
-    record {
-      vertex = λ γ → ⟦ x ⟧∋-cong (OneTypeMapEq.vertex ⟦τ⟧ γ) ;
-      edge = λ γ* → ⟦ x ⟧∋-cong₂ (OneTypeMapEq.edge ⟦τ⟧ γ*) ;
-      face = λ sq-fill → trivial n }
+  Γ ⊢ Typeover-eq {⟦ρ⟧ = ⟦ρ⟧} {⟦σ⟧} T ⟦τ⟧ (SectionF ⟦ρ⟧ ⟦ x ⟧V) (SectionF ⟦σ⟧ ⟦ x ⟧V) ∋ SectionF₂ ⟦τ⟧ ⟦ x ⟧V
 apps (_ ,,, t*) top = t*
 apps (τ ,,, _) (pop x) = apps τ x
+
+subps : ∀ {n Γ Δ} {T : Typeover n Δ} {⟦ρ⟧ ⟦σ⟧ ⟦τ⟧ ⟦t⟧}
+  {ρ : Sub Γ Δ ⟦ρ⟧} {σ : Sub Γ Δ ⟦σ⟧} → PathSub ρ σ ⟦τ⟧ → Δ ⊢ T ∋ ⟦t⟧ →
+  Γ ⊢ Typeover-eq T ⟦τ⟧ (SectionF ⟦ρ⟧ ⟦t⟧) (SectionF ⟦σ⟧ ⟦t⟧) ∋ SectionF₂ ⟦τ⟧ ⟦t⟧
+subps τ (VAR x) = apps τ x
+subps τ PRP = REF PRP
+subps τ (REF t) = {!!}

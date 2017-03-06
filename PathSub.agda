@@ -13,8 +13,8 @@ Typeover-eq : ∀ {n Γ Δ ⟦ρ⟧ ⟦σ⟧} (T : Typeover n Δ) →
 Typeover-eq {n} {⟦ρ⟧ = ⟦ρ⟧} {⟦σ⟧} T ⟦τ⟧ F G = record {
   obj = λ γ → eqTTn (Section.vertex F γ) (ap₂ (Typeover.obj-cong T) (OneTypeMapEq.vertex ⟦τ⟧ γ)) (Section.vertex G γ) ;
   obj-cong = make-Functor (λ {γ} {γ'} γ* → eqTTn-cong n (Section.edge F γ*) (ap₃ (Typeover.obj-cong₂ T) (OneTypeMapEq.vertex ⟦τ⟧ _) (OneTypeMapEq.vertex ⟦τ⟧ _) (ap₂' (OneTypeMap.edge ⟦ρ⟧) γ*) (ap₂' (OneTypeMap.edge ⟦σ⟧) γ*) (OneTypeMapEq.edge ⟦τ⟧ γ*)) (Section.edge G γ*)) ;
-  obj-cong₂ = make-Functor₂ (λ γ₁* γ₂* γₑ γₑ' sq-fill → eqTTn-cong₂ n (Section.face F sq-fill) (Typeover.obj-cong₃ T (OneTypeMapEq.edge ⟦τ⟧ γ₁*) (OneTypeMapEq.edge ⟦τ⟧ γ₂*) (OneTypeMapEq.edge ⟦τ⟧ γₑ) (OneTypeMapEq.edge ⟦τ⟧ γₑ') (ap₃' (OneTypeMap.face ⟦ρ⟧) sq-fill) (ap₃' (OneTypeMap.face ⟦σ⟧) sq-fill)) (Section.face G sq-fill)) ;
-  obj-cong₃' = trivial n }
+  obj-cong₂ = make-Functor₂ (λ γ₁* γ₂* γₑ γₑ' sq-fill → eqTTn-cong₂ n (Section.face F sq-fill) (Typeover.obj-cong₃ T) (Section.face G sq-fill)) ;
+  obj-cong₃ = trivial n }
 
 SectionF₂ : ∀ {n Γ Δ} {F G : OneTypeMap Γ Δ} {T : Typeover n Δ} (P : OneTypeMapEq F G) (s : Section T) →
   Section (Typeover-eq {⟦ρ⟧ = F} {G} T P (SectionF F s) (SectionF G s))

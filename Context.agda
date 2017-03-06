@@ -63,7 +63,7 @@ record Typeover n Γ where
     obj : ∀ (γ : ⟦ Γ ⟧C) → Type n
     obj-cong : Functor Γ n obj
     obj-cong₂ : Functor₂ Γ n obj obj-cong
-    obj-cong₃' : ∀ {γ δ : OneType.Square (CONTEXT Γ)}
+    obj-cong₃ : ∀ {γ δ : OneType.Square (CONTEXT Γ)}
       {enw : EQC Γ (OneType.Square.nw (CONTEXT Γ) γ) (OneType.Square.nw (CONTEXT Γ) δ)}
       {ene : EQC Γ (OneType.Square.ne (CONTEXT Γ) γ) (OneType.Square.ne (CONTEXT Γ) δ)}
       {esw : EQC Γ (OneType.Square.sw (CONTEXT Γ) γ) (OneType.Square.sw (CONTEXT Γ) δ)}
@@ -111,13 +111,6 @@ record Typeover n Γ where
                                           })} →
       [ pred n ] ap₃ obj-cong₂ _ _ _ _ γsq ∼⟪ eqTTn-cong n (ap₃ obj-cong₂ _ _ _ _ sq₁) (eqn-cong₂ n (ap₃ obj-cong₂ _ _ _ _ sqₑ) (ap₃ obj-cong₂ _ _ _ _ sqₑ')) (ap₃ obj-cong₂ _ _ _ _ sq₂) ⟫ ap₃ obj-cong₂ _ _ _ _ δsq
 
---TODO Inline
-  obj-cong₃ : ∀ {γ₁ γ₁' γ₂ γ₂' δ₁ δ₁' δ₂ δ₂' : ⟦ Γ ⟧C}
-      {γ₁* : EQC Γ γ₁ γ₁'} {γ₂* : EQC Γ γ₂ γ₂'} {γₑ : EQC Γ γ₁ γ₂} {γₑ' : EQC Γ γ₁' γ₂'} {δ₁* : EQC Γ δ₁ δ₁'} {δ₂* : EQC Γ δ₂ δ₂'} {δₑ : EQC Γ δ₁ δ₂} {δₑ' : EQC Γ δ₁' δ₂'} {e₁ : EQC Γ γ₁ δ₁} {e₁' : EQC Γ γ₁' δ₁'} {e₂ : EQC Γ γ₂ δ₂} {e₂' : EQC Γ γ₂' δ₂'}
-      (γsq : EQC₂ γ₁* γ₂* γₑ γₑ') (δsq : EQC₂ δ₁* δ₂* δₑ δₑ') (sq₁ : EQC₂ γ₁* δ₁* e₁ e₁') (sq₂ : EQC₂ γ₂* δ₂* e₂ e₂') (sqₑ : EQC₂ γₑ δₑ e₁ e₂) (sqₑ' : EQC₂ γₑ' δₑ' e₁' e₂') →
-      [ pred n ] ap₃ obj-cong₂ _ _ _ _ γsq ∼⟪ eqTTn-cong n (ap₃ obj-cong₂ _ _ _ _ sq₁) (eqn-cong₂ n {A₁* = ap₂ obj-cong γₑ} (ap₃ obj-cong₂ _ _ _ _ sqₑ) (ap₃ obj-cong₂ _ _ _ _ sqₑ')) (ap₃ obj-cong₂ _ _ _ _ sq₂) ⟫ ap₃ obj-cong₂ _ _ _ _ δsq
-  obj-cong₃ = λ _ _ _ _ _ _ → obj-cong₃'
-  
 ⟦ ε ⟧C = Lift ⊤
 ⟦ Γ ,, S ⟧C = Σ[ γ ∈ ⟦ Γ ⟧C ] ⟦ S ⟧T γ
 
@@ -143,8 +136,7 @@ weak {T = T} S = record {
   obj = λ {(γ , _) → Typeover.obj S γ};
   obj-cong = make-Functor λ {(γ* , _) → ap₂ (Typeover.obj-cong S) γ*};
   obj-cong₂ = make-Functor₂ λ {_ _ _ _ (γsq , _) → ap₃ (Typeover.obj-cong₂ S) _ _ _ _ γsq};
-  obj-cong₃' = λ {γ} {δ} {enw} {ene} {esw} {ese} {γsq} {δsq} {sq₁} {sq₂} {sqₑ} {sqₑ'} →
-               Typeover.obj-cong₃ S (proj₁ γsq) (proj₁ δsq) (proj₁ sq₁) (proj₁ sq₂) (proj₁ sqₑ) (proj₁ sqₑ') }
+  obj-cong₃ = Typeover.obj-cong₃ S }
 
 infix 5 _∋_
 data _∋_ : ∀ {n} (Γ : Cx) (T : Typeover n Γ) → Set₁ where
@@ -171,5 +163,5 @@ K n _ A = record {
   obj = λ _ → A ; 
   obj-cong = make-Functor (λ _ → Refn A) ;
   obj-cong₂ = make-Functor₂ (λ _ _ _ _ _ → Refn-cong (Refn A)) ;
-  obj-cong₃' = Refn-cong₂ {n} (Refn-cong (Refn A)) }
+  obj-cong₃ = Refn-cong₂ {n} (Refn-cong (Refn A)) }
 
