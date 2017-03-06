@@ -114,6 +114,11 @@ record OneTypeMap (Γ Δ : Cx) : Set₁ where
     edge   : Functor' Γ Δ vertex
     face   : Functor₂' edge
 
+record OneTypeMapEq {Γ Δ} (F G : OneTypeMap Γ Δ) : Set₁ where
+  field
+    vertex : ∀ γ → EQC Δ (OneTypeMap.vertex F γ) (OneTypeMap.vertex G γ)
+    edge : ∀ {γ γ'} (γ* : EQC Γ γ γ') → EQC₂ (vertex γ) (vertex γ') (ap₂' (OneTypeMap.edge F) γ*) (ap₂' (OneTypeMap.edge G) γ*)
+
 TypeoverF : ∀ {n} {Γ Δ} → OneTypeMap Γ Δ → Typeover n Δ → Typeover n Γ
 TypeoverF F T = record {
   obj = λ γ → Typeover.obj T (OneTypeMap.vertex F γ) ;

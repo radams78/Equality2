@@ -7,10 +7,9 @@ open import Syntax
 open import PathSub
 
 --Put in section
-apps : ∀ {n Γ Δ} {T : Typeover n Δ} {⟦ρ⟧ ⟦σ⟧ τs}
-  {τs-cong : ∀ {γ γ'} (γ* : EQC Γ γ γ') → EQC₂ (τs γ) (τs γ') (ap₂' (OneTypeMap.edge ⟦ρ⟧) γ*) (ap₂' (OneTypeMap.edge ⟦σ⟧) γ*)}
-  {ρ : Sub Γ Δ ⟦ρ⟧} {σ : Sub Γ Δ ⟦σ⟧} (τ : PathSub ρ σ τs τs-cong) (x : Δ ∋ T) →
-  Γ ⊢ Typeover-eq {⟦ρ⟧ = ⟦ρ⟧} {⟦σ⟧} {τs} {τs-cong} T (record {
+apps : ∀ {n Γ Δ} {T : Typeover n Δ} {⟦ρ⟧ ⟦σ⟧ ⟦τ⟧}
+  {ρ : Sub Γ Δ ⟦ρ⟧} {σ : Sub Γ Δ ⟦σ⟧} (τ : PathSub ρ σ ⟦τ⟧) (x : Δ ∋ T) →
+  Γ ⊢ Typeover-eq {⟦ρ⟧ = ⟦ρ⟧} {⟦σ⟧} {OneTypeMapEq.vertex ⟦τ⟧} {OneTypeMapEq.edge ⟦τ⟧} T (record {
     vertex = λ γ → ⟦ x ⟧∋ (OneTypeMap.vertex ⟦ρ⟧ γ) ;
     edge = λ γ* → ⟦ x ⟧∋-cong (ap₂' (OneTypeMap.edge ⟦ρ⟧) γ*) ;
     face = λ sq-fill → ⟦ x ⟧∋-cong₂ (ap₃' (OneTypeMap.face ⟦ρ⟧) sq-fill) })
@@ -19,8 +18,8 @@ apps : ∀ {n Γ Δ} {T : Typeover n Δ} {⟦ρ⟧ ⟦σ⟧ τs}
     edge = λ γ* → ⟦ x ⟧∋-cong (ap₂' (OneTypeMap.edge ⟦σ⟧) γ*) ;
     face = λ sq-fill → ⟦ x ⟧∋-cong₂ (ap₃' (OneTypeMap.face ⟦σ⟧) sq-fill) }) ∋ 
     record {
-      vertex = λ γ → ⟦ x ⟧∋-cong (τs γ) ;
-      edge = λ γ* → ⟦ x ⟧∋-cong₂ (τs-cong γ*) ;
+      vertex = λ γ → ⟦ x ⟧∋-cong (OneTypeMapEq.vertex ⟦τ⟧ γ) ;
+      edge = λ γ* → ⟦ x ⟧∋-cong₂ (OneTypeMapEq.edge ⟦τ⟧ γ*) ;
       face = λ sq-fill → trivial n }
 apps (_ ,,, t*) top = t*
 apps (τ ,,, _) (pop x) = apps τ x
