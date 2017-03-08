@@ -1,0 +1,77 @@
+\documentclass{easychair}
+\bibliographystyle{plain}
+
+\title{A Type Theory with Native Homotopy Universes}
+\author{Robin Adams\inst{1} \and Andrew Polonsky\inst{2}}
+\institute{Universitetet i Bergen \and University Paris Diderot}
+
+\usepackage{proof}
+
+\newcommand{\Prop}{\ensuremath{\mathbf{Prop}}}
+\newcommand{\Set}{\ensuremath{\mathbf{Set}}}
+\newcommand{\Groupoid}{\ensuremath{\mathbf{Groupoid}}}
+\newcommand{\LEtwo}{\ensuremath{\lambda \simeq_2}}
+\newcommand{\eqdef}{\mathrel{\smash{\stackrel{\text{def}}{=}}}}
+
+\begin{document}
+\maketitle
+
+We present a type theory $\LEtwo$ with an extensional equality relation; that is, the universe of types is closed by reflection into it of the logical relation defined by induction on the structure of types.
+
+The type system has four universes:
+\begin{itemize}
+\item
+The trivial universe $\mathbf{1}$, with one type $\top$ that has one object $*$.
+\item
+The universe $\Prop$ of \emph{propositions}.  An object of $\Prop$ is called a \emph{proposition}, and the objects of a proposition are called \emph{proofs}.
+\item
+The universe $\Set$ of \emph{sets}.
+\item
+The universe $\Groupoid$ of \emph{groupoids}.
+\end{itemize}
+
+For each universe $U$, we have an associated relation of equality between the universes $\simeq$, and between objects of the universes $\sim$, with associated rules of deduction:
+
+\[ \infer{A \simeq B : U}{A : U \quad B : U}
+\qquad
+\infer{a \sim_e b : U^-}{a : A \quad e : A \simeq B \quad b : B} \]
+
+where $U^-$ is the universe one dimension below $U$.  Thus:
+\begin{itemize}
+\item
+Given two propositions $\phi$ and $\psi$, we have the proposition $\phi \simeq \psi$ which denotes the proposition `$\phi$ if and only if $\psi$'.  If $\delta : \phi$, $\epsilon : \psi$ and $\chi : \phi \simeq \psi$, then $\delta \sim_\chi \epsilon = * : \mathbf{1}$.  (\emph{Cf} In homotopy type theory, any two objects of a proposition are equal.)
+\item
+Given two sets $A$ and $B$, we have the set $A \simeq B$, which denotes the set of all bijections between $A$ and $B$.  Given $a : A$, $f : A \simeq B$ and $b : B$, we have the proposition $a \sim_f b : \Prop$, which denotes that $a$ is mapped to $b$ by the bijection $f$.
+\item
+Given two groupoids $G$ and $H$, we have the groupoid $G \simeq H$, which denotes the groupoid of all groupoid isomorphisms between $G$ and $H$.  Given $g : G$, $\phi : G \simeq H$ and $h : H$, we have the set $g \sim_\phi h : \Set$, which can be thought of as the set of all paths between $\phi(g)$ and $h$ in $H$.
+\end{itemize}
+
+We have reflexivity provided by the following typing rules:
+\[ \infer{A : U}{1_A : A \simeq A} \qquad \infer{a : A}{r_a : a \sim_{1_A} a} \]
+The relation $\sim_{1_A}$ thus behaves like an equality relation on each type $A$.
+
+Each universe is itself an object of the next universe:
+\[ \mathbf{1} : \Prop : \Set : \Groupoid \]
+and we have the following definitional equalities:
+\[ \phi \sim_{1_\Prop} \psi \eqdef \phi \simeq \psi, \quad
+A \sim_{1_\Set} B \eqdef A \simeq B \]
+
+The following computation rules also hold in $\LEtwo$.
+
+\textbf{TODO}
+
+We therefore note the following features of $\LEtwo$:
+\begin{itemize}
+\item
+Univalence holds definitionally --- an equality between types $A \simeq B$ is exactly the type of equivalences between $A$ and $B$.
+\item
+Transport respects reflexivity and composition definitionally.
+\end{itemize}
+
+This type theory has been formalised in Agda, using the method of the system $\mathtt{Kipling}$ from McBride \cite{McBridea}.
+
+The formalisation is available online at https://github.com/radams78/Equality2.
+
+\bibliography{type}
+
+\end{document}

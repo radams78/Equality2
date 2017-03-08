@@ -1,3 +1,4 @@
+{-# OPTIONS --rewriting #-}
 module Syntax where
 
 open import Level
@@ -8,13 +9,44 @@ open import Relation.Binary.PropositionalEquality hiding ([_])
 open import Univ
 open import Context
 
+open Context.Functors
+
+module constant {n : hLevel} {Γ : Cx} (A : Type n) where
+  postulate functorK : Functor (CONTEXT Γ) (TYPE n)
+  postulate apK : ∀ γ → ap _ _ functorK γ ▷ A
+  {-# REWRITE apK #-}
+  postulate ap2K : ∀ {γ} {γ'} (γ* : EQC Γ γ γ') → ap2 _ _ functorK γ* ▷ Refn A
+  {-# REWRITE ap2K #-}
+open constant
+
+postulate apSets : ∀ {Γ : Cx} (γ : ⟦ Γ ⟧C) → ap _ _ (functorK sets) γ ▷ sets
+{-# REWRITE apSets #-}
+postulate ap2Sets : ∀ {Γ γ γ'} (γ* : EQC Γ γ γ') → ap2 _ _ (functorK sets) γ* ▷ Refn sets
+{-# REWRITE ap2Sets #-}
+--Need this separately for some reason - bug?
+
+K : ∀ n Γ → Type n → Typeover n Γ
+K n _ A = record { 
+  obj = functorK A ;
+  obj-cong₂ = λ _ _ → Refn-cong (Refn A);
+  obj-cong₃ = λ _ _ _ _ _ _ _ → Refn-cong₂ {n} (Refn-cong (Refn A))}
+
 data _⊢_ (Γ : Cx) : ∀ {n} → Typeover n Γ → Set₁
 ⟦_⟧⊢ : ∀ {Γ n} {T : Typeover n Γ} → Γ ⊢ T → (γ : ⟦ Γ ⟧C) → ⟦ T ⟧T γ
 ⟦_⟧⊢-cong : ∀ {Γ n} {T : Typeover n Γ} (t : Γ ⊢ T) {γ γ'} (γ* : EQC Γ γ γ') → T ∋ ⟦ t ⟧⊢ γ ∼〈 γ* 〉 ⟦ t ⟧⊢ γ'
-⟦_⟧⊢-cong₂ : ∀ {Γ n} {T : Typeover n Γ} (t : Γ ⊢ T) {a₁ a₂ b₁ b₂}
-  {a* : EQC Γ a₁ a₂} {b* : EQC Γ b₁ b₂} {p₁ : EQC Γ a₁ b₁} {p₂ : EQC Γ a₂ b₂}
-  (sq : EQC₂ {Γ} a* b* p₁ p₂) → 
-  [ pred n ] ⟦ t ⟧⊢-cong a* ∼〈〈 eqTTn-cong {n} (⟦ t ⟧⊢-cong p₁) (Typeover.obj-cong₂ T sq) (⟦ t ⟧⊢-cong p₂) 〉〉 ⟦ t ⟧⊢-cong b*
+⟦_⟧⊢-square : ∀ {Γ n} {T : Typeover n Γ} (t : Γ ⊢ T) (sq : Square Γ) → Squareover T sq
+⟦_⟧⊢-cong₂ : ∀ {Γ n} {T : Typeover n Γ} (t : Γ ⊢ T) {sq : Square Γ} (sq-fill : EQC₂ {Γ} sq) → Squareover.Fill (⟦ t ⟧⊢-square sq) sq-fill
+
+module EQ {n Γ} {T : Typeover n Γ} (t : Γ ⊢ T) where
+  postulate EQ : Functor (CONTEXT Γ) (TYPE (pred n))
+  postulate apEQ : ∀ (γ : ⟦ Γ ⟧C) → ap _ _ EQ γ ▷ eqTTn (⟦ t ⟧⊢ γ) (Refn (ap _ _ (Typeover.obj T) γ)) (⟦ t ⟧⊢ γ)
+  {-# REWRITE apEQ #-}
+  postulate ap2EQ : ∀ {γ γ'} (γ* : EQC Γ γ γ') → ap2 _ _ EQ γ* ▷ eqTTn-cong n (⟦ t ⟧⊢-cong γ*) (Refn-cong (ap2 _ _ (Typeover.obj T) γ*)) (⟦ t ⟧⊢-cong γ*)
+  {-# REWRITE ap2EQ #-}
+
+open EQ
+
+⟦ t ⟧⊢-square = square-section ⟦ t ⟧⊢ ⟦ t ⟧⊢-cong
 
 data _⊢_ Γ where
 
@@ -27,76 +59,21 @@ data _⊢_ Γ where
     --------------------
       Γ ⊢ K hone Γ sets
 
+  REF : ∀ {n} {T : Typeover n Γ} →
+    (t : Γ ⊢ T) →
+  -----------------
+    Γ ⊢ record { obj = EQ t ;
+               obj-cong₂ = λ sq sq-fill → eqTTn-cong₂ {n} (⟦ t ⟧⊢-cong₂ sq-fill) (Refn-cong₂ {n} (Typeover.obj-cong₂ T sq sq-fill)) (⟦ t ⟧⊢-cong₂ sq-fill) ;
+               obj-cong₃ = λ _ _ _ _ _ _ _ → trivial {n} _ _ _ }
+
 ⟦ VAR x ⟧⊢ = ⟦ x ⟧∋
-⟦ PRP ⟧⊢ _ = prp
+⟦ PRP ⟧⊢ γ = prp
+⟦ REF t ⟧⊢ γ = refn (⟦ t ⟧⊢ γ)
 
 ⟦ VAR x ⟧⊢-cong γ* = ⟦ x ⟧∋-cong γ*
-⟦ PRP ⟧⊢-cong γ* = ref prp
+⟦ PRP ⟧⊢-cong γ* = refn prp
+⟦ REF {n} {T} t ⟧⊢-cong γ* = refn-cong n (ap2 _ _ (Typeover.obj T) γ*) (⟦ t ⟧⊢-cong γ*)
 
-⟦ VAR x ⟧⊢-cong₂ γ₂ = ⟦ x ⟧∋-cong₂ γ₂
-⟦ PRP ⟧⊢-cong₂ γ₂ = ref-cong (ref prp)
-
---A substitution or context morphism from Γ to Δ
-data Sub (Γ : Cx) : Cx → Set₁
-⟦_⟧s : ∀ {Γ Δ} → Sub Γ Δ → ⟦ Γ ⟧C → ⟦ Δ ⟧C
-⟦_⟧s-cong : ∀ {Γ Δ} (σ : Sub Γ Δ) {γ γ' : ⟦ Γ ⟧C} → EQC Γ γ γ' → EQC Δ (⟦ σ ⟧s γ) (⟦ σ ⟧s γ')
-⟦_⟧s-cong₂ : ∀ {Γ Δ} (σ : Sub Γ Δ) {a₁ a₂ b₁ b₂ : ⟦ Γ ⟧C} 
-  {a* : EQC Γ a₁ a₂} {b* : EQC Γ b₁ b₂} {p₁ : EQC Γ a₁ b₁} {p₂ : EQC Γ a₂ b₂} →
-  EQC₂ {Γ} a* b* p₁ p₂ → EQC₂ {Δ} (⟦ σ ⟧s-cong a*) (⟦ σ ⟧s-cong b*) (⟦ σ ⟧s-cong p₁) (⟦ σ ⟧s-cong p₂)
-TypeoverF : ∀ {n Γ Δ} → Sub Γ Δ → Typeover n Δ → Typeover n Γ
-
-data Sub Γ where
-  • : Sub Γ ε
-  _,,,_ : ∀ {n Δ} {T : Typeover n Δ} (σ : Sub Γ Δ) → Γ ⊢ TypeoverF σ T → Sub Γ (Δ ,, T)
---TODO Substitutions into sets and propositions
-
-TypeoverF σ T = record { 
-  obj = λ γ → Typeover.obj T (⟦ σ ⟧s γ) ; 
-  obj-cong = λ γ* → Typeover.obj-cong T (⟦ σ ⟧s-cong γ*) ;
-  obj-cong₂ = λ γ₂ → Typeover.obj-cong₂ T (⟦ σ ⟧s-cong₂ γ₂) ;
-  obj-cong₃ = λ γsq δsq sq₁ sq₂ sqₑ sqₑ' → Typeover.obj-cong₃ T (⟦ σ ⟧s-cong₂ γsq) (⟦ σ ⟧s-cong₂ δsq) (⟦ σ ⟧s-cong₂ sq₁) (⟦ σ ⟧s-cong₂ sq₂) (⟦ σ ⟧s-cong₂ sqₑ) (⟦ σ ⟧s-cong₂ sqₑ')}
-
-⟦ • ⟧s γ = lift ⊤.tt
-⟦ σ ,,, t ⟧s γ = ⟦ σ ⟧s γ , ⟦ t ⟧⊢ γ
-
-⟦ • ⟧s-cong _ = ⊤.tt
-⟦ σ ,,, t ⟧s-cong γ* = (⟦ σ ⟧s-cong γ*) , ⟦ t ⟧⊢-cong γ*
-
-⟦ • ⟧s-cong₂ _ = ⊤.tt
-⟦ σ ,,, t ⟧s-cong₂ γ₂ = (⟦ σ ⟧s-cong₂ γ₂) , ⟦ t ⟧⊢-cong₂ γ₂
-
-ap : ∀ {Γ Δ n} {T : Typeover n Δ} (σ : Sub Γ Δ) → Δ ∋ T → Γ ⊢ TypeoverF σ T
-ap (_ ,,, t) top = t
-ap (σ ,,, _) (pop x) = ap σ x
-
-ap-sound : ∀ {n Γ Δ} {T : Typeover n Δ} {σ : Sub Γ Δ} {x : Δ ∋ T} {γ} → ⟦ ap σ x ⟧⊢ γ ≡ ⟦ x ⟧∋ (⟦ σ ⟧s γ)
-ap-sound {σ = _ ,,, _} {x = top} = refl
-ap-sound {σ = _ ,,, _} {pop x} = ap-sound {x = x}
-
-sub : ∀ {n Γ Δ} {T : Typeover n Δ} (σ : Sub Γ Δ) → Δ ⊢ T → Γ ⊢ TypeoverF σ T
-sub σ (VAR x) = ap σ x
-sub σ PRP = PRP
-
-sub-sound : ∀ {n Γ Δ} {T : Typeover n Δ} {σ : Sub Γ Δ} {t : Δ ⊢ T} {γ} → ⟦ sub σ t ⟧⊢ γ ≡ ⟦ t ⟧⊢ (⟦ σ ⟧s γ)
-sub-sound {t = VAR x} = ap-sound {x = x}
-sub-sound {t = PRP} = refl
-
-data PathSub : ∀ {Γ Δ} → Sub Γ Δ → Sub Γ Δ → Set₁
-⟦_⟧ps : ∀ {Γ Δ} {ρ σ : Sub Γ Δ} → PathSub ρ σ → (γ : ⟦ Γ ⟧C) → EQC Δ (⟦ ρ ⟧s γ) (⟦ σ ⟧s γ)
-⟦_⟧ps-cong : ∀ {Γ Δ} {ρ σ : Sub Γ Δ} (τ : PathSub ρ σ) {γ γ'} (γ* : EQC Γ γ γ') →
-  EQC₂ {Δ} (⟦ τ ⟧ps γ) (⟦ τ ⟧ps γ') (⟦ ρ ⟧s-cong γ*) (⟦ σ ⟧s-cong γ*)
-
-data PathSub where
-  • : ∀ {Γ} → PathSub {Γ} • •
-  _,,,_ : ∀ {Γ Δ T} {ρ σ : Sub Γ Δ} {s t} (τ : PathSub ρ σ) → Γ ⊢ record { 
-    obj = λ γ → path (⟦ s ⟧⊢ γ) (Typeover.obj-cong T (⟦ τ ⟧ps γ)) (⟦ t ⟧⊢ γ) ;
-    obj-cong = λ {γ} {γ'} γ* → path-cong (⟦ s ⟧⊢-cong γ*) (Typeover.obj-cong₂ T (⟦ τ ⟧ps-cong γ*)) (⟦ t ⟧⊢-cong γ*) ;
-    obj-cong₂ = λ γ* → path-cong₂ (⟦ s ⟧⊢-cong₂ γ*) (Typeover.obj-cong₃ T (⟦ τ ⟧ps-cong _) (⟦ τ ⟧ps-cong _) (⟦ τ ⟧ps-cong _) (⟦ τ ⟧ps-cong _) (⟦ ρ ⟧s-cong₂ γ*) (⟦ σ ⟧s-cong₂ γ*)) (⟦ t ⟧⊢-cong₂ γ*) } →
-       PathSub {Δ = Δ ,, T} (ρ ,,, s) (σ ,,, t)
-
-⟦ • ⟧ps γ = ⊤.tt
-⟦ τ ,,, b* ⟧ps γ = (⟦ τ ⟧ps γ) , ⟦ b* ⟧⊢ γ
-
-⟦ • ⟧ps-cong γ* = ⊤.tt
-⟦ τ ,,, b* ⟧ps-cong γ* = (⟦ τ ⟧ps-cong γ*) , (⟦ b* ⟧⊢-cong γ*)
-
+⟦ VAR x ⟧⊢-cong₂ γ₂ = ⟦ x ⟧∋-cong₂ _ γ₂
+⟦ PRP ⟧⊢-cong₂ γ₂ = refn-cong hone (Ref sets) (refn prp)
+⟦ REF {n} t ⟧⊢-cong₂ γ₂ = trivial {n} _ _ _

@@ -180,7 +180,7 @@ eqn-cong {hzero} = iso-cong
 eqn-cong {hminusone} = iff-cong
 eqn-cong {hminustwo} _ _ = tt
 
-eqTTn-cong : {n : hLevel} 
+eqTTn-cong : (n : hLevel)
   {A A' B B' : Type n}
   {e : Eq A B} {e' : Eq A' B'} {A* : Eq A A'} {B* : Eq B B'}
   {a : TT A} {a' : TT A'} {b : TT B} {b' : TT B'} → 
@@ -201,6 +201,19 @@ eqn-cong₂ {hzero} = iso-cong₂
 eqn-cong₂ {hminusone} _ _ = tt
 eqn-cong₂ {hminustwo} _ _ = tt
 
+eqTTn-cong₂ : ∀ {n : hLevel}
+  {A₁ A₁' A₂ A₂' B₁ B₁' B₂ B₂' : Type n}
+  {e₁ : Eq A₁ B₁} {e₁' : Eq A₁' B₁'} {e₂ : Eq A₂ B₂} {e₂' : Eq A₂' B₂'} {A₁* : Eq A₁ A₁'} {A₂* : Eq A₂ A₂'} {B₁* : Eq B₁ B₁'} {B₂* : Eq B₂ B₂'} {Aₑ : Eq A₁ A₂} {Aₑ' : Eq A₁' A₂'} {Bₑ : Eq B₁ B₂} {Bₑ' : Eq B₁' B₂'}
+  {a₁ : TT A₁} {a₁' : TT A₁'} {a₂ : TT A₂} {a₂' : TT A₂'} {b₁ : TT B₁} {b₁' : TT B₁'} {b₂ : TT B₂} {b₂' : TT B₂'}
+  {a₁* : [ n ] a₁ ∼〈〈 A₁* 〉〉 a₁'} {a₂* : [ n ] a₂ ∼〈〈 A₂* 〉〉 a₂'} {b₁* : [ n ] b₁ ∼〈〈 B₁* 〉〉 b₁'} {b₂* : [ n ] b₂ ∼〈〈 B₂* 〉〉 b₂'} {aₑ : [ n ] a₁ ∼〈〈 Aₑ 〉〉 a₂} {aₑ' : [ n ] a₁' ∼〈〈 Aₑ' 〉〉 a₂'}
+  {e₁* : [ n ] e₁ ∼〈〈 eqn-cong A₁* B₁* 〉〉 e₁'} {e₂* : [ n ] e₂ ∼〈〈 eqn-cong A₂* B₂* 〉〉 e₂'} {Aₑ* : [ n ] A₁* ∼〈〈 eqn-cong Aₑ Aₑ' 〉〉 A₂*} {eₑ : [ n ] e₁ ∼〈〈 eqn-cong Aₑ Bₑ 〉〉 e₂} {eₑ' : [ n ] e₁' ∼〈〈 eqn-cong Aₑ' Bₑ' 〉〉 e₂'} {Bₑ* : [ n ] B₁* ∼〈〈 eqn-cong Bₑ Bₑ' 〉〉 B₂*} {bₑ : [ n ] b₁ ∼〈〈 Bₑ 〉〉 b₂} {bₑ' : [ n ] b₁' ∼〈〈 Bₑ' 〉〉 b₂'} →
+  [ pred n ] a₁* ∼〈〈 eqTTn-cong n aₑ Aₑ* aₑ' 〉〉 a₂* → [ pred n ] e₁* ∼〈〈 eqTTn-cong n eₑ (eqn-cong₂ {n} Aₑ* Bₑ*) eₑ' 〉〉 e₂* → [ pred n ] b₁* ∼〈〈 eqTTn-cong n bₑ Bₑ* bₑ' 〉〉 b₂* →
+  [ _ ] eqTTn-cong n a₁* e₁* b₁* ∼〈〈 eqn-cong (eqTTn-cong n aₑ eₑ bₑ) (eqTTn-cong n aₑ' eₑ' bₑ') 〉〉 eqTTn-cong n a₂* e₂* b₂*
+eqTTn-cong₂ {hone} = path-cong₂
+eqTTn-cong₂ {hzero} _ _ _ = tt
+eqTTn-cong₂ {hminusone} _ _ _ = tt
+eqTTn-cong₂ {hminustwo} _ _ _ = tt
+
 Refn : ∀ {n} (A : Type n) → Eq A A
 Refn {hone} A = Ref A
 Refn {hzero} A = Ref₀ A
@@ -217,8 +230,31 @@ Refn-cong₂ : ∀ {n : hLevel}
   {A A' B B' : Type n}
   {e : Eq A B} {e' : Eq A' B'} {A* : Eq A A'} {B* : Eq B B'}
   (sq : [ _ ] e ∼〈〈 eqn-cong A* B* 〉〉 e') →
-  [ _ ] Refn-cong e ∼〈〈 eqTTn-cong {n} (Refn-cong A*) (eqn-cong₂ {n} sq sq) (Refn-cong B*) 〉〉 Refn-cong e'
+  [ _ ] Refn-cong e ∼〈〈 eqTTn-cong n (Refn-cong A*) (eqn-cong₂ {n} sq sq) (Refn-cong B*) 〉〉 Refn-cong e'
 Refn-cong₂ {hone} = Ref-cong₂
 Refn-cong₂ {hzero} _ = tt
 Refn-cong₂ {hminusone} _ = tt
 Refn-cong₂ {hminustwo} _ = tt
+
+refn : ∀ {n : hLevel} {A : Type n} (a : TT A) →
+  [ n ] a ∼〈〈 Refn A 〉〉 a
+refn {hone} a = ref a
+refn {hzero} _ = ref₀
+refn {hminusone} _ = tt
+refn {hminustwo} _ = tt
+
+refn-cong : ∀ (n : hLevel) {A A' : Type n} (A* : Eq A A') {a : TT A} {a' : TT A'} (a* : [ n ] a ∼〈〈 A* 〉〉 a') → 
+  [ pred n ] refn a ∼〈〈 eqTTn-cong n a* (Refn-cong A*) a* 〉〉 refn a'
+refn-cong hone A* a* = ref-cong a*
+refn-cong hzero A* a* = tt
+refn-cong hminusone A* a* = tt
+refn-cong hminustwo A* a* = tt
+
+trivial : ∀ {n : hLevel}
+  {A B : Type (pred (pred n))}
+  (a : TT A) (e : Eq A B) (b : TT B)
+  → [ pred (pred n) ] a ∼〈〈 e 〉〉 b
+trivial {hone} _ _ _ = tt
+trivial {hzero} _ _ _ = tt
+trivial {hminusone} _ _ _ = tt
+trivial {hminustwo} _ _ _ = tt
