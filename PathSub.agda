@@ -5,6 +5,7 @@ open import Univ
 open import Context
 open import Syntax
 <<<<<<< HEAD
+<<<<<<< HEAD
 open import Substitution
 
 data  PathSub : ∀ {Γ Δ} → Sub Γ Δ → Sub Γ Δ → Set₁
@@ -40,6 +41,8 @@ data PathSub where
        PathSub {Δ = Δ ,, T} (ρ ,,, s) (σ ,,, t)
 
 =======
+=======
+>>>>>>> 70845cfc78c50b862cf0016ffbe2191c6ebdbe31
 
 data PathSub {Γ} : ∀ {Δ} → Sub Γ Δ → Sub Γ Δ → Set₁
 Typeover-eq : ∀ {n Γ Δ} {ρ σ : Sub Γ Δ} (τ : PathSub ρ σ) (T : Typeover n Δ)
@@ -71,6 +74,9 @@ Typeover-eq {n} {Γ} {Δ} {ρ} {σ} τ T F F-cong F-cong₂ G G-cong G-cong₂ =
   obj-cong₂ = λ γ₂ → eqTTn-cong₂ n (F-cong₂ γ₂) (Typeover.obj-cong₃ T (⟦ τ ⟧ps-cong _) (⟦ τ ⟧ps-cong _) (⟦ τ ⟧ps-cong _) (⟦ τ ⟧ps-cong _) (⟦ ρ ⟧s-cong₂ γ₂) (⟦ σ ⟧s-cong₂ γ₂)) (G-cong₂ γ₂) ;
   obj-cong₃ = λ _ _ _ _ _ _ → trivial n }
 
+<<<<<<< HEAD
+>>>>>>> 70845cfc78c50b862cf0016ffbe2191c6ebdbe31
+=======
 >>>>>>> 70845cfc78c50b862cf0016ffbe2191c6ebdbe31
 ⟦ • ⟧ps γ = ⊤.tt
 ⟦ τ ,,, b* ⟧ps γ = (⟦ τ ⟧ps γ) , ⟦ b* ⟧⊢ γ
@@ -78,11 +84,14 @@ Typeover-eq {n} {Γ} {Δ} {ρ} {σ} τ T F F-cong F-cong₂ G G-cong G-cong₂ =
 ⟦ • ⟧ps-cong γ* = ⊤.tt
 ⟦ τ ,,, b* ⟧ps-cong γ* = (⟦ τ ⟧ps-cong γ*) , (⟦ b* ⟧⊢-cong γ*)
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 apps : ∀ {n Γ Δ} {ρ σ : Sub Γ Δ} {T : Typeover n Δ} (τ : PathSub ρ σ) (x : Δ ∋ T) → Γ ⊢ TypeoverFF n ρ σ T 
   (λ γ → ⟦ x ⟧∋ (⟦ ρ ⟧s γ)) (λ γ* → ⟦ x ⟧∋-cong (⟦ ρ ⟧s-cong γ*)) (λ sq-fill → ⟦ x ⟧∋-cong₂ _ (⟦ ρ ⟧s-cong₂ sq-fill)) τ 
   (λ γ → ⟦ x ⟧∋ (⟦ σ ⟧s γ)) (λ γ* → ⟦ x ⟧∋-cong (⟦ σ ⟧s-cong γ*)) (λ sq-fill → ⟦ x ⟧∋-cong₂ _ (⟦ σ ⟧s-cong₂ sq-fill))
 apps (τ ,,, e) top = e
 apps (τ ,,, e) (pop x) = apps τ x
+=======
+>>>>>>> 70845cfc78c50b862cf0016ffbe2191c6ebdbe31
 =======
 >>>>>>> 70845cfc78c50b862cf0016ffbe2191c6ebdbe31

@@ -1,10 +1,13 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 open import Univ
 open import Context
 open import Substitution
 open import PathSub
 
 =======
+=======
+>>>>>>> 70845cfc78c50b862cf0016ffbe2191c6ebdbe31
 module PathSub3 where
 open import Context
 open import Syntax
@@ -22,4 +25,7 @@ subps : ∀ {n Γ Δ} {T : Typeover n Δ} {ρ σ : Sub Γ Δ} (τ : PathSub ρ �
     (λ sq-fill → ⟦ t ⟧⊢-cong₂ (⟦ σ ⟧s-cong₂ sq-fill))
 subps τ (VAR x) = apps τ x
 subps τ PRP = {!!}
+<<<<<<< HEAD
+>>>>>>> 70845cfc78c50b862cf0016ffbe2191c6ebdbe31
+=======
 >>>>>>> 70845cfc78c50b862cf0016ffbe2191c6ebdbe31

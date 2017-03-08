@@ -11,6 +11,7 @@ open import Univ.HLevel
 open import Context
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 open Context.Functors
 
 module constant {n : hLevel} {Γ : Cx} (A : Type n) where
@@ -33,6 +34,8 @@ K n _ A = record {
   obj-cong₂ = λ _ _ → Refn-cong (Refn A);
   obj-cong₃ = λ _ _ _ _ _ _ _ → Refn-cong₂ {n} (Refn-cong (Refn A))}
 =======
+=======
+>>>>>>> 70845cfc78c50b862cf0016ffbe2191c6ebdbe31
 --TODO Remove old equality constructions in Univ
 --TODO Extract function for ap₂ ∘ Typeover.obj-cong T
 
@@ -58,6 +61,9 @@ ap₃' (make-Functor₂' F-cong₂) = F-cong₂
 postulate ap₃'-ref : ∀ {Γ Δ F F-cong γ γ'} (F-cong₂ : Functor₂' {Γ} {Δ} {F} F-cong) (γ* : EQC Γ γ γ') →
                    ap₃' F-cong₂ (RefC-cong γ*) ▷ RefC-cong (ap₂' F-cong γ*)
 {-# REWRITE ap₃'-ref #-}
+<<<<<<< HEAD
+>>>>>>> 70845cfc78c50b862cf0016ffbe2191c6ebdbe31
+=======
 >>>>>>> 70845cfc78c50b862cf0016ffbe2191c6ebdbe31
 
 data _⊢_ (Γ : Cx) : ∀ {n} → Typeover n Γ → Set₁
@@ -82,6 +88,9 @@ open EQ
   {a* : EQC Γ a₁ a₂} {b* : EQC Γ b₁ b₂} {p₁ : EQC Γ a₁ b₁} {p₂ : EQC Γ a₂ b₂}
   (sq : EQC₂ {Γ} a* b* p₁ p₂) → 
   [ pred n ] ⟦ t ⟧⊢-cong a* ∼⟪ eqTTn-cong n (⟦ t ⟧⊢-cong p₁) (ap₃ (Typeover.obj-cong₂ T) _ _ _ _ sq) (⟦ t ⟧⊢-cong p₂) ⟫ ⟦ t ⟧⊢-cong b*
+<<<<<<< HEAD
+>>>>>>> 70845cfc78c50b862cf0016ffbe2191c6ebdbe31
+=======
 >>>>>>> 70845cfc78c50b862cf0016ffbe2191c6ebdbe31
 
 data _⊢_ Γ where
@@ -95,6 +104,7 @@ data _⊢_ Γ where
     --------------------
       Γ ⊢ K hone Γ sets
 
+<<<<<<< HEAD
 <<<<<<< HEAD
   REF : ∀ {n} {T : Typeover n Γ} →
     (t : Γ ⊢ T) →
@@ -115,6 +125,8 @@ data _⊢_ Γ where
 ⟦ PRP ⟧⊢-cong₂ γ₂ = refn-cong hone (Ref sets) (refn prp)
 ⟦ REF {n} t ⟧⊢-cong₂ γ₂ = trivial {n} _ _ _
 =======
+=======
+>>>>>>> 70845cfc78c50b862cf0016ffbe2191c6ebdbe31
 --TODO Extract the type below
   REF : ∀ {n} {T : Typeover n Γ} →
       (t : Γ ⊢ T) →
@@ -178,4 +190,7 @@ sub-sound : ∀ {n Γ Δ} {T : Typeover n Δ} {σs} {σs-cong} {σs-cong₂} {σ
 sub-sound {t = VAR x} = ap-sound {x = x}
 sub-sound {t = PRP} = refl
 sub-sound {t = REF t} = {!!}
+<<<<<<< HEAD
+>>>>>>> 70845cfc78c50b862cf0016ffbe2191c6ebdbe31
+=======
 >>>>>>> 70845cfc78c50b862cf0016ffbe2191c6ebdbe31

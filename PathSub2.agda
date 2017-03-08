@@ -4,6 +4,7 @@ open import Univ
 open import Context
 open import Syntax
 <<<<<<< HEAD
+<<<<<<< HEAD
 open import Substitution
 open import PathSub
 
@@ -18,6 +19,8 @@ subps : ∀ n {Γ Δ} (T : Typeover n Δ) (ρ σ : Sub Γ Δ) (τ : PathSub ρ �
 subps n T ρ σ τ (VAR x) = apps τ x
 subps hone {Δ = Δ} .(K hone Δ sets) ρ σ τ PRP = {!!}
 =======
+=======
+>>>>>>> 70845cfc78c50b862cf0016ffbe2191c6ebdbe31
 open import PathSub
 
 --Put in section
@@ -36,4 +39,7 @@ apps-cong : ∀ {n Γ Δ} {T : Typeover n Δ} {ρ σ : Sub Γ Δ} (τ : PathSub 
   ⟦ apps τ x ⟧⊢ γ ≡ ⟦ x ⟧∋-cong (⟦ τ ⟧ps γ)
 apps-cong (_ ,,, _) top _ = refl
 apps-cong (τ ,,, _) (pop x) γ = apps-cong τ x γ
+<<<<<<< HEAD
+>>>>>>> 70845cfc78c50b862cf0016ffbe2191c6ebdbe31
+=======
 >>>>>>> 70845cfc78c50b862cf0016ffbe2191c6ebdbe31

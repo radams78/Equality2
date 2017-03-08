@@ -1,4 +1,8 @@
 {-# OPTIONS --rewriting #-}
+<<<<<<< HEAD
+=======
+
+>>>>>>> 70845cfc78c50b862cf0016ffbe2191c6ebdbe31
 module Context where
 open import Level
 open import Function hiding (_∋_)
@@ -8,6 +12,7 @@ open import Univ.HLevel
 
 postulate _▷_ : ∀ {i} {A : Set i} → A → A → Set
 {-# BUILTIN REWRITE _▷_ #-}
+<<<<<<< HEAD
 
 record Setoid (i j : Level) : Set (suc (i ⊔ j)) where
   field
@@ -44,12 +49,27 @@ _∋_∼〈_〉_ : ∀ {n Γ} (T : Typeover n Γ) {γ γ'} → ⟦ T ⟧T γ →
 EQC₂ : ∀ {Γ} → Square Γ → Set
 RefC : ∀ {Γ} (γ : ⟦ Γ ⟧C) → EQC Γ γ γ
 RefC-cong : ∀ {Γ} {γ γ' : ⟦ Γ ⟧C} (γ* : EQC Γ γ γ') → EQC₂ (RefC γ) (RefC γ') γ* γ*
+=======
+
+data Cx : Set₁
+⟦_⟧C : Cx → Set₁
+data Functor (Γ : Cx) (n : hLevel) (F : ⟦ Γ ⟧C → Type n) : Set₁
+record Typeover (n : hLevel) (Γ : Cx) : Set₁
+⟦_⟧T : ∀ {n Γ} → Typeover n Γ → ⟦ Γ ⟧C → Set
+EQC : ∀ Γ → ⟦ Γ ⟧C → ⟦ Γ ⟧C → Set
+EQC₂ : ∀ {Γ} {a₁ a₂ b₁ b₂ : ⟦ Γ ⟧C} → EQC Γ a₁ a₂ → EQC Γ b₁ b₂ → EQC Γ a₁ b₁ → EQC Γ a₂ b₂ → Set
+RefC : ∀ {Γ} (γ : ⟦ Γ ⟧C) → EQC Γ γ γ
+RefC-cong : ∀ {Γ} {γ γ' : ⟦ Γ ⟧C} (γ* : EQC Γ γ γ') → EQC₂ (RefC γ) (RefC γ') γ* γ*
+_∋_∼〈_〉_ : ∀ {n Γ} (T : Typeover n Γ) {γ γ'} → ⟦ T ⟧T γ → EQC Γ γ γ' → ⟦ T ⟧T γ' → Set
+
+>>>>>>> 70845cfc78c50b862cf0016ffbe2191c6ebdbe31
 
 infix 75 _,,_
 data Cx where
   ε : Cx
   _,,_ : ∀ {n} (Γ : Cx) → Typeover n Γ → Cx
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 record Square Γ where
   field
@@ -128,6 +148,39 @@ ap₃ (make-Functor₂ F-cong₂) = F-cong₂
 postulate ap₃-ref : ∀ {Γ n F F-cong} (F-cong₂ : Functor₂ Γ n F F-cong) {γ γ'} (γ* : EQC Γ γ γ') →
                     ap₃ F-cong₂ (RefC γ) (RefC γ') γ* γ* (RefC-cong γ*) ▷ Refn-cong {n} (ap₂ F-cong γ*)
 {-# REWRITE ap₃-ref #-}
+=======
+data Functor Γ n F where
+  make-Functor : (∀ {γ γ'} (γ* : EQC Γ γ γ') → Eq (F γ) (F γ')) → Functor Γ n F
+
+ap₂ : ∀ {Γ n F} → Functor Γ n F → ∀ {γ γ'} → EQC Γ γ γ' → Eq (F γ) (F γ')
+ap₂ (make-Functor F-cong) = F-cong
+
+postulate ap₂-ref : ∀ {Γ n F} (F-cong : Functor Γ n F) (γ : ⟦ Γ ⟧C) → ap₂ F-cong (RefC γ) ▷ Refn (F γ)
+{-# REWRITE ap₂-ref #-}
+
+data Functor₂ Γ n F (F-cong : Functor Γ n F) : Set₁ where
+  make-Functor₂ : (∀ {γ₁ γ₁' γ₂ γ₂'} (γ₁* : EQC Γ γ₁ γ₁') (γ₂* : EQC Γ γ₂ γ₂') (γₑ : EQC Γ γ₁ γ₂) (γₑ' : EQC Γ γ₁' γ₂')
+    (sq-fill : EQC₂ γ₁* γ₂* γₑ γₑ') → [ n ] ap₂ F-cong γ₁* ∼⟪ eqn-cong (ap₂ F-cong γₑ) (ap₂ F-cong γₑ') ⟫ ap₂ F-cong γ₂*) →
+    Functor₂ Γ n F F-cong
+
+ap₃ : ∀ {Γ n F F-cong} → Functor₂ Γ n F F-cong → ∀ {γ₁ γ₁' γ₂ γ₂'} (γ₁* : EQC Γ γ₁ γ₁') (γ₂* : EQC Γ γ₂ γ₂') (γₑ : EQC Γ γ₁ γ₂) (γₑ' : EQC Γ γ₁' γ₂')
+    (sq-fill : EQC₂ γ₁* γ₂* γₑ γₑ') → [ n ] ap₂ F-cong γ₁* ∼⟪ eqn-cong (ap₂ F-cong γₑ) (ap₂ F-cong γₑ') ⟫ ap₂ F-cong γ₂*
+ap₃ (make-Functor₂ F-cong₂) = F-cong₂
+
+postulate ap₃-ref : ∀ {Γ n F F-cong} (F-cong₂ : Functor₂ Γ n F F-cong) {γ γ'} (γ* : EQC Γ γ γ') →
+                    ap₃ F-cong₂ (RefC γ) (RefC γ') γ* γ* (RefC-cong γ*) ▷ Refn-cong {n} (ap₂ F-cong γ*)
+{-# REWRITE ap₃-ref #-}
+
+record Typeover n Γ where
+  field
+    obj : ∀ (γ : ⟦ Γ ⟧C) → Type n
+    obj-cong : Functor Γ n obj
+    obj-cong₂ : Functor₂ Γ n obj obj-cong
+    obj-cong₃ : ∀ {γ₁ γ₁' γ₂ γ₂' δ₁ δ₁' δ₂ δ₂' : ⟦ Γ ⟧C}
+      {γ₁* : EQC Γ γ₁ γ₁'} {γ₂* : EQC Γ γ₂ γ₂'} {γₑ : EQC Γ γ₁ γ₂} {γₑ' : EQC Γ γ₁' γ₂'} {δ₁* : EQC Γ δ₁ δ₁'} {δ₂* : EQC Γ δ₂ δ₂'} {δₑ : EQC Γ δ₁ δ₂} {δₑ' : EQC Γ δ₁' δ₂'} {e₁ : EQC Γ γ₁ δ₁} {e₁' : EQC Γ γ₁' δ₁'} {e₂ : EQC Γ γ₂ δ₂} {e₂' : EQC Γ γ₂' δ₂'}
+      (γsq : EQC₂ γ₁* γ₂* γₑ γₑ') (δsq : EQC₂ δ₁* δ₂* δₑ δₑ') (sq₁ : EQC₂ γ₁* δ₁* e₁ e₁') (sq₂ : EQC₂ γ₂* δ₂* e₂ e₂') (sqₑ : EQC₂ γₑ δₑ e₁ e₂) (sqₑ' : EQC₂ γₑ' δₑ' e₁' e₂') →
+      [ pred n ] ap₃ obj-cong₂ _ _ _ _ γsq ∼⟪ eqTTn-cong n (ap₃ obj-cong₂ _ _ _ _ sq₁) (eqn-cong₂ n {A₁* = ap₂ obj-cong γₑ} (ap₃ obj-cong₂ _ _ _ _ sqₑ) (ap₃ obj-cong₂ _ _ _ _ sqₑ')) (ap₃ obj-cong₂ _ _ _ _ sq₂) ⟫ ap₃ obj-cong₂ _ _ _ _ δsq
+>>>>>>> 70845cfc78c50b862cf0016ffbe2191c6ebdbe31
 
 ⟦ ε ⟧C = Lift ⊤
 ⟦ Γ ,, S ⟧C = Σ[ γ ∈ ⟦ Γ ⟧C ] ⟦ S ⟧T γ
@@ -137,6 +190,7 @@ T ∋ a ∼〈 γ* 〉 b = [ _ ] a ∼〈〈 ap2 _ _ (Typeover.obj T) γ* 〉〉
 EQC ε (lift tt) (lift tt) = ⊤
 EQC (Γ ,, S) (γ , s) (γ' , s') = Σ[ γ* ∈ EQC Γ γ γ' ] S ∋ s ∼〈 γ* 〉 s'
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 RefC {ε} _ = tt
 RefC {Γ ,, T} (γ , t) = RefC γ , refn t
@@ -223,6 +277,8 @@ square-section point path sq = record
                                  ; east = path (Square.East sq)
                                  }
 =======
+=======
+>>>>>>> 70845cfc78c50b862cf0016ffbe2191c6ebdbe31
 T ∋ a ∼〈 γ* 〉 b = [ _ ] a ∼⟪ ap₂ (Typeover.obj-cong T) γ* ⟫ b
 
 RefC {ε} γ = tt

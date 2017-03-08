@@ -125,6 +125,12 @@ postulate Ref : ∀ A → A ⇔ A
 
 postulate Ref-cong : ∀ {A B} (F : A ⇔ B) → Ref A ∼⟪ eqU-cong F F ⟫ Ref B
 
+postulate Ref-cong₂ : {!!}
+
+postulate ref : ∀ {A} (a : Obj A) → a ∼⟪ Ref A ⟫ a
+
+postulate ref-cong : {!!}
+
 ------------------------------------------------------
 -- The structures that exist at every level
 ------------------------------------------------------
@@ -223,7 +229,7 @@ Refn-cong {hzero} e = Ref₀-cong e
 Refn-cong {hminusone} e = tt
 Refn-cong {hminustwo} e = tt
 
-{- Refn-cong₂ : ∀ {n : hLevel}
+Refn-cong₂ : ∀ {n : hLevel}
   {A A' B B' : Type n}
   {e : Eq A B} {e' : Eq A' B'} {A* : Eq A A'} {B* : Eq B B'}
   (sq : [ _ ] e ∼〈〈 eqn-cong A* B* 〉〉 e') →
@@ -254,4 +260,4 @@ trivial : ∀ {n : hLevel}
 trivial {hone} _ _ _ = tt
 trivial {hzero} _ _ _ = tt
 trivial {hminusone} _ _ _ = tt
-trivial {hminustwo} _ _ _ = tt -}
+trivial {hminustwo} _ _ _ = tt
