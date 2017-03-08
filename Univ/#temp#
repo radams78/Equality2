@@ -1,0 +1,58 @@
+Γ ⊢
+record
+
+; obj-cong =
+    make-Functor
+    (λ {.γ} {.γ'} γ* →
+       eqTTn-cong n (⟦ sub σ t ⟧⊢-cong γ*)
+       (ap₃ (Typeover.obj-cong₂ T) (ap₂' ⟦ σ ⟧s-cong (RefC .γ))
+        (ap₂' ⟦ σ ⟧s-cong (RefC .γ')) (ap₂' ⟦ σ ⟧s-cong γ*)
+        (ap₂' ⟦ σ ⟧s-cong γ*) (ap₃' ⟦ σ ⟧s-cong₂ (RefC-cong γ*)))
+       (⟦ sub σ t ⟧⊢-cong γ*))
+; obj-cong₂ =
+    make-Functor₂
+    (λ {.γ₁} {.γ₁'} {.γ₂} {.γ₂'} γ₁* γ₂* γₑ γₑ' sq-fill →
+       eqTTn-cong₂ n (⟦ sub σ t ⟧⊢-cong₂ sq-fill)
+       (Typeover.obj-cong₃ (TypeoverF σ T) (RefC-cong γ₁*) (RefC-cong γ₂*)
+        (RefC-cong γₑ) (RefC-cong γₑ') sq-fill sq-fill)
+       (⟦ sub σ t ⟧⊢-cong₂ sq-fill))
+; obj-cong₃ =
+    λ {.γ₁} {.γ₁'} {.γ₂} {.γ₂'} {.δ₁} {.δ₁'} {.δ₂} {.δ₂'} {.γ₁*} {.γ₂*}
+      {.γₑ} {.γₑ'} {.δ₁*} {.δ₂*} {.δₑ} {.δₑ'} {.e₁} {.e₁'} {.e₂} {.e₂'} z
+      z₁ z₂ z₃ z₄ z₅ →
+      trivial n
+}
+
+Γ ⊢
+      TypeoverF σ
+      (record
+{ obj =
+    λ γ →
+      eqTTn (⟦ sub σ t ⟧⊢ γ)
+      (ap₂ (Typeover.obj-cong T) (ap₂' ⟦ σ ⟧s-cong (RefC γ)))
+      (⟦ sub σ t ⟧⊢ γ)
+
+{ obj =
+           λ γ →
+             eqTTn (⟦ t ⟧⊢ γ) (ap₂ (Typeover.obj-cong T) (RefC γ)) (⟦ t ⟧⊢ γ)
+             
+       ; obj-cong =
+           make-Functor
+           (λ {.γ} {.γ'} γ* →
+              eqTTn-cong n (⟦ t ⟧⊢-cong γ*)
+              (ap₃ (Typeover.obj-cong₂ T) (RefC .γ) (RefC .γ') γ* γ*
+               (RefC-cong γ*))
+              (⟦ t ⟧⊢-cong γ*))
+       ; obj-cong₂ =
+           make-Functor₂
+           (λ {.γ₁} {.γ₁'} {.γ₂} {.γ₂'} γ₁* γ₂* γₑ γₑ' sq-fill →
+              eqTTn-cong₂ n (⟦ t ⟧⊢-cong₂ sq-fill)
+              (Typeover.obj-cong₃ T (RefC-cong γ₁*) (RefC-cong γ₂*)
+               (RefC-cong γₑ) (RefC-cong γₑ') sq-fill sq-fill)
+              (⟦ t ⟧⊢-cong₂ sq-fill))
+       ; obj-cong₃ =
+           λ {.γ₁} {.γ₁'} {.γ₂} {.γ₂'} {.δ₁} {.δ₁'} {.δ₂} {.δ₂'} {.γ₁*} {.γ₂*}
+             {.γₑ} {.γₑ'} {.δ₁*} {.δ₂*} {.δₑ} {.δₑ'} {.e₁} {.e₁'} {.e₂} {.e₂'} z
+             z₁ z₂ z₃ z₄ z₅ →
+             trivial n
+       })
