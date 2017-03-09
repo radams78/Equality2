@@ -16,12 +16,13 @@ postulate path : ∀ {A B} → Obj A → A ⇔ B → Obj B → Sets
 private _∼⟪_⟫_ : ∀ {A B} → Obj A → A ⇔ B → Obj B → Set
 a ∼⟪ φ ⟫ b = El (path a φ b)
 
---TODO Common pattern with Square
-GROUPOID : FibSetoid zero zero zero
+postulate Ref : ∀ A → A ⇔ A
+
 GROUPOID = record {
   Dom = U ;
   Fib = Obj ;
   eqG = eqU ;
+  ref = Ref ;
   eqG-cong = eqU-cong ;
   EqFib = _∼⟪_⟫_ }
 
@@ -34,27 +35,22 @@ postulate path-cong : ∀ {A A' B B' a a' b b' φ φ'} {A* : A ⇔ A'} {B* : B �
 
 --TODO Extract cube type
 postulate eqU-cong₃ : ∀ {A B C D : FibSetoid.Square GROUPOID}
-                      {F₁ : OneType.Square.nw (FibSetoid.FS2OneType GROUPOID) A ⇔ OneType.Square.nw (FibSetoid.FS2OneType GROUPOID)B} {F₁' : OneType.Square.ne (FibSetoid.FS2OneType GROUPOID)A ⇔ OneType.Square.ne (FibSetoid.FS2OneType GROUPOID) B}
-                      {F₂ : OneType.Square.sw (FibSetoid.FS2OneType GROUPOID) A ⇔ OneType.Square.sw (FibSetoid.FS2OneType GROUPOID) B}
-                      {F₂' : OneType.Square.se (FibSetoid.FS2OneType GROUPOID) A ⇔ OneType.Square.se (FibSetoid.FS2OneType GROUPOID) B}
-                      {G₁ : OneType.Square.nw (FibSetoid.FS2OneType GROUPOID) C ⇔ OneType.Square.nw (FibSetoid.FS2OneType GROUPOID) D} {G₁' : OneType.Square.ne (FibSetoid.FS2OneType GROUPOID) C ⇔ OneType.Square.ne (FibSetoid.FS2OneType GROUPOID) D}
-                      {G₂ : OneType.Square.sw (FibSetoid.FS2OneType GROUPOID) C ⇔ OneType.Square.sw (FibSetoid.FS2OneType GROUPOID) D} {G₂' : OneType.Square.se (FibSetoid.FS2OneType GROUPOID) C ⇔ OneType.Square.se (FibSetoid.FS2OneType GROUPOID) D}
-                      {H₁ : OneType.Square.nw (FibSetoid.FS2OneType GROUPOID) A ⇔ OneType.Square.nw (FibSetoid.FS2OneType GROUPOID) C} {H₁' : OneType.Square.ne (FibSetoid.FS2OneType GROUPOID) A ⇔ OneType.Square.ne (FibSetoid.FS2OneType GROUPOID) C}
-                      {H₂ : OneType.Square.sw (FibSetoid.FS2OneType GROUPOID) A ⇔ OneType.Square.sw (FibSetoid.FS2OneType GROUPOID) C} {H₂' : OneType.Square.se (FibSetoid.FS2OneType GROUPOID) A ⇔ OneType.Square.se (FibSetoid.FS2OneType GROUPOID) C}
-                      {K₁ : OneType.Square.nw (FibSetoid.FS2OneType GROUPOID) B ⇔ OneType.Square.nw (FibSetoid.FS2OneType GROUPOID) D} {K₁' : OneType.Square.ne (FibSetoid.FS2OneType GROUPOID) B ⇔ OneType.Square.ne (FibSetoid.FS2OneType GROUPOID) D}
-                      {K₂ : OneType.Square.sw (FibSetoid.FS2OneType GROUPOID) B ⇔ OneType.Square.sw (FibSetoid.FS2OneType GROUPOID) D} {K₂' : OneType.Square.se (FibSetoid.FS2OneType GROUPOID) B ⇔ OneType.Square.se (FibSetoid.FS2OneType GROUPOID) D}
-                      {Aₑ* : OneType.Fill (FibSetoid.FS2OneType GROUPOID) A}
-                      {Bₑ* : OneType.Fill (FibSetoid.FS2OneType GROUPOID) B}
-                      {Cₑ* : OneType.Fill (FibSetoid.FS2OneType GROUPOID) C}
-                      {Dₑ* : OneType.Fill (FibSetoid.FS2OneType GROUPOID) D}
-                      {H₁* : OneType.Square.north (FibSetoid.FS2OneType GROUPOID) A ∼⟪ eqU-cong H₁ H₁' ⟫ OneType.Square.north (FibSetoid.FS2OneType GROUPOID) C}
-                      {H₂* : OneType.Square.south (FibSetoid.FS2OneType GROUPOID) A ∼⟪ eqU-cong H₂ H₂' ⟫ OneType.Square.south  (FibSetoid.FS2OneType GROUPOID) C}
-                      {Hₑ : OneType.Square.west  (FibSetoid.FS2OneType GROUPOID) A ∼⟪ eqU-cong H₁ H₂ ⟫ OneType.Square.west  (FibSetoid.FS2OneType GROUPOID) C}
-                      {Hₑ' : OneType.Square.east  (FibSetoid.FS2OneType GROUPOID) A ∼⟪ eqU-cong H₁' H₂' ⟫ OneType.Square.east  (FibSetoid.FS2OneType GROUPOID) C}
-                      {K₁* : OneType.Square.north  (FibSetoid.FS2OneType GROUPOID) B ∼⟪ eqU-cong K₁ K₁' ⟫ OneType.Square.north  (FibSetoid.FS2OneType GROUPOID) D}
-                      {K₂* : OneType.Square.south  (FibSetoid.FS2OneType GROUPOID) B ∼⟪ eqU-cong K₂ K₂' ⟫ OneType.Square.south  (FibSetoid.FS2OneType GROUPOID) D}
-                      {Kₑ : OneType.Square.west  (FibSetoid.FS2OneType GROUPOID) B ∼⟪ eqU-cong K₁ K₂ ⟫ OneType.Square.west  (FibSetoid.FS2OneType GROUPOID) D}
-                      {Kₑ' : OneType.Square.east  (FibSetoid.FS2OneType GROUPOID) B ∼⟪ eqU-cong K₁' K₂' ⟫ OneType.Square.east  (FibSetoid.FS2OneType GROUPOID) D} → 
+                      {H₁ : OneType.Square.nw (FibSetoid.oneType GROUPOID) A ⇔ OneType.Square.nw (FibSetoid.oneType GROUPOID) C} {H₁' : OneType.Square.ne (FibSetoid.oneType GROUPOID) A ⇔ OneType.Square.ne (FibSetoid.oneType GROUPOID) C}
+                      {H₂ : OneType.Square.sw (FibSetoid.oneType GROUPOID) A ⇔ OneType.Square.sw (FibSetoid.oneType GROUPOID) C} {H₂' : OneType.Square.se (FibSetoid.oneType GROUPOID) A ⇔ OneType.Square.se (FibSetoid.oneType GROUPOID) C}
+                      {K₁ : OneType.Square.nw (FibSetoid.oneType GROUPOID) B ⇔ OneType.Square.nw (FibSetoid.oneType GROUPOID) D} {K₁' : OneType.Square.ne (FibSetoid.oneType GROUPOID) B ⇔ OneType.Square.ne (FibSetoid.oneType GROUPOID) D}
+                      {K₂ : OneType.Square.sw (FibSetoid.oneType GROUPOID) B ⇔ OneType.Square.sw (FibSetoid.oneType GROUPOID) D} {K₂' : OneType.Square.se (FibSetoid.oneType GROUPOID) B ⇔ OneType.Square.se (FibSetoid.oneType GROUPOID) D}
+                      {Aₑ* : OneType.Fill (FibSetoid.oneType GROUPOID) A}
+                      {Bₑ* : OneType.Fill (FibSetoid.oneType GROUPOID) B}
+                      {Cₑ* : OneType.Fill (FibSetoid.oneType GROUPOID) C}
+                      {Dₑ* : OneType.Fill (FibSetoid.oneType GROUPOID) D}
+                      {H₁* : OneType.Square.north (FibSetoid.oneType GROUPOID) A ∼⟪ eqU-cong H₁ H₁' ⟫ OneType.Square.north (FibSetoid.oneType GROUPOID) C}
+                      {H₂* : OneType.Square.south (FibSetoid.oneType GROUPOID) A ∼⟪ eqU-cong H₂ H₂' ⟫ OneType.Square.south  (FibSetoid.oneType GROUPOID) C}
+                      {Hₑ : OneType.Square.west  (FibSetoid.oneType GROUPOID) A ∼⟪ eqU-cong H₁ H₂ ⟫ OneType.Square.west  (FibSetoid.oneType GROUPOID) C}
+                      {Hₑ' : OneType.Square.east  (FibSetoid.oneType GROUPOID) A ∼⟪ eqU-cong H₁' H₂' ⟫ OneType.Square.east  (FibSetoid.oneType GROUPOID) C}
+                      {K₁* : OneType.Square.north  (FibSetoid.oneType GROUPOID) B ∼⟪ eqU-cong K₁ K₁' ⟫ OneType.Square.north  (FibSetoid.oneType GROUPOID) D}
+                      {K₂* : OneType.Square.south  (FibSetoid.oneType GROUPOID) B ∼⟪ eqU-cong K₂ K₂' ⟫ OneType.Square.south  (FibSetoid.oneType GROUPOID) D}
+                      {Kₑ : OneType.Square.west  (FibSetoid.oneType GROUPOID) B ∼⟪ eqU-cong K₁ K₂ ⟫ OneType.Square.west  (FibSetoid.oneType GROUPOID) D}
+                      {Kₑ' : OneType.Square.east  (FibSetoid.oneType GROUPOID) B ∼⟪ eqU-cong K₁' K₂' ⟫ OneType.Square.east  (FibSetoid.oneType GROUPOID) D} → 
                       Aₑ* ∼⟪ path-cong H₁* (eqU-cong₂ Hₑ Hₑ') H₂* ⟫₀ Cₑ* → 
                       Bₑ* ∼⟪ path-cong K₁* (eqU-cong₂ Kₑ Kₑ') K₂* ⟫₀ Dₑ* → 
                       eqU-cong₂ Aₑ* Bₑ* ∼⟪ path-cong (eqU-cong₂ H₁* K₁*) (eqU-cong₂ (eqU-cong₂ Hₑ Kₑ) (eqU-cong₂ Hₑ' Kₑ')) (eqU-cong₂ H₂* K₂*) ⟫₀ eqU-cong₂ Cₑ* Dₑ*
@@ -66,8 +62,6 @@ postulate path-cong₂ : ∀ {A₁ A₁' A₂ A₂' B₁ B₁' B₂ B₂' : U}
                          {φ₁* : φ₁ ∼⟪ eqU-cong A₁* B₁* ⟫ φ₁'} {φ₂* : φ₂ ∼⟪ eqU-cong A₂* B₂* ⟫ φ₂'} {Aₑ* : A₁* ∼⟪ eqU-cong Aₑ Aₑ' ⟫ A₂*} {Bₑ* : B₁* ∼⟪ eqU-cong Bₑ Bₑ' ⟫ B₂*} → 
                          a₁* ∼⟪ path-cong aₑ Aₑ* aₑ' ⟫₀ a₂* → φ₁* ∼⟪ path-cong φₑ (eqU-cong₂ Aₑ* Bₑ*) φₑ' ⟫₀ φ₂* → b₁* ∼⟪ path-cong bₑ Bₑ* bₑ' ⟫₀ b₂* → 
                          path-cong a₁* φ₁* b₁* ∼⟪ iso-cong (path-cong aₑ φₑ bₑ) (path-cong aₑ' φₑ' bₑ') ⟫₀ path-cong a₂* φ₂* b₂*
-
-postulate Ref : ∀ A → A ⇔ A
 
 postulate Ref-cong : ∀ {A B} (F : A ⇔ B) → Ref A ∼⟪ eqU-cong F F ⟫ Ref B
 

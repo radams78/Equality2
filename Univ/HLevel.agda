@@ -80,6 +80,22 @@ eqn-cong₂ {hzero} = iso-cong₂'
 eqn-cong₂ {hminusone} _ _ = tt
 eqn-cong₂ {hminustwo} _ _ = tt
 
+eqn-cong₃ : ∀ (n : hLevel)
+  {A₁ A₁' A₂ A₂' B₁ B₁' B₂ B₂' C₁ C₁' C₂ C₂' D₁ D₁' D₂ D₂' : Type n}
+  {A₁* : Eq A₁ A₁'} {A₂* : Eq A₂ A₂'} {B₁* : Eq B₁ B₁'} {B₂* : Eq B₂ B₂'} {C₁* : Eq C₁ C₁'} {C₂* : Eq C₂ C₂'} {D₁* : Eq D₁ D₁'} {D₂* : Eq D₂ D₂'}
+  {Aₑ : Eq A₁ A₂} {Aₑ' : Eq A₁' A₂'} {Bₑ : Eq B₁ B₂} {Bₑ' : Eq B₁' B₂'} {Cₑ : Eq C₁ C₂} {Cₑ' : Eq C₁' C₂'} {Dₑ : Eq D₁ D₂} {Dₑ' : Eq D₁' D₂'}
+  {F₁ : Eq A₁ C₁} {F₁' : Eq A₁' C₁'} {F₂ : Eq A₂ C₂} {F₂' : Eq A₂' C₂'}
+  {G₁ : Eq B₁ D₁} {G₁' : Eq B₁' D₁'} {G₂ : Eq B₂ D₂} {G₂' : Eq B₂' D₂'}
+  {Aₑ* : [ n ] A₁* ∼⟪ eqn-cong Aₑ Aₑ' ⟫ A₂*} {Bₑ* : [ n ] B₁* ∼⟪ eqn-cong Bₑ Bₑ' ⟫ B₂*} {Cₑ* : [ n ] C₁* ∼⟪ eqn-cong Cₑ Cₑ' ⟫ C₂*} {Dₑ* : [ n ] D₁* ∼⟪ eqn-cong Dₑ Dₑ' ⟫ D₂*}
+  {F₁* : [ n ] A₁* ∼⟪ eqn-cong F₁ F₁' ⟫ C₁*} {Fₑ : [ n ] Aₑ ∼⟪ eqn-cong F₁ F₂ ⟫ Cₑ} {Fₑ' : [ n ] Aₑ' ∼⟪ eqn-cong F₁' F₂' ⟫ Cₑ'} {F₂* : [ n ] A₂* ∼⟪ eqn-cong F₂ F₂' ⟫ C₂*}
+  {G₁* : [ n ] B₁* ∼⟪ eqn-cong G₁ G₁' ⟫ D₁*} {Gₑ : [ n ] Bₑ ∼⟪ eqn-cong G₁ G₂ ⟫ Dₑ} {Gₑ' : [ n ] Bₑ' ∼⟪ eqn-cong G₁' G₂' ⟫ Dₑ'} {G₂* : [ n ] B₂* ∼⟪ eqn-cong G₂ G₂' ⟫ D₂*} →
+  [ pred n ] Aₑ* ∼⟪ eqTTn-cong n F₁* (eqn-cong₂ n Fₑ Fₑ') F₂* ⟫ Cₑ* → [ pred n ] Bₑ* ∼⟪ eqTTn-cong n G₁* (eqn-cong₂ n Gₑ Gₑ') G₂* ⟫ Dₑ* →
+  [ pred n ] eqn-cong₂ n Aₑ* Bₑ* ∼⟪ eqTTn-cong n (eqn-cong₂ n F₁* G₁*) (eqn-cong₂ n (eqn-cong₂ n Fₑ Gₑ) (eqn-cong₂ n Fₑ' Gₑ')) (eqn-cong₂ n F₂* G₂*) ⟫ eqn-cong₂ n Cₑ* Dₑ*
+eqn-cong₃ hone = eqU-cong₃ 
+eqn-cong₃ hzero _ _ = tt
+eqn-cong₃ hminusone _ _ = tt
+eqn-cong₃ hminustwo _ _ = tt
+
 eqTTn-cong₂ : ∀ (n : hLevel)
   {A₁ A₁' A₂ A₂' B₁ B₁' B₂ B₂' : Type n}
   {e₁ : Eq A₁ B₁} {e₁' : Eq A₁' B₁'} {e₂ : Eq A₂ B₂} {e₂' : Eq A₂' B₂'} {A₁* : Eq A₁ A₁'} {B₁* : Eq B₁ B₁'} {A₂* : Eq A₂ A₂'} {B₂* : Eq B₂ B₂'} {Aₑ : Eq A₁ A₂} {Aₑ' : Eq A₁' A₂'} {Bₑ : Eq B₁ B₂} {Bₑ' : Eq B₁' B₂'}
