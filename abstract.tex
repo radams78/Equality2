@@ -18,19 +18,22 @@
 
 We present a type theory $\LEtwo$ with an extensional equality relation; that is, the universe of types is closed by reflection into it of the logical relation defined by induction on the structure of types.
 
-The type system has four universes:
+The type system has three universes:
 \begin{itemize}
 \item
-The trivial universe $\mathbf{1}$, with one type $\top$ that has one object $*$.
-\item
-The universe $\Prop$ of \emph{propositions}.  An object of $\Prop$ is called a \emph{proposition}, and the objects of a proposition are called \emph{proofs}.
+The universe $\Prop$ of \emph{propositions}.  An object of $\Prop$ is
+called a \emph{proposition}, and the objects of a proposition are
+called \emph{proofs}.  There is a proposition $\mathbf{1}$, which has
+a unique proof $*$.
 \item
 The universe $\Set$ of \emph{sets}.
 \item
 The universe $\Groupoid$ of \emph{groupoids}.
 \end{itemize}
 
-For each universe $U$, we have an associated relation of equality between the universes $\simeq$, and between objects of the universes $\sim$, with associated rules of deduction:
+For each universe $U$, we have an associated relation of equality
+between $U$-types $\simeq$, and between objects of $U$-equal
+types $\sim$.  The associated rules of deduction are:
 
 \[ \infer{A \simeq B : U}{A : U \quad B : U}
 \qquad
@@ -39,7 +42,7 @@ For each universe $U$, we have an associated relation of equality between the un
 where $U^-$ is the universe one dimension below $U$.  Thus:
 \begin{itemize}
 \item
-Given two propositions $\phi$ and $\psi$, we have the proposition $\phi \simeq \psi$ which denotes the proposition `$\phi$ if and only if $\psi$'.  If $\delta : \phi$, $\epsilon : \psi$ and $\chi : \phi \simeq \psi$, then $\delta \sim_\chi \epsilon = * : \mathbf{1}$.  (\emph{Cf} In homotopy type theory, any two objects of a proposition are equal.)
+Given two propositions $\phi$ and $\psi$, we have the proposition $\phi \simeq \psi$ which denotes the proposition `$\phi$ if and only if $\psi$'.  If $\delta : \phi$, $\epsilon : \psi$ and $\chi : \phi \simeq \psi$, then $\delta \sim_\chi \epsilon = \mathbf{1}$.  (\emph{Cf} In homotopy type theory, any two objects of a proposition are equal.)
 \item
 Given two sets $A$ and $B$, we have the set $A \simeq B$, which denotes the set of all bijections between $A$ and $B$.  Given $a : A$, $f : A \simeq B$ and $b : B$, we have the proposition $a \sim_f b : \Prop$, which denotes that $a$ is mapped to $b$ by the bijection $f$.
 \item
