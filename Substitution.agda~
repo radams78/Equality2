@@ -1,0 +1,54 @@
+module Substitution where
+open import Level
+open import Relation.Binary.PropositionalEquality
+open import Data.Unit
+open import Data.Product
+open import Context
+open import Syntax
+
+--A substitution or context morphism from Γ to Δ
+data Sub (Γ : Cx) : Cx → Set₁
+⟦_⟧s : ∀ {Γ Δ} → Sub Γ Δ → ⟦ Γ ⟧C → ⟦ Δ ⟧C
+⟦_⟧s-cong : ∀ {Γ Δ} (σ : Sub Γ Δ) {γ γ' : ⟦ Γ ⟧C} → EQC Γ γ γ' → EQC Δ (⟦ σ ⟧s γ) (⟦ σ ⟧s γ')
+⟦_⟧s-square : ∀ {Γ Δ} (σ : Sub Γ Δ) → Square Γ → Square Δ
+⟦_⟧s-cong₂ : ∀ {Γ Δ} (σ : Sub Γ Δ) {sq : Square Γ} → EQC₂ {Γ} sq → EQC₂ {Δ} (⟦ σ ⟧s-square sq)
+TypeoverF : ∀ {n Γ Δ} → Sub Γ Δ → Typeover n Δ → Typeover n Γ
+
+data Sub Γ where
+  • : Sub Γ ε
+  _,,,_ : ∀ {n Δ} {T : Typeover n Δ} (σ : Sub Γ Δ) → Γ ⊢ TypeoverF σ T → Sub Γ (Δ ,, T)
+--TODO Substitutions into sets and propositions
+
+⟦ σ ⟧s-square = square-functor ⟦ σ ⟧s ⟦ σ ⟧s-cong
+
+TypeoverF σ T = record { 
+  obj = λ γ → Typeover.obj T (⟦ σ ⟧s γ) ; 
+  obj-cong = λ γ* → Typeover.obj-cong T (⟦ σ ⟧s-cong γ*) ;
+  obj-cong₂ = λ _ γ₂ → Typeover.obj-cong₂ T _ (⟦ σ ⟧s-cong₂ γ₂) ;
+  obj-cong₃ = λ _ γsq δsq sq₁ sq₂ sqₑ sqₑ' → Typeover.obj-cong₃ T _ (⟦ σ ⟧s-cong₂ γsq) (⟦ σ ⟧s-cong₂ δsq) (⟦ σ ⟧s-cong₂ sq₁) (⟦ σ ⟧s-cong₂ sq₂) (⟦ σ ⟧s-cong₂ sqₑ) (⟦ σ ⟧s-cong₂ sqₑ')}
+
+⟦ • ⟧s γ = lift ⊤.tt
+⟦ σ ,,, t ⟧s γ = ⟦ σ ⟧s γ , ⟦ t ⟧⊢ γ
+
+⟦ • ⟧s-cong _ = ⊤.tt
+⟦ σ ,,, t ⟧s-cong γ* = (⟦ σ ⟧s-cong γ*) , ⟦ t ⟧⊢-cong γ*
+
+⟦ • ⟧s-cong₂ _ = ⊤.tt
+⟦ σ ,,, t ⟧s-cong₂ γ₂ = (⟦ σ ⟧s-cong₂ γ₂) , ⟦ t ⟧⊢-cong₂ γ₂
+
+ap : ∀ {Γ Δ n} {T : Typeover n Δ} (σ : Sub Γ Δ) → Δ ∋ T → Γ ⊢ TypeoverF σ T
+ap (_ ,,, t) top = t
+ap (σ ,,, _) (pop x) = ap σ x
+
+ap-sound : ∀ {n Γ Δ} {T : Typeover n Δ} {σ : Sub Γ Δ} {x : Δ ∋ T} {γ} → ⟦ ap σ x ⟧⊢ γ ≡ ⟦ x ⟧∋ (⟦ σ ⟧s γ)
+ap-sound {σ = _ ,,, _} {x = top} = refl
+ap-sound {σ = _ ,,, _} {pop x} = ap-sound {x = x}
+
+sub : ∀ {n Γ Δ} {T : Typeover n Δ} (σ : Sub Γ Δ) → Δ ⊢ T → Γ ⊢ TypeoverF σ T
+sub σ (VAR x) = ap σ x
+sub σ PRP = PRP
+
+sub-sound : ∀ {n Γ Δ} {T : Typeover n Δ} {σ : Sub Γ Δ} {t : Δ ⊢ T} {γ} → ⟦ sub σ t ⟧⊢ γ ≡ ⟦ t ⟧⊢ (⟦ σ ⟧s γ)
+sub-sound {t = VAR x} = ap-sound {x = x}
+sub-sound {t = PRP} = refl
+
