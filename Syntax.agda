@@ -40,13 +40,14 @@ data _⊢_∋_ Γ where
       Γ ⊢ eqS ⟦t⟧ (refT T) ⟦t⟧ ∋ refS ⟦t⟧
 
   EQCONG : ∀ {n} {S S' T T' : Typeover n Γ}
-           {E : EqT S S'} {E' : EqT T T'}
+           {S* : EqT S S'} {T* : EqT T T'}
            {F : EqT S T} {F' : EqT S' T'}
            {⟦s⟧ : Section S} {⟦s'⟧ : Section S'} {⟦t⟧ : Section T} {⟦t'⟧ : Section T'}
-           {⟦s*⟧ : Section (eqS ⟦s⟧ E ⟦s'⟧)} {⟦t*⟧ : Section (eqS ⟦t⟧ E' ⟦t'⟧)} →
-           (s* : Γ ⊢ eqS ⟦s⟧ E ⟦s'⟧ ∋ ⟦s*⟧) (f* : Γ ⊢ {!!} ∋ {!!}) (t* : Γ ⊢ eqS ⟦t⟧ E' ⟦t'⟧ ∋ ⟦t*⟧) →
+           {⟦s*⟧ : Section (eqS ⟦s⟧ S* ⟦s'⟧)} {⟦t*⟧ : Section (eqS ⟦t⟧ T* ⟦t'⟧)} 
+           {⟦f*⟧ : Section (eqS F (EqTypeover-cong {n} {Γ} {S} {S'} {T} {T'} S* T*) F')} →
+           (s* : Γ ⊢ eqS ⟦s⟧ S* ⟦s'⟧ ∋ ⟦s*⟧) (f* : Γ ⊢ eqS F (EqTypeover-cong {n} {Γ} {S} {S'} {T} {T'} S* T*) F' ∋ ⟦f*⟧) (t* : Γ ⊢ eqS ⟦t⟧ T* ⟦t'⟧ ∋ ⟦t*⟧) →
          --------------------------------------
-           Γ ⊢ EqTypeover (eqS ⟦s⟧ F ⟦t⟧) (eqS ⟦s'⟧ F' ⟦t'⟧) ∋ {!!}
+           Γ ⊢ EqTypeover (eqS ⟦s⟧ F ⟦t⟧) (eqS ⟦s'⟧ F' ⟦t'⟧) ∋ eqS-cong {n} {Γ} {S} {S'} {T} {T'} ⟦s*⟧ ⟦f*⟧ ⟦t*⟧
 
 --TODO Make n explicit in refn, refn-cong
 
@@ -79,4 +80,4 @@ sub : ∀ {n Γ Δ} {T : Typeover n Δ} {⟦σ⟧} (σ : Sub Γ Δ ⟦σ⟧) {�
 sub σ (VAR x) = ap σ x
 sub σ PRP = PRP
 sub σ (REF t) = REF (sub σ t)
-sub σ (EQCONG s* f* t*) = {!!}
+sub σ (EQCONG s* f* t*) = {!EQCONG ? ? ?!}

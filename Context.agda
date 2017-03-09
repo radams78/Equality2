@@ -179,10 +179,6 @@ const {n} a = record {
   edge = λ _ → refn a ;
   face = λ _ → refn-cong {n} (refn a) }
 
---TODO Replace with Section ∘ EqTypeover
---TODO Remove
-postulate dummy : ∀ n {A B : Type (pred n)} {a : TT A} {e : Eq A B} {b : TT B} → [ pred n ] a ∼⟪ e ⟫ b
-
 EqTypeover : ∀ {n Γ} → Typeover n Γ → Typeover n Γ → Typeover n Γ
 EqTypeover {n} S T = record {
   obj = λ γ → eqn (Typeover.obj S γ) (Typeover.obj T γ) ;
@@ -221,7 +217,7 @@ postulate eqS-cong : ∀ {n Γ}
                    {S S' T T' : Typeover n Γ}
                    {S* : EqT S S'} {T* : EqT T T'} {e : Section (EqTypeover S T)} {e' : Section (EqTypeover S' T')}
                    {s : Section S} {s' : Section S'} {t : Section T} {t' : Section T'} →
-                   Section (eqS s S* s') → Section (eqS e (EqTypeover-cong S* T*) e') → Section (eqS t T* t') →
+                   Section (eqS s S* s') → Section (eqS e (EqTypeover-cong {n} {_} {S} {S'} {T} {T'} S* T*) e') → Section (eqS t T* t') →
                    EqT (eqS s e t) (eqS s' e' t')
 
 refS : ∀ {n Γ} {T : Typeover n Γ} (s : Section T) → Section (eqS s (refT T) s)
