@@ -1,3 +1,4 @@
+\begin{code}
 {-# OPTIONS --rewriting #-}
 module Syntax where
 
@@ -16,11 +17,16 @@ open import Context
 
 --TODO Make "Vertex" and "Point" consistent
 
---TODO Move to Context.agda?
 --TODO Make arguments to ap₃ (Typeover.obj-cong₂ T) implicit
+\end{code}
 
+%<*Typing>
+\begin{code}
 data _⊢_∋_ (Γ : Cx) : ∀ {n} (T : Typeover n Γ) (t : Section T) → Set₁
+\end{code}
+%</Typing>
 
+\begin{code}
 data _⊢_∋_ Γ where
 
   VAR : ∀ {n} {T : Typeover n Γ} → 
@@ -80,4 +86,10 @@ sub : ∀ {n Γ Δ} {T : Typeover n Δ} {⟦σ⟧} (σ : Sub Γ Δ ⟦σ⟧) {�
 sub σ (VAR x) = ap σ x
 sub σ PRP = PRP
 sub σ (REF t) = REF (sub σ t)
-sub σ (EQCONG s* f* t*) = {!EQCONG ? ? ?!}
+sub .{pred n} {Γ} {Δ} {⟦σ⟧ = ⟦σ⟧} σ (EQCONG {n} {S} {S'} {T} {T'} {S*} {T*} {F} {F'} {⟦s⟧} {⟦s'⟧} {⟦t⟧} {⟦t'⟧} {⟦s*⟧} {⟦t*⟧} {⟦F*⟧} s* f* t*) =  
+  EQCONG {Γ} {n} {TypeoverF ⟦σ⟧ S} {TypeoverF ⟦σ⟧ S'} {TypeoverF ⟦σ⟧ T} {TypeoverF ⟦σ⟧ T'}
+    {SectionF ⟦σ⟧ S*} {SectionF ⟦σ⟧ T*} {SectionF ⟦σ⟧ F} {SectionF ⟦σ⟧ F'} 
+    {SectionF ⟦σ⟧ ⟦s⟧} {SectionF ⟦σ⟧ ⟦s'⟧} {SectionF ⟦σ⟧ ⟦t⟧} {SectionF ⟦σ⟧ ⟦t'⟧}
+    {SectionF ⟦σ⟧ ⟦s*⟧} {SectionF ⟦σ⟧ ⟦t*⟧} {SectionF ⟦σ⟧ ⟦F*⟧}
+    (sub σ s*) (sub σ f*) (sub σ t*)
+\end{code}
