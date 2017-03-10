@@ -1,3 +1,4 @@
+\begin{code}
 {-# OPTIONS --rewriting #-}
 module Context where
 open import Level
@@ -7,13 +8,35 @@ open import Data.Product
 open import FibSetoid
 open import Univ.HLevel
 
+\end{code}
+
+%<*Cx>
+\begin{code}
 data Cx : Set₁
+\end{code}
+%</Cx>
+
+%<*IntC>
+\begin{code}
 ⟦_⟧C : Cx → Set₁
+\end{code}
+%</IntC>
+
+\begin{code}
 data Functor (Γ : Cx) (n : hLevel) (F : ⟦ Γ ⟧C → Type n) : Set₁
 record Typeover (n : hLevel) (Γ : Cx) : Set₁
 ⟦_⟧T : ∀ {n Γ} → Typeover n Γ → ⟦ Γ ⟧C → Set
+\end{code}
+
+%<*EqC>
+\begin{code}
 EQC : ∀ Γ → ⟦ Γ ⟧C → ⟦ Γ ⟧C → Set
-EQC₂ : ∀ {Γ} {a₁ a₂ b₁ b₂ : ⟦ Γ ⟧C} → EQC Γ a₁ a₂ → EQC Γ b₁ b₂ → EQC Γ a₁ b₁ → EQC Γ a₂ b₂ → Set
+EQC₂ : ∀ {Γ} {a₁ a₂ b₁ b₂ : ⟦ Γ ⟧C} → 
+  EQC Γ a₁ a₂ → EQC Γ b₁ b₂ → EQC Γ a₁ b₁ → EQC Γ a₂ b₂ → Set
+\end{code}
+%</EqC>
+
+\begin{code}
 CONTEXT : Cx → OneType (suc zero) zero zero
 RefC : ∀ {Γ} (γ : ⟦ Γ ⟧C) → EQC Γ γ γ
 RefC-cong : ∀ {Γ} {γ γ' : ⟦ Γ ⟧C} (γ* : EQC Γ γ γ') → EQC₂ (RefC γ) (RefC γ') γ* γ*
@@ -34,6 +57,7 @@ CONTEXT Γ = record {
 
 data Functor Γ n F where
   make-Functor : (∀ {γ γ'} (γ* : EQC Γ γ γ') → Eq (F γ) (F γ')) → Functor Γ n F
+--TODO Make safe by demanding functors map reflexivity to reflexivity
 
 ap₂ : ∀ {Γ n F} → Functor Γ n F → ∀ {γ γ'} → EQC Γ γ γ' → Eq (F γ) (F γ')
 ap₂ (make-Functor F-cong) = F-cong
@@ -213,12 +237,16 @@ eqS {n} {Γ} {S} {T} s e t = record {
   obj-cong₃ = trivial n }
 
 --TODO Fill in
-postulate eqS-cong : ∀ {n Γ}
-                   {S S' T T' : Typeover n Γ}
-                   {S* : EqT S S'} {T* : EqT T T'} {e : Section (EqTypeover S T)} {e' : Section (EqTypeover S' T')}
-                   {s : Section S} {s' : Section S'} {t : Section T} {t' : Section T'} →
-                   Section (eqS s S* s') → Section (eqS e (EqTypeover-cong {n} {_} {S} {S'} {T} {T'} S* T*) e') → Section (eqS t T* t') →
-                   EqT (eqS s e t) (eqS s' e' t')
+eqS-cong : ∀ {n Γ}
+  {S S' T T' : Typeover n Γ}
+  {S* : EqT S S'} {T* : EqT T T'} {e : Section (EqTypeover S T)} {e' : Section (EqTypeover S' T')}
+  {s : Section S} {s' : Section S'} {t : Section T} {t' : Section T'} →
+  Section (eqS s S* s') → Section (eqS e (EqTypeover-cong {n} {_} {S} {S'} {T} {T'} S* T*) e') → Section (eqS t T* t') →
+  EqT (eqS s e t) (eqS s' e' t')
+eqS-cong {n} s* e* t* = record { 
+  vertex = λ γ → eqTTn-cong n (Section.vertex s* γ) (Section.vertex e* γ) (Section.vertex t* γ) ; 
+  edge = λ γ* → eqTTn-cong₂ n (Section.edge s* γ*) (Section.edge e* γ*) (Section.edge t* γ*) ; 
+  face = λ sq-fill → trivial n }
 
 refS : ∀ {n Γ} {T : Typeover n Γ} (s : Section T) → Section (eqS s (refT T) s)
 refS {n} {Γ} {T} s = record {
@@ -252,3 +280,4 @@ Typeover-eq {n} {⟦ρ⟧ = ⟦ρ⟧} {⟦σ⟧} T ⟦τ⟧ F G = record {
   obj-cong = make-Functor (λ {γ} {γ'} γ* → eqTTn-cong n (Section.edge F γ*) (ap₃ (Typeover.obj-cong₂ T) (OneTypeMapEq.vertex ⟦τ⟧ _) (OneTypeMapEq.vertex ⟦τ⟧ _) (app₂ ⟦ρ⟧ γ*) (app₂ ⟦σ⟧ γ*) (OneTypeMapEq.edge ⟦τ⟧ γ*)) (Section.edge G γ*)) ;
   obj-cong₂ = make-Functor₂ (λ γ₁* γ₂* γₑ γₑ' sq-fill → eqTTn-cong₂ n (Section.face F sq-fill) (Typeover.obj-cong₃ T) (Section.face G sq-fill)) ;
   obj-cong₃ = trivial n }
+\end{code}
