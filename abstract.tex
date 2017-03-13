@@ -15,7 +15,7 @@
 \newcommand{\Prop}{\ensuremath{\mathbf{Prop}}}
 \newcommand{\Set}{\ensuremath{\mathbf{Set}}}
 \newcommand{\Groupoid}{\ensuremath{\mathbf{Groupoid}}}
-\newcommand{\LEtwo}{\ensuremath{\lambda \! \simeq_2}}
+\newcommand{\LEtwo}{\ensuremath{\lambda \! \! \simeq_2}}
 \newcommand{\eqdef}{\mathrel{\smash{\stackrel{\text{def}}{=}}}}
 \newcommand{\brackets}[1]{\ensuremath{[ \! [ {#1} ] \! ]}}
 \newcommand{\textGamma}{\ensuremath{\Gamma}}
@@ -81,8 +81,12 @@ $A \sim_{1_\Set} B \eqdef A \simeq B$.  As well as the normal operation of subst
 The system $\LEtwo$ enjoys the following properties.  Univalence holds definitionally; that is, an equality between types $A \simeq B$ is exactly (definitionally) the type of equivalences between $A$ and $B$.  Also, transport respects reflexivity and composition definitionally.
 
 This type theory has been formalised in Agda, using the method of the system $\mathtt{Kipling}$ from McBride \cite{McBridea}.  The method ensures that, if $s$ and $t$ are definitionally equal expressions in $\lambda \simeq_2$, then $\brackets{s}$ and $\brackets{t}$ are definitionally equal objects in Agda.  We interpret each context with a groupoid in Agda; that is, we define
-a type \ExecuteMetaData[Context.tex]{Cx} of contexts, and
-functions \\
+a type
+
+\ExecuteMetaData[Context.tex]{Cx}
+
+of contexts, and functions
+
 \ExecuteMetaData[Context.tex]{IntC}
 \ExecuteMetaData[Context.tex]{EqC}
 
