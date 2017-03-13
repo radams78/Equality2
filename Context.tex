@@ -566,22 +566,36 @@
 \\
 \>\AgdaComment{--TODO Fill in}\<%
 \\
-\>\AgdaKeyword{postulate} \AgdaPostulate{eqS-cong} \AgdaSymbol{:} \AgdaSymbol{∀} \AgdaSymbol{\{}\AgdaBound{n} \AgdaBound{Γ}\AgdaSymbol{\}}\<%
+\>\AgdaFunction{eqS-cong} \AgdaSymbol{:} \AgdaSymbol{∀} \AgdaSymbol{\{}\AgdaBound{n} \AgdaBound{Γ}\AgdaSymbol{\}}\<%
 \\
-\>[2]\AgdaIndent{19}{}\<[19]%
-\>[19]\AgdaSymbol{\{}\AgdaBound{S} \AgdaBound{S'} \AgdaBound{T} \AgdaBound{T'} \AgdaSymbol{:} \AgdaRecord{Typeover} \AgdaBound{n} \AgdaBound{Γ}\AgdaSymbol{\}}\<%
+\>[0]\AgdaIndent{2}{}\<[2]%
+\>[2]\AgdaSymbol{\{}\AgdaBound{S} \AgdaBound{S'} \AgdaBound{T} \AgdaBound{T'} \AgdaSymbol{:} \AgdaRecord{Typeover} \AgdaBound{n} \AgdaBound{Γ}\AgdaSymbol{\}}\<%
 \\
-\>[2]\AgdaIndent{19}{}\<[19]%
-\>[19]\AgdaSymbol{\{}\AgdaBound{S*} \AgdaSymbol{:} \AgdaFunction{EqT} \AgdaBound{S} \AgdaBound{S'}\AgdaSymbol{\}} \AgdaSymbol{\{}\AgdaBound{T*} \AgdaSymbol{:} \AgdaFunction{EqT} \AgdaBound{T} \AgdaBound{T'}\AgdaSymbol{\}} \AgdaSymbol{\{}\AgdaBound{e} \AgdaSymbol{:} \AgdaRecord{Section} \AgdaSymbol{(}\AgdaFunction{EqTypeover} \AgdaBound{S} \AgdaBound{T}\AgdaSymbol{)\}} \AgdaSymbol{\{}\AgdaBound{e'} \AgdaSymbol{:} \AgdaRecord{Section} \AgdaSymbol{(}\AgdaFunction{EqTypeover} \AgdaBound{S'} \AgdaBound{T'}\AgdaSymbol{)\}}\<%
+\>[0]\AgdaIndent{2}{}\<[2]%
+\>[2]\AgdaSymbol{\{}\AgdaBound{S*} \AgdaSymbol{:} \AgdaFunction{EqT} \AgdaBound{S} \AgdaBound{S'}\AgdaSymbol{\}} \AgdaSymbol{\{}\AgdaBound{T*} \AgdaSymbol{:} \AgdaFunction{EqT} \AgdaBound{T} \AgdaBound{T'}\AgdaSymbol{\}} \AgdaSymbol{\{}\AgdaBound{e} \AgdaSymbol{:} \AgdaRecord{Section} \AgdaSymbol{(}\AgdaFunction{EqTypeover} \AgdaBound{S} \AgdaBound{T}\AgdaSymbol{)\}} \AgdaSymbol{\{}\AgdaBound{e'} \AgdaSymbol{:} \AgdaRecord{Section} \AgdaSymbol{(}\AgdaFunction{EqTypeover} \AgdaBound{S'} \AgdaBound{T'}\AgdaSymbol{)\}}\<%
 \\
-\>[2]\AgdaIndent{19}{}\<[19]%
-\>[19]\AgdaSymbol{\{}\AgdaBound{s} \AgdaSymbol{:} \AgdaRecord{Section} \AgdaBound{S}\AgdaSymbol{\}} \AgdaSymbol{\{}\AgdaBound{s'} \AgdaSymbol{:} \AgdaRecord{Section} \AgdaBound{S'}\AgdaSymbol{\}} \AgdaSymbol{\{}\AgdaBound{t} \AgdaSymbol{:} \AgdaRecord{Section} \AgdaBound{T}\AgdaSymbol{\}} \AgdaSymbol{\{}\AgdaBound{t'} \AgdaSymbol{:} \AgdaRecord{Section} \AgdaBound{T'}\AgdaSymbol{\}} \AgdaSymbol{→}\<%
+\>[0]\AgdaIndent{2}{}\<[2]%
+\>[2]\AgdaSymbol{\{}\AgdaBound{s} \AgdaSymbol{:} \AgdaRecord{Section} \AgdaBound{S}\AgdaSymbol{\}} \AgdaSymbol{\{}\AgdaBound{s'} \AgdaSymbol{:} \AgdaRecord{Section} \AgdaBound{S'}\AgdaSymbol{\}} \AgdaSymbol{\{}\AgdaBound{t} \AgdaSymbol{:} \AgdaRecord{Section} \AgdaBound{T}\AgdaSymbol{\}} \AgdaSymbol{\{}\AgdaBound{t'} \AgdaSymbol{:} \AgdaRecord{Section} \AgdaBound{T'}\AgdaSymbol{\}} \AgdaSymbol{→}\<%
 \\
-\>[2]\AgdaIndent{19}{}\<[19]%
-\>[19]\AgdaRecord{Section} \AgdaSymbol{(}\AgdaFunction{eqS} \AgdaBound{s} \AgdaBound{S*} \AgdaBound{s'}\AgdaSymbol{)} \AgdaSymbol{→} \AgdaRecord{Section} \AgdaSymbol{(}\AgdaFunction{eqS} \AgdaBound{e} \AgdaSymbol{(}\AgdaFunction{EqTypeover-cong} \AgdaSymbol{\{}\AgdaBound{n}\AgdaSymbol{\}} \AgdaSymbol{\{\_\}} \AgdaSymbol{\{}\AgdaBound{S}\AgdaSymbol{\}} \AgdaSymbol{\{}\AgdaBound{S'}\AgdaSymbol{\}} \AgdaSymbol{\{}\AgdaBound{T}\AgdaSymbol{\}} \AgdaSymbol{\{}\AgdaBound{T'}\AgdaSymbol{\}} \AgdaBound{S*} \AgdaBound{T*}\AgdaSymbol{)} \AgdaBound{e'}\AgdaSymbol{)} \AgdaSymbol{→} \AgdaRecord{Section} \AgdaSymbol{(}\AgdaFunction{eqS} \AgdaBound{t} \AgdaBound{T*} \AgdaBound{t'}\AgdaSymbol{)} \AgdaSymbol{→}\<%
+\>[0]\AgdaIndent{2}{}\<[2]%
+\>[2]\AgdaRecord{Section} \AgdaSymbol{(}\AgdaFunction{eqS} \AgdaBound{s} \AgdaBound{S*} \AgdaBound{s'}\AgdaSymbol{)} \AgdaSymbol{→} \AgdaRecord{Section} \AgdaSymbol{(}\AgdaFunction{eqS} \AgdaBound{e} \AgdaSymbol{(}\AgdaFunction{EqTypeover-cong} \AgdaSymbol{\{}\AgdaBound{n}\AgdaSymbol{\}} \AgdaSymbol{\{\_\}} \AgdaSymbol{\{}\AgdaBound{S}\AgdaSymbol{\}} \AgdaSymbol{\{}\AgdaBound{S'}\AgdaSymbol{\}} \AgdaSymbol{\{}\AgdaBound{T}\AgdaSymbol{\}} \AgdaSymbol{\{}\AgdaBound{T'}\AgdaSymbol{\}} \AgdaBound{S*} \AgdaBound{T*}\AgdaSymbol{)} \AgdaBound{e'}\AgdaSymbol{)} \AgdaSymbol{→} \AgdaRecord{Section} \AgdaSymbol{(}\AgdaFunction{eqS} \AgdaBound{t} \AgdaBound{T*} \AgdaBound{t'}\AgdaSymbol{)} \AgdaSymbol{→}\<%
 \\
-\>[2]\AgdaIndent{19}{}\<[19]%
-\>[19]\AgdaFunction{EqT} \AgdaSymbol{(}\AgdaFunction{eqS} \AgdaBound{s} \AgdaBound{e} \AgdaBound{t}\AgdaSymbol{)} \AgdaSymbol{(}\AgdaFunction{eqS} \AgdaBound{s'} \AgdaBound{e'} \AgdaBound{t'}\AgdaSymbol{)}\<%
+\>[0]\AgdaIndent{2}{}\<[2]%
+\>[2]\AgdaFunction{EqT} \AgdaSymbol{(}\AgdaFunction{eqS} \AgdaBound{s} \AgdaBound{e} \AgdaBound{t}\AgdaSymbol{)} \AgdaSymbol{(}\AgdaFunction{eqS} \AgdaBound{s'} \AgdaBound{e'} \AgdaBound{t'}\AgdaSymbol{)}\<%
+\\
+\>\AgdaFunction{eqS-cong} \AgdaSymbol{\{}\AgdaBound{n}\AgdaSymbol{\}} \AgdaBound{s*} \AgdaBound{e*} \AgdaBound{t*} \AgdaSymbol{=} \AgdaKeyword{record} \AgdaSymbol{\{} \<[33]%
+\>[33]\<%
+\\
+\>[0]\AgdaIndent{2}{}\<[2]%
+\>[2]\AgdaField{vertex} \AgdaSymbol{=} \AgdaSymbol{λ} \AgdaBound{γ} \AgdaSymbol{→} \AgdaFunction{eqTTn-cong} \AgdaBound{n} \AgdaSymbol{(}\AgdaField{Section.vertex} \AgdaBound{s*} \AgdaBound{γ}\AgdaSymbol{)} \AgdaSymbol{(}\AgdaField{Section.vertex} \AgdaBound{e*} \AgdaBound{γ}\AgdaSymbol{)} \AgdaSymbol{(}\AgdaField{Section.vertex} \AgdaBound{t*} \AgdaBound{γ}\AgdaSymbol{)} \AgdaSymbol{;} \<[98]%
+\>[98]\<%
+\\
+\>[0]\AgdaIndent{2}{}\<[2]%
+\>[2]\AgdaField{edge} \AgdaSymbol{=} \AgdaSymbol{λ} \AgdaBound{γ*} \AgdaSymbol{→} \AgdaFunction{eqTTn-cong₂} \AgdaBound{n} \AgdaSymbol{(}\AgdaField{Section.edge} \AgdaBound{s*} \AgdaBound{γ*}\AgdaSymbol{)} \AgdaSymbol{(}\AgdaField{Section.edge} \AgdaBound{e*} \AgdaBound{γ*}\AgdaSymbol{)} \AgdaSymbol{(}\AgdaField{Section.edge} \AgdaBound{t*} \AgdaBound{γ*}\AgdaSymbol{)} \AgdaSymbol{;} \<[95]%
+\>[95]\<%
+\\
+\>[0]\AgdaIndent{2}{}\<[2]%
+\>[2]\AgdaField{face} \AgdaSymbol{=} \AgdaSymbol{λ} \AgdaBound{sq-fill} \AgdaSymbol{→} \AgdaFunction{trivial} \AgdaBound{n} \AgdaSymbol{\}}\<%
 \\
 %
 \\
