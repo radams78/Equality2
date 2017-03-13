@@ -40,6 +40,7 @@ The universe $\Set$ of \emph{sets}.
 \item
 The universe $\Groupoid$ of \emph{groupoids}.
 \end{itemize}
+The system has been designed in such a way that it should be straightforward to extend the system with three, four, \ldots dimensions.
 
 For each universe $U$, we have an associated relation of equality
 between $U$-types $\simeq$, and between objects of $U$-equal
@@ -59,51 +60,31 @@ Given two sets $A$ and $B$, we have the set $A \simeq B$, which denotes the set 
 Given two groupoids $G$ and $H$, we have the groupoid $G \simeq H$, which denotes the groupoid of all groupoid isomorphisms between $G$ and $H$.  Given $g : G$, $\phi : G \simeq H$ and $h : H$, we have the set $g \sim_\phi h : \Set$, which can be thought of as the set of all paths between $\phi(g)$ and $h$ in $H$.
 \end{itemize}
 
-We have reflexivity provided by the following typing rules:
-\[ \infer{1_A : A \simeq A}{A : U} \qquad \infer{r_a : a \sim_{1_A} a}{a : A} \]
-The relation $\sim_{1_A}$ thus behaves like an equality relation on each type $A$.
-
-The introduction and elimination rules for $\simeq$ ensure that $A \simeq B$ is the type of equivalences between $A$ and $B$:
-\[ \infer{e^+(a) : B}{e : A \simeq B \quad a : A} \qquad \infer{e^-(b) : A}{e : A \simeq B \quad b : B} \]
-\[ \infer{e^=(a,b) : (a \sim_{1_A} e^-(b)) \simeq (e^+(a) \sim_{1_B} b)}{a : A \quad b : B \quad e : A \simeq B} \]
-\[ \infer{\Gamma \vdash \mathsf{univ}([x : A] b, [y : B] a, [x : A, y : B]e) : A \simeq B}{\begin{array}{rl}
+%We have reflexivity provided by the following typing rules:
+%The relation $\sim_{1_A}$ thus behaves like an equality relation on each type $A$.
+The introduction and elimination rules for $\simeq$ ensure that $A \simeq B$ is the type of equivalences between $A$ and $B$.
+\[ \infer{1_A : A \simeq A}{A : U} \qquad \infer{r_a : a \sim_{1_A} a}{a : A} \qquad \infer{e^+(a) : B}{e : A \simeq B \quad a : A} \qquad \infer{e^-(b) : A}{e : A \simeq B \quad b : B} \]
+\[ \infer{e^=(a,b) : (a \sim_{1_A} e^-(b)) \simeq (e^+(a) \sim_{1_B} b)}{a : A \quad b : B \quad e : A \simeq B} \qquad
+\infer{\Gamma \vdash \mathsf{univ}([x : A] b, [y : B] a, [x : A, y : B]e) : A \simeq B}{\begin{array}{rl}
 \Gamma, x : A & \vdash b : B \\
 \Gamma, y : B & \vdash a : A \\
 \Gamma, x : A, y : B & \vdash e : (x \sim_{1_A} a) \simeq (b \sim_{1_B} y)
 \end{array}} \]
+%It is then possible to define the composition of paths:
+%\[ \infer{e \bullet f : A \simeq C}{e : A \simeq B \quad f : B \simeq C} \qquad \infer{p \bullet q : a \sim_{e \bullet f} c}{p : a \sim_e b \quad q : b \sim_f c} \]
 
-Each universe is itself an object of the next universe:
-\[ \mathbf{1} : \Prop : \Set : \Groupoid \]
-and we have the following definitional equalities:
-\[ \phi \sim_{1_\Prop} \psi \eqdef \phi \simeq \psi, \quad
-A \sim_{1_\Set} B \eqdef A \simeq B \]
+Each universe is itself an object of the next universe; thus $\mathbf{1} : \Prop : \Set : \Groupoid$.  We also have the following definitional equalities:
+$\phi \sim_{1_\Prop} \psi \eqdef \phi \simeq \psi$, 
+$A \sim_{1_\Set} B \eqdef A \simeq B$.  As well as the normal operation of substitution, we have an operation of \emph{path substitution}:
+\[ \infer{\Gamma \vdash b [x // e] : b [x/a] =_{B[x//e]} b[x/a']}{\Gamma, x : A \vdash b : B \quad \Gamma \vdash e : a \sim_{1_A} a'} \]
 
-The following computation rules also hold in $\LEtwo$.
+The system $\LEtwo$ enjoys the following properties.  Univalence holds definitionally; that is, an equality between types $A \simeq B$ is exactly (definitionally) the type of equivalences between $A$ and $B$.  Also, transport respects reflexivity and composition definitionally.
 
-\textbf{TODO}
-
-We therefore note the following features of $\LEtwo$:
-\begin{itemize}
-\item
-Univalence holds definitionally --- an equality between types $A \simeq B$ is exactly (definitionally) the type of equivalences between $A$ and $B$.
-\item
-Transport respects reflexivity and composition definitionally.
-\end{itemize}
-
-This type theory has been formalised in Agda, using the method of the system $\mathtt{Kipling}$ from McBride \cite{McBridea}.  The method ensures that, if $s$ and $t$ are definitionally equal expressions in $\lambda \simeq_2$, then $\brackets{s}$ and $\brackets{t}$ are definitionally equal objects in Agda.
-
-We have
-\begin{itemize}
-\item
-a type \ExecuteMetaData[Context.tex]{Cx}
-\item
-functions
+This type theory has been formalised in Agda, using the method of the system $\mathtt{Kipling}$ from McBride \cite{McBridea}.  The method ensures that, if $s$ and $t$ are definitionally equal expressions in $\lambda \simeq_2$, then $\brackets{s}$ and $\brackets{t}$ are definitionally equal objects in Agda.  We interpret each context with a groupoid in Agda; that is, we define
+a type \ExecuteMetaData[Context.tex]{Cx} of contexts, and
+functions \\
 \ExecuteMetaData[Context.tex]{IntC}
 \ExecuteMetaData[Context.tex]{EqC}
-\item
-an inductive data type
-\ExecuteMetaData[Syntax.tex]{Typing}
-\end{itemize}
 
 The formalisation is available online at \url{https://github.com/radams78/Equality2}.
 
@@ -113,11 +94,8 @@ An earlier version of this system was presented in \cite{ap:tsnhu}.  In this tal
 
 Our system is closely related to the system PHOML (Predicative Higher-Order Minimal Logic) presented in \cite{abc:ncrpehoml}.  The system $\LEtwo$ can be seen as an extension of PHOML with groupoids, and with a univalent equality for both sets and groupoids.
 
-Cubical type theory \cite{cchm:cubical, huber:canonicity} has a very similar motivation to this work, and also offers a type theory with univalence and a computational interpretation.  One difference with our system is that the following equations hold judgementally:
+Cubical type theory \cite{cchm:cubical, huber:canonicity} has a very similar motivation to this work, and also offers a type theory with univalence and a computational interpretation.  One difference with our system is that transport across the identity path is identity, and transport across $p \bullet q$ is the composition of transport across $p$ with transport across $q$, up to definitional equality.  In cubical type theory, these equations only hold up to propositional equality.
 
-\textbf{TODO}
-
-The corresponding equations in cubical type theory would be $\mathsf{transp}^i \, A \, a = a$ where $i$ does not occur in $A$, and $\mathsf{transp}^j \, B \, (\mathsf{transp}^i \, A \, a) = \mathsf{transp}^i (\mathsf{comp}^j \, U \, [(i = 0) \mapsto A[i:=0], (i=1) \mapsto B]) \, A \, a$.  In cubical type theory, these equations do hold up to definitional equality for all terms $a$.  They hold up to definitional equality when $a$ is a canonical object, and up to propositional equality in general.
 
 \bibliography{type}
 
