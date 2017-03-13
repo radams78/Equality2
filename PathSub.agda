@@ -30,7 +30,7 @@ data PathSub {Γ} : ∀ {Δ ⟦ρ⟧ ⟦σ⟧}
     {s : Γ ⊢ _ ∋ ⟦s⟧} {t : Γ ⊢ _ ∋ ⟦t⟧}
     {s-is-t : ∀ γ → [ n ] Section.vertex ⟦s⟧ γ ∼⟪ ap₂ (Typeover.obj-cong T) (OneTypeMapEq.vertex ⟦τ⟧ γ) ⟫ Section.vertex ⟦t⟧ γ }
     {s-is-t-cong : ∀ {γ γ'} (γ* : EQC Γ γ γ') → [ pred n ] s-is-t γ ∼⟪ eqTTn-cong n (Section.edge ⟦s⟧ γ*) (ap₃ (Typeover.obj-cong₂ T) _ _ _ _ (OneTypeMapEq.edge ⟦τ⟧ γ*)) (Section.edge ⟦t⟧ γ*) ⟫ s-is-t γ'} →
-      Γ ⊢ Typeover-eq {n} {Γ} {Δ} {⟦ρ⟧} {⟦σ⟧} T ⟦τ⟧ ⟦s⟧ ⟦t⟧ ∋ record { vertex = s-is-t; edge = s-is-t-cong; face = λ _ → trivial n } →
+    Γ ⊢ Typeover-eq {n} {Γ} {Δ} {⟦ρ⟧} {⟦σ⟧} T ⟦τ⟧ ⟦s⟧ ⟦t⟧ ∋ record { vertex = s-is-t; edge = s-is-t-cong; face = λ _ → trivial n } →
       PathSub {Δ = Δ ,, T} (ρ ,,, s) (σ ,,, t) (record { vertex = λ γ → (OneTypeMapEq.vertex ⟦τ⟧ γ) , s-is-t γ;
       edge = λ γ* → (OneTypeMapEq.edge ⟦τ⟧ γ*) , s-is-t-cong γ* })
 
