@@ -62,7 +62,7 @@ We have reflexivity provided by the following typing rules:
 The relation $\sim_{1_A}$ thus behaves like an equality relation on each type $A$.
 
 The introduction and elimination rules for $\simeq$ ensure that $A \simeq B$ is the type of equivalences between $A$ and $B$:
-\[ \infer{e^+(a) : B}{e : A \simeq B \quad a : A} \infer{e^-(b) : A}{e : A \simeq B \quad b : B} \]
+\[ \infer{e^+(a) : B}{e : A \simeq B \quad a : A} \qquad \infer{e^-(b) : A}{e : A \simeq B \quad b : B} \]
 \[ \infer{e^=(a,b) : (a \sim_{1_A} e^-(b)) \simeq (e^+(a) \sim_{1_B} b)}{a : A \quad b : B \quad e : A \simeq B} \]
 \[ \infer{\Gamma \vdash \mathsf{univ}([x : A] b, [y : B] a, [x : A, y : B]e) : A \simeq B}{\begin{array}{rl}
 \Gamma, x : A & \vdash b : B \\
