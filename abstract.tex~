@@ -1,9 +1,0 @@
-\documentclass{easychair}
-
-\title{A Type Theory with Native Homotopy Universes}
-\author{Robin Adams and Andrew Polonsky}
-
-\begin{dacument}
-\maketitle
-
-\end{document}
