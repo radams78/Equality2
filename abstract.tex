@@ -61,7 +61,7 @@ The introduction and elimination rules for $\simeq$ ensure that $A \simeq B$ is 
 \textbf{TODO}
 
 We have reflexivity provided by the following typing rules:
-\[ \infer{A : U}{1_A : A \simeq A} \qquad \infer{a : A}{r_a : a \sim_{1_A} a} \]
+\[ \infer{1_A : A \simeq A}{A : U} \qquad \infer{r_a : a \sim_{1_A} a}{a : A} \]
 The relation $\sim_{1_A}$ thus behaves like an equality relation on each type $A$.
 
 Each universe is itself an object of the next universe:
