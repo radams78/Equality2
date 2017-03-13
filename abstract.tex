@@ -57,7 +57,8 @@ Given two propositions $\phi$ and $\psi$, we have the proposition $\phi \simeq \
 \item
 Given two sets $A$ and $B$, we have the set $A \simeq B$, which denotes the set of all bijections between $A$ and $B$.  Given $a : A$, $f : A \simeq B$ and $b : B$, we have the proposition $a \sim_f b : \Prop$, which denotes that $a$ is mapped to $b$ by the bijection $f$.
 \item
-Given two groupoids $G$ and $H$, we have the groupoid $G \simeq H$, which denotes the groupoid of all groupoid isomorphisms between $G$ and $H$.  Given $g : G$, $\phi : G \simeq H$ and $h : H$, we have the set $g \sim_\phi h : \Set$, which can be thought of as the set of all paths between $\phi(g)$ and $h$ in $H$.
+Given two groupoids $G$ and $H$, we have the groupoid $G \simeq H$,
+which denotes the groupoid of all groupoid equivalences between $G$ and $H$.  Given $g : G$, $\phi : G \simeq H$ and $h : H$, we have the set $g \sim_\phi h : \Set$, which can be thought of as the set of all paths between $\phi(g)$ and $h$ in $H$.
 \end{itemize}
 
 %We have reflexivity provided by the following typing rules:
@@ -75,7 +76,9 @@ The introduction and elimination rules for $\simeq$ ensure that $A \simeq B$ is 
 
 Each universe is itself an object of the next universe; thus $\mathbf{1} : \Prop : \Set : \Groupoid$.  We also have the following definitional equalities:
 $\phi \sim_{1_\Prop} \psi \eqdef \phi \simeq \psi$, 
-$A \sim_{1_\Set} B \eqdef A \simeq B$.  As well as the normal operation of substitution, we have an operation of \emph{path substitution}:
+$A \sim_{1_\Set} B \eqdef A \simeq B$.
+
+As well as the normal operation of substitution, we have an operation of \emph{path substitution}:
 \[ \infer{\Gamma \vdash b [x // e] : b [x/a] =_{B[x//e]} b[x/a']}{\Gamma, x : A \vdash b : B \quad \Gamma \vdash e : a \sim_{1_A} a'} \]
 
 The system $\LEtwo$ enjoys the following properties.  Univalence holds definitionally; that is, an equality between types $A \simeq B$ is exactly (definitionally) the type of equivalences between $A$ and $B$.  Also, transport respects reflexivity and composition definitionally.
