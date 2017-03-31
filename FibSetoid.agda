@@ -62,10 +62,10 @@ record FibSetoid i j k : Set (suc (i ⊔ j ⊔ k)) where
   HasCong₂ : Set (i ⊔ j ⊔ k)
   HasCong₂ = ∀ {top bottom : Square} →
         OneType.Fill oneType top → OneType.Fill oneType bottom →
-        EqFib (eqG-cong (OneType.Square.north oneType top) (OneType.Square.north oneType bottom))
-          (eqG-cong (eqG-cong (OneType.Square.west oneType top) (OneType.Square.west oneType bottom))
-            (eqG-cong (OneType.Square.east oneType top) (OneType.Square.east oneType bottom)))
-          (eqG-cong (OneType.Square.south oneType top) (OneType.Square.south oneType bottom))
+        EqFib (eqG-cong (OneType.Square.north {r = oneType} top) (OneType.Square.north {r = oneType} bottom))
+          (eqG-cong (eqG-cong (OneType.Square.west {r = oneType} top) (OneType.Square.west {r = oneType} bottom))
+            (eqG-cong (OneType.Square.east {r = oneType} top) (OneType.Square.east {r = oneType} bottom)))
+          (eqG-cong (OneType.Square.south {r = oneType} top) (OneType.Square.south {r = oneType} bottom))
 
 data RefGraphFunctor {i i' j j'} (S : RefGraph i j) (T : RefGraph i' j') : Set (i ⊔ i' ⊔ j ⊔ j') where
   mkRefGraphFunctor : ∀

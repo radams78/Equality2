@@ -65,20 +65,20 @@ eqTTn-cong : (n : hLevel)
   {a : TT A} {a' : TT A'} {b : TT B} {b' : TT B'} → 
   [ n ] a ∼⟪ A* ⟫ a' → [ n ] e ∼⟪ eqn-cong A* B* ⟫ e' → [ n ] b ∼⟪ B* ⟫ b' →
   Eq (eqTTn a e b) (eqTTn a' e' b')
-eqTTn-cong {hone} = path-cong
-eqTTn-cong {hzero} = eq-cong
-eqTTn-cong {hminusone} _ _ _ = tt
-eqTTn-cong {hminustwo} _ _ _ = tt
+eqTTn-cong hone = path-cong
+eqTTn-cong hzero = eq-cong
+eqTTn-cong hminusone _ _ _ = tt
+eqTTn-cong hminustwo _ _ _ = tt
 
 eqn-cong₂ : ∀ (n : hLevel)
   {A₁ A₁' A₂ A₂' B₁ B₁' B₂ B₂' : Type n}
   {A₁* : Eq A₁ A₁'} {A₂* : Eq A₂ A₂'} {B₁* : Eq B₁ B₁'} {B₂* : Eq B₂ B₂'} {Aₑ : Eq A₁ A₂} {Aₑ' : Eq A₁' A₂'} {Bₑ : Eq B₁ B₂} {Bₑ' : Eq B₁' B₂'} →
   [ n ] A₁* ∼⟪ eqn-cong Aₑ Aₑ' ⟫ A₂* → [ n ] B₁* ∼⟪ eqn-cong Bₑ Bₑ' ⟫ B₂* →
   [ n ] eqn-cong A₁* B₁* ∼⟪ eqn-cong (eqn-cong Aₑ Bₑ) (eqn-cong Aₑ' Bₑ') ⟫ eqn-cong A₂* B₂*
-eqn-cong₂ {hone} = eqU-cong₂
-eqn-cong₂ {hzero} = iso-cong₂'
-eqn-cong₂ {hminusone} _ _ = tt
-eqn-cong₂ {hminustwo} _ _ = tt
+eqn-cong₂ hone = eqU-cong₂
+eqn-cong₂ hzero = iso-cong₂'
+eqn-cong₂ hminusone _ _ = tt
+eqn-cong₂ hminustwo _ _ = tt
 
 eqn-cong₃ : ∀ (n : hLevel)
   {A₁ A₁' A₂ A₂' B₁ B₁' B₂ B₂' C₁ C₁' C₂ C₂' D₁ D₁' D₂ D₂' : Type n}
@@ -106,10 +106,10 @@ eqTTn-cong₂ : ∀ (n : hLevel)
   {aₑ : [ n ] a₁ ∼⟪ Aₑ ⟫ a₂} {aₑ' : [ n ] a₁' ∼⟪ Aₑ' ⟫ a₂'} {bₑ : [ n ] b₁ ∼⟪ Bₑ ⟫ b₂} {bₑ' : [ n ] b₁' ∼⟪ Bₑ' ⟫ b₂'} →
   [ pred n ] a₁* ∼⟪ eqTTn-cong n aₑ Aₑ* aₑ' ⟫ a₂* → [ pred n ] e₁* ∼⟪ eqTTn-cong n eₑ (eqn-cong₂ n Aₑ* Bₑ*) eₑ' ⟫ e₂* → [ pred n ] b₁* ∼⟪ eqTTn-cong n bₑ Bₑ* bₑ' ⟫ b₂* →
   [ pred n ] eqTTn-cong n a₁* e₁* b₁* ∼⟪ eqn-cong (eqTTn-cong n aₑ eₑ bₑ) (eqTTn-cong n aₑ' eₑ' bₑ') ⟫ eqTTn-cong n a₂* e₂* b₂*
-eqTTn-cong₂ {hone} = path-cong₂
-eqTTn-cong₂ {hzero} _ _ _ = tt
-eqTTn-cong₂ {hminusone} _ _ _ = tt
-eqTTn-cong₂ {hminustwo} _ _ _ = tt
+eqTTn-cong₂ hone = path-cong₂
+eqTTn-cong₂ hzero _ _ _ = tt
+eqTTn-cong₂ hminusone _ _ _ = tt
+eqTTn-cong₂ hminustwo _ _ _ = tt
 
 Refn : ∀ {n} (A : Type n) → Eq A A
 Refn {hone} A = Ref A

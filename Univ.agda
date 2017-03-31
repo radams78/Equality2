@@ -1,5 +1,4 @@
 module Univ where
-open import Data.Unit
 open import Univ.Univ public
 open import Univ.Unit public
 open import Univ.Prp public
