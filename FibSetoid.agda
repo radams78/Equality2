@@ -5,6 +5,7 @@ open import Level
 postulate _▷_ : ∀ {i} {A : Set i} → A → A → Set
 {-# BUILTIN REWRITE _▷_ #-}
 
+-- A reflexive graph is a multigraph where every vertex has a path to itself
 record RefGraph i j : Set (suc (i ⊔ j)) where
   field
     Vertex  : Set i
@@ -21,19 +22,28 @@ record RefGraph i j : Set (suc (i ⊔ j)) where
       south : Path sw se
       west  : Path nw sw
       east  : Path ne se
-  
-  record IsOneType k : Set (i ⊔ j ⊔ suc k) where
+
+-- A 2-graph is a reflexive graph together with, for every square, a set of
+-- fillings of that square.
+  record IsTwoGraph k : Set (i ⊔ j ⊔ suc k) where
     field
       Fill : Square → Set k
 
-record OneType i j k : Set (suc (i ⊔ j ⊔ k)) where
+record TwoGraph i j k : Set (suc (i ⊔ j ⊔ k)) where
   field
     graph : RefGraph i j
-    isOneType : RefGraph.IsOneType graph k
+    isTwoGraph : RefGraph.IsTwoGraph graph k
 
   open RefGraph graph public
-  open IsOneType isOneType public
+  open IsTwoGraph isTwoGraph public
 
+-- A universe consists of:
+-- * a set of (names of) types
+-- * for any type A, a set of elements of A
+-- * for any types A B, a type A = B
+-- * for any a : A, p : A = B and b : B, a set a ~< p > b of paths from a to b over p
+-- * for any A, an element ref A : A = A
+-- * for any p : A = A' and q : B = B', an element p =* q : (A = B) = (A' = B')
 record FibSetoid i j k : Set (suc (i ⊔ j ⊔ k)) where
   field
     Dom  : Set i
@@ -43,29 +53,29 @@ record FibSetoid i j k : Set (suc (i ⊔ j ⊔ k)) where
     eqG-cong : ∀ {A A' B B'} → Fib (eqG A A') → Fib (eqG B B') → Fib (eqG (eqG A B) (eqG A' B'))
     EqFib : ∀ {A B} → Fib A → Fib (eqG A B) → Fib B → Set k
 
-  oneType : OneType i j k
-  oneType = record {
+  twoGraph : TwoGraph i j k
+  twoGraph = record {
     graph = record {
       Vertex = Dom ;
       Path = λ A B → Fib (eqG A B);
       ref = ref} ;
-    isOneType = record {
+    isTwoGraph = record {
       Fill = λ square → EqFib (RefGraph.Square.north square) (eqG-cong (RefGraph.Square.west square) (RefGraph.Square.east square)) (RefGraph.Square.south square) } }
 
   --TODO Inline?
   Eq : Dom → Dom → Set j
-  Eq = OneType.Path oneType
+  Eq = TwoGraph.Path twoGraph
 
   Square : Set (i ⊔ j)
-  Square = OneType.Square oneType
+  Square = TwoGraph.Square twoGraph
 
   HasCong₂ : Set (i ⊔ j ⊔ k)
   HasCong₂ = ∀ {top bottom : Square} →
-        OneType.Fill oneType top → OneType.Fill oneType bottom →
-        EqFib (eqG-cong (OneType.Square.north {r = oneType} top) (OneType.Square.north {r = oneType} bottom))
-          (eqG-cong (eqG-cong (OneType.Square.west {r = oneType} top) (OneType.Square.west {r = oneType} bottom))
-            (eqG-cong (OneType.Square.east {r = oneType} top) (OneType.Square.east {r = oneType} bottom)))
-          (eqG-cong (OneType.Square.south {r = oneType} top) (OneType.Square.south {r = oneType} bottom))
+        TwoGraph.Fill twoGraph top → TwoGraph.Fill twoGraph bottom →
+        EqFib (eqG-cong (TwoGraph.Square.north {r = twoGraph} top) (TwoGraph.Square.north {r = twoGraph} bottom))
+          (eqG-cong (eqG-cong (TwoGraph.Square.west {r = twoGraph} top) (TwoGraph.Square.west {r = twoGraph} bottom))
+            (eqG-cong (TwoGraph.Square.east {r = twoGraph} top) (TwoGraph.Square.east {r = twoGraph} bottom)))
+          (eqG-cong (TwoGraph.Square.south {r = twoGraph} top) (TwoGraph.Square.south {r = twoGraph} bottom))
 
 data RefGraphFunctor {i i' j j'} (S : RefGraph i j) (T : RefGraph i' j') : Set (i ⊔ i' ⊔ j ⊔ j') where
   mkRefGraphFunctor : ∀
@@ -85,29 +95,29 @@ square (mkRefGraphFunctor point pathF) sq = record
                 ; east = pathF (RefGraph.Square.east sq)
                 }
 
-data OneTypeFunctor {i i' j j' k k'} (S : OneType i j k) (T : OneType i' j' k') : Set (i ⊔ i' ⊔ j ⊔ j' ⊔ k ⊔ k') where
-  mkOneTypeFunctor : ∀ (graphFunctor : RefGraphFunctor (OneType.graph S) (OneType.graph T)) →
-    (∀ {sq} → OneType.Fill S sq → OneType.Fill T (square graphFunctor sq)) →
-    OneTypeFunctor S T
+data TwoGraphFunctor {i i' j j' k k'} (S : TwoGraph i j k) (T : TwoGraph i' j' k') : Set (i ⊔ i' ⊔ j ⊔ j' ⊔ k ⊔ k') where
+  mkTwoGraphFunctor : ∀ (graphFunctor : RefGraphFunctor (TwoGraph.graph S) (TwoGraph.graph T)) →
+    (∀ {sq} → TwoGraph.Fill S sq → TwoGraph.Fill T (square graphFunctor sq)) →
+    TwoGraphFunctor S T
 
-app : ∀ {i i' j j' k k'} {S : OneType i j k} {T : OneType i' j' k'} →
-  OneTypeFunctor S T → OneType.Vertex S → OneType.Vertex T
-app (mkOneTypeFunctor (mkRefGraphFunctor point _) _) = point
+app : ∀ {i i' j j' k k'} {S : TwoGraph i j k} {T : TwoGraph i' j' k'} →
+  TwoGraphFunctor S T → TwoGraph.Vertex S → TwoGraph.Vertex T
+app (mkTwoGraphFunctor (mkRefGraphFunctor point _) _) = point
 
-app₂ : ∀ {i i' j j' k k'} {S : OneType i j k} {T : OneType i' j' k'}
-  (F : OneTypeFunctor S T) {x y} → OneType.Path S x y → OneType.Path T (app F x) (app F y)
-app₂ (mkOneTypeFunctor (mkRefGraphFunctor _ path) _) = path
+app₂ : ∀ {i i' j j' k k'} {S : TwoGraph i j k} {T : TwoGraph i' j' k'}
+  (F : TwoGraphFunctor S T) {x y} → TwoGraph.Path S x y → TwoGraph.Path T (app F x) (app F y)
+app₂ (mkTwoGraphFunctor (mkRefGraphFunctor _ path) _) = path
 
-postulate app₂-ref : ∀ {i i' j j' k k'} {S : OneType i j k} {T : OneType i' j' k'}
-                   (F : OneTypeFunctor S T) (x : OneType.Vertex S) →
-                   app₂ F (OneType.ref S x) ▷ OneType.ref T (app F x)
+postulate app₂-ref : ∀ {i i' j j' k k'} {S : TwoGraph i j k} {T : TwoGraph i' j' k'}
+                   (F : TwoGraphFunctor S T) (x : TwoGraph.Vertex S) →
+                   app₂ F (TwoGraph.ref S x) ▷ TwoGraph.ref T (app F x)
 {-# REWRITE app₂-ref #-}
 
-gf : ∀ {i i' j j' k k'} {S : OneType i j k} {T : OneType i' j' k'} →
-  OneTypeFunctor S T → RefGraphFunctor (OneType.graph S) (OneType.graph T)
+gf : ∀ {i i' j j' k k'} {S : TwoGraph i j k} {T : TwoGraph i' j' k'} →
+  TwoGraphFunctor S T → RefGraphFunctor (TwoGraph.graph S) (TwoGraph.graph T)
 gf F = mkRefGraphFunctor (app F) (app₂ F)
 
-app₃ : ∀ {i i' j j' k k'} {S : OneType i j k} {T : OneType i' j' k'}
-  (F : OneTypeFunctor S T) {sq} → OneType.Fill S sq → OneType.Fill T (square (gf F) sq)
-app₃ (mkOneTypeFunctor (mkRefGraphFunctor _ _) isOneTypeFunctor) = isOneTypeFunctor
+app₃ : ∀ {i i' j j' k k'} {S : TwoGraph i j k} {T : TwoGraph i' j' k'}
+  (F : TwoGraphFunctor S T) {sq} → TwoGraph.Fill S sq → TwoGraph.Fill T (square (gf F) sq)
+app₃ (mkTwoGraphFunctor (mkRefGraphFunctor _ _) isTwoGraphFunctor) = isTwoGraphFunctor
 

@@ -37,7 +37,7 @@ EQC₂ : ∀ {Γ} {a₁ a₂ b₁ b₂ : ⟦ Γ ⟧C} →
 %</EqC>
 
 \begin{code}
-CONTEXT : Cx → OneType (suc zero) zero zero
+CONTEXT : Cx → TwoGraph (suc zero) zero zero
 RefC : ∀ {Γ} (γ : ⟦ Γ ⟧C) → EQC Γ γ γ
 RefC-cong : ∀ {Γ} {γ γ' : ⟦ Γ ⟧C} (γ* : EQC Γ γ γ') → EQC₂ (RefC γ) (RefC γ') γ* γ*
 _∋_∼⟨_⟩_ : ∀ {n Γ} (T : Typeover n Γ) {γ γ'} → ⟦ T ⟧T γ → EQC Γ γ γ' → ⟦ T ⟧T γ' → Set
@@ -52,7 +52,7 @@ CONTEXT Γ = record {
     Vertex = ⟦ Γ ⟧C ;
     Path = EQC Γ ;
     ref = RefC };
-  isOneType = record {
+  isTwoGraph = record {
     Fill = λ γ* → EQC₂ (RefGraph.Square.north γ*) (RefGraph.Square.south γ*) (RefGraph.Square.west γ*) (RefGraph.Square.east γ*) }}
 
 data Functor Γ n F where
@@ -84,49 +84,49 @@ record Typeover n Γ where
     obj : ∀ (γ : ⟦ Γ ⟧C) → Type n
     obj-cong : Functor Γ n obj
     obj-cong₂ : Functor₂ Γ n obj obj-cong
-    obj-cong₃ : ∀ {γ δ : OneType.Square (CONTEXT Γ)}
-      {enw : EQC Γ (OneType.Square.nw (CONTEXT Γ) γ) (OneType.Square.nw (CONTEXT Γ) δ)}
-      {ene : EQC Γ (OneType.Square.ne (CONTEXT Γ) γ) (OneType.Square.ne (CONTEXT Γ) δ)}
-      {esw : EQC Γ (OneType.Square.sw (CONTEXT Γ) γ) (OneType.Square.sw (CONTEXT Γ) δ)}
-      {ese : EQC Γ (OneType.Square.se (CONTEXT Γ) γ) (OneType.Square.se (CONTEXT Γ) δ)}
-      {γsq : OneType.Fill (CONTEXT Γ) γ} {δsq : OneType.Fill (CONTEXT Γ) δ}
-      {sq₁ : OneType.Fill (CONTEXT Γ) (record
-                                         { nw = OneType.Square.nw (CONTEXT Γ) γ
-                                         ; ne = OneType.Square.ne (CONTEXT Γ) γ
-                                         ; sw = OneType.Square.nw (CONTEXT Γ) δ
-                                         ; se = OneType.Square.ne (CONTEXT Γ) δ
-                                         ; north = OneType.Square.north (CONTEXT Γ) γ
-                                         ; south = OneType.Square.north (CONTEXT Γ) δ
+    obj-cong₃ : ∀ {γ δ : TwoGraph.Square (CONTEXT Γ)}
+      {enw : EQC Γ (TwoGraph.Square.nw {r = CONTEXT Γ} γ) (TwoGraph.Square.nw {r = CONTEXT Γ} δ)}
+      {ene : EQC Γ (TwoGraph.Square.ne {r = CONTEXT Γ} γ) (TwoGraph.Square.ne {r = CONTEXT Γ} δ)}
+      {esw : EQC Γ (TwoGraph.Square.sw {r = CONTEXT Γ} γ) (TwoGraph.Square.sw {r = CONTEXT Γ} δ)}
+      {ese : EQC Γ (TwoGraph.Square.se {r = CONTEXT Γ} γ) (TwoGraph.Square.se {r = CONTEXT Γ} δ)}
+      {γsq : TwoGraph.Fill (CONTEXT Γ) γ} {δsq : TwoGraph.Fill (CONTEXT Γ) δ}
+      {sq₁ : TwoGraph.Fill (CONTEXT Γ) (record
+                                         { nw = TwoGraph.Square.nw {r = CONTEXT Γ} γ
+                                         ; ne = TwoGraph.Square.ne {r = CONTEXT Γ} γ
+                                         ; sw = TwoGraph.Square.nw {r = CONTEXT Γ} δ
+                                         ; se = TwoGraph.Square.ne {r = CONTEXT Γ} δ
+                                         ; north = TwoGraph.Square.north {r = CONTEXT Γ} γ
+                                         ; south = TwoGraph.Square.north {r = CONTEXT Γ} δ
                                          ; west = enw
                                          ; east = ene
                                          })}
-      {sq₂ : OneType.Fill (CONTEXT Γ) (record
+      {sq₂ : TwoGraph.Fill (CONTEXT Γ) (record
                                          { nw = _
                                          ; ne = _
                                          ; sw = _
                                          ; se = _
-                                         ; north = OneType.Square.south (CONTEXT Γ) γ
-                                         ; south = OneType.Square.south (CONTEXT Γ) δ
+                                         ; north = TwoGraph.Square.south {r = CONTEXT Γ} γ
+                                         ; south = TwoGraph.Square.south {r = CONTEXT Γ} δ
                                          ; west = esw
                                          ; east = ese
                                          })}
-      {sqₑ : OneType.Fill (CONTEXT Γ) (record
+      {sqₑ : TwoGraph.Fill (CONTEXT Γ) (record
                                          { nw = _
                                          ; ne = _
                                          ; sw = _
                                          ; se = _
-                                         ; north = OneType.Square.west (CONTEXT Γ) γ
-                                         ; south = OneType.Square.west (CONTEXT Γ) δ
+                                         ; north = TwoGraph.Square.west {r = CONTEXT Γ} γ
+                                         ; south = TwoGraph.Square.west {r = CONTEXT Γ} δ
                                          ; west = enw
                                          ; east = esw
                                          })}
-      {sqₑ' : OneType.Fill (CONTEXT Γ) (record
+      {sqₑ' : TwoGraph.Fill (CONTEXT Γ) (record
                                           { nw = _
                                           ; ne = _
                                           ; sw = _
                                           ; se = _
-                                          ; north = OneType.Square.east (CONTEXT Γ) γ
-                                          ; south = OneType.Square.east (CONTEXT Γ) δ
+                                          ; north = TwoGraph.Square.east {r = CONTEXT Γ} γ
+                                          ; south = TwoGraph.Square.east {r = CONTEXT Γ} δ
                                           ; west = ene
                                           ; east = ese
                                           })} →
@@ -254,16 +254,22 @@ refS {n} {Γ} {T} s = record {
   edge = λ γ* → refn-cong {n} (Section.edge s γ*) ;
   face = λ _ → trivial n }
 
---TODO Inline
-OneTypeMap : Cx → Cx → Set₁
-OneTypeMap Γ Δ = OneTypeFunctor (CONTEXT Γ) (CONTEXT Δ)
+refS-cong : ∀ {n Γ} {S T : Typeover n Γ}
+  {s : Section S} {e : Section (EqTypeover S T)} {t : Section T}
+  (p : Section (eqS s e t)) → Section (eqS (refS s) (eqS-cong {n} p {!!} p) (refS t))
+refS-cong p = record {
+  vertex = λ γ → refn-cong {!!} ; edge = {!!} ; face = {!!} }
 
-record OneTypeMapEq {Γ Δ} (F G : OneTypeMap Γ Δ) : Set₁ where
+--TODO Inline
+TwoGraphMap : Cx → Cx → Set₁
+TwoGraphMap Γ Δ = TwoGraphFunctor (CONTEXT Γ) (CONTEXT Δ)
+
+record TwoGraphMapEq {Γ Δ} (F G : TwoGraphMap Γ Δ) : Set₁ where
   field
     vertex : ∀ γ → EQC Δ (app F γ) (app G γ)
     edge : ∀ {γ γ'} (γ* : EQC Γ γ γ') → EQC₂ (vertex γ) (vertex γ') (app₂ F γ*) (app₂ G γ*)
 
-TypeoverF : ∀ {n} {Γ Δ} → OneTypeMap Γ Δ → Typeover n Δ → Typeover n Γ
+TypeoverF : ∀ {n} {Γ Δ} → TwoGraphMap Γ Δ → Typeover n Δ → Typeover n Γ
 TypeoverF F T = record {
   obj = λ γ → Typeover.obj T (app F γ) ;
   obj-cong = make-Functor (λ γ* → ap₂ (Typeover.obj-cong T) (app₂ F γ*)) ;
@@ -271,13 +277,13 @@ TypeoverF F T = record {
   obj-cong₃ = Typeover.obj-cong₃ T}
 
 Typeover-eq : ∀ {n Γ Δ ⟦ρ⟧ ⟦σ⟧} (T : Typeover n Δ) →
-  OneTypeMapEq ⟦ρ⟧ ⟦σ⟧ →
+  TwoGraphMapEq ⟦ρ⟧ ⟦σ⟧ →
   (F : Section (TypeoverF ⟦ρ⟧ T))
   (G : Section (TypeoverF ⟦σ⟧ T)) →
   Typeover (pred n) Γ
 Typeover-eq {n} {⟦ρ⟧ = ⟦ρ⟧} {⟦σ⟧} T ⟦τ⟧ F G = record {
-  obj = λ γ → eqTTn (Section.vertex F γ) (ap₂ (Typeover.obj-cong T) (OneTypeMapEq.vertex ⟦τ⟧ γ)) (Section.vertex G γ) ;
-  obj-cong = make-Functor (λ {γ} {γ'} γ* → eqTTn-cong n (Section.edge F γ*) (ap₃ (Typeover.obj-cong₂ T) (OneTypeMapEq.vertex ⟦τ⟧ _) (OneTypeMapEq.vertex ⟦τ⟧ _) (app₂ ⟦ρ⟧ γ*) (app₂ ⟦σ⟧ γ*) (OneTypeMapEq.edge ⟦τ⟧ γ*)) (Section.edge G γ*)) ;
+  obj = λ γ → eqTTn (Section.vertex F γ) (ap₂ (Typeover.obj-cong T) (TwoGraphMapEq.vertex ⟦τ⟧ γ)) (Section.vertex G γ) ;
+  obj-cong = make-Functor (λ {γ} {γ'} γ* → eqTTn-cong n (Section.edge F γ*) (ap₃ (Typeover.obj-cong₂ T) (TwoGraphMapEq.vertex ⟦τ⟧ _) (TwoGraphMapEq.vertex ⟦τ⟧ _) (app₂ ⟦ρ⟧ γ*) (app₂ ⟦σ⟧ γ*) (TwoGraphMapEq.edge ⟦τ⟧ γ*)) (Section.edge G γ*)) ;
   obj-cong₂ = make-Functor₂ (λ γ₁* γ₂* γₑ γₑ' sq-fill → eqTTn-cong₂ n (Section.face F sq-fill) (Typeover.obj-cong₃ T) (Section.face G sq-fill)) ;
   obj-cong₃ = trivial n }
 \end{code}

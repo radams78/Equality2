@@ -26,7 +26,7 @@
 \begin{document}
 \maketitle
 
-We present a type theory called $\LEtwo$ with an extensional equality relation; that is, the universe of types is closed by reflection into it of the logical relation defined by induction on the structure of types.
+We present a type theory called $\LEtwo$ with an extensional equality relation. The universe of types is closed under the logical relation defined by induction on the structure of types.
 
 The type system has three universes:
 \begin{itemize}
@@ -55,7 +55,7 @@ where $U^-$ is the universe one dimension below $U$.  Thus:
 \item
 Given two propositions $\phi$ and $\psi$, we have the proposition $\phi \simeq \psi$ which denotes the proposition `$\phi$ if and only if $\psi$'.  If $\delta : \phi$, $\epsilon : \psi$ and $\chi : \phi \simeq \psi$, then $\delta \sim_\chi \epsilon = \mathbf{1}$.  (\emph{Cf} In homotopy type theory, any two objects of a proposition are equal.)
 \item
-Given two sets $A$ and $B$, we have the set $A \simeq B$, which denotes the set of all bijections between $A$ and $B$.  Given $a : A$, $f : A \simeq B$ and $b : B$, we have the proposition $a \sim_f b : \Prop$, which denotes that $a$ is mapped to $b$ by the bijection $f$.
+Given two sets $A$ and $B$, we have the set $A \simeq B$, which denotes the set of all bijections between $A$ and $B$.  Given $a : A$, $f : A \simeq B$ and $b : B$, we have the proposition $a \sim_f b : \Prop$, which denotes intuitively that $a$ is mapped to $b$ by the bijection $f$.
 \item
 Given two groupoids $G$ and $H$, we have the groupoid $G \simeq H$,
 which denotes the groupoid of all groupoid equivalences between $G$ and $H$.  Given $g : G$, $\phi : G \simeq H$ and $h : H$, we have the set $g \sim_\phi h : \Set$, which can be thought of as the set of all paths between $\phi(g)$ and $h$ in $H$.
@@ -79,7 +79,7 @@ $\phi \sim_{1_\Prop} \psi \eqdef \phi \simeq \psi$,
 $A \sim_{1_\Set} B \eqdef A \simeq B$.
 
 As well as the normal operation of substitution, we have an operation of \emph{path substitution}:
-\[ \infer{\Gamma \vdash b [x // e] : b [x/a] =_{B[x//e]} b[x/a']}{\Gamma, x : A \vdash b : B \quad \Gamma \vdash e : a \sim_{1_A} a'} \]
+\[ \infer{\Gamma \vdash b [x / \! / e] : b [x/a] \sim_{B[x//e]} b[x/a']}{\Gamma, x : A \vdash b : B \quad \Gamma \vdash e : a \sim_{1_A} a'} \]
 
 The system $\LEtwo$ enjoys the following properties.  Univalence holds definitionally; that is, an equality between types $A \simeq B$ is exactly (definitionally) the type of equivalences between $A$ and $B$.  Also, transport respects reflexivity and composition definitionally.
 
@@ -101,7 +101,7 @@ An earlier version of this system was presented in \cite{ap:tsnhu}.  In this tal
 
 Our system is closely related to the system PHOML (Predicative Higher-Order Minimal Logic) presented in \cite{abc:ncrpehoml}.  The system $\LEtwo$ can be seen as an extension of PHOML with groupoids, and with a univalent equality for both sets and groupoids.
 
-Cubical type theory \cite{cchm:cubical, huber:canonicity} has a very similar motivation to this work, and also offers a type theory with univalence and a computational interpretation.  One difference with our system is that transport across the identity path is identity, and transport across $p \bullet q$ is the composition of transport across $p$ with transport across $q$, up to definitional equality.  In cubical type theory, these equations only hold up to propositional equality.
+Cubical type theory \cite{cchm:cubical, huber:canonicity} has a very similar motivation to this work, and also offers a type theory with univalence and a computational interpretation.  One difference with our system is that in cubical type theory, transport respects reflexivity and composition only up to propositional equality.
 
 
 \bibliography{type}

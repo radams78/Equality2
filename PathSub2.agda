@@ -17,4 +17,5 @@ subps : ∀ {n Γ Δ} {T : Typeover n Δ} {⟦ρ⟧ ⟦σ⟧ ⟦τ⟧ ⟦t⟧}
   Γ ⊢ Typeover-eq T ⟦τ⟧ (SectionF ⟦ρ⟧ ⟦t⟧) (SectionF ⟦σ⟧ ⟦t⟧) ∋ SectionF₂ ⟦τ⟧ ⟦t⟧
 subps τ (VAR x) = apps τ x
 subps τ PRP = REF PRP
-subps τ (REF t) = {!!}
+subps τ (REF t) = {!REF!}
+subps τ (EQCONG s* f* t*) = {!!}
