@@ -31,10 +31,11 @@ We present a type theory called $\LEtwo$ with an extensional equality relation. 
 The type system has three universes:
 \begin{itemize}
 \item
+The trivial universe $\mathbf{1}$, which has one object $*$.
+\item
 The universe $\Prop$ of \emph{propositions}.  An object of $\Prop$ is
 called a \emph{proposition}, and the objects of a proposition are
-called \emph{proofs}.  There is a proposition $\mathbf{1}$, which has
-a unique proof $*$.
+called \emph{proofs}.
 \item
 The universe $\Set$ of \emph{sets}.
 \item
@@ -84,12 +85,9 @@ As well as the normal operation of substitution, we have an operation of \emph{p
 The system $\LEtwo$ enjoys the following properties.  Univalence holds definitionally; that is, an equality between types $A \simeq B$ is exactly (definitionally) the type of equivalences between $A$ and $B$.  Also, transport respects reflexivity and composition definitionally.
 
 This type theory has been formalised in Agda, using the method of the system $\mathtt{Kipling}$ from McBride \cite{McBridea}.  The method ensures that, if $s$ and $t$ are definitionally equal expressions in $\lambda \simeq_2$, then $\brackets{s}$ and $\brackets{t}$ are definitionally equal objects in Agda.  We interpret each context with a groupoid in Agda; that is, we define
-a type
+the following type of contexts and functions:
 
 \ExecuteMetaData[Context.tex]{Cx}
-
-of contexts, and functions
-
 \ExecuteMetaData[Context.tex]{IntC}
 \ExecuteMetaData[Context.tex]{EqC}
 
