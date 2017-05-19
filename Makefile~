@@ -1,2 +1,0 @@
-abstract.pdf: abstract.tex Context.tex
-	latexmk -pdf abstract

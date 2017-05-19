@@ -1,6 +1,0 @@
-open import PathSub
-
-TypeoverFF : ∀ {n Γ Δ} {ρ σ : Sub Γ Δ} {T : Typeover n Δ}
-  (s : ∀ γ → ⟦ T ⟧T (⟦ ρ ⟧s γ))
-  (scong : ∀ {γ} {γ'} (γ* : EQC Γ γ γ') → T ∋ s γ ∼〈 ? 〉 s γ')
-  → Typeover (pred n) Γ
