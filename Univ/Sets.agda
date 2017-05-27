@@ -1,8 +1,8 @@
 module Univ.Sets where
 open import Level
-open import FibSetoid
 open import Univ.Univ
 open import Univ.Prp
+open import Semantics.Universe
 
 -- Sets
 
@@ -29,7 +29,7 @@ postulate Ref₀-cong : ∀ {A} {B} (e : A ≃ B) → Ref₀ A ∼⟪ iso-cong e
 
 postulate ref₀ : ∀ {A} {a} → a ∼⟪ Ref₀ A ⟫₀ a
 
-SETS : FibSetoid zero zero zero
+SETS : Universe zero zero zero
 SETS = record {
   Dom = Sets ;
   Fib = El ;
@@ -38,5 +38,5 @@ SETS = record {
   eqG-cong = iso-cong ;
   EqFib = _∼⟪_⟫₀_ }
 
-postulate iso-cong₂' : FibSetoid.HasCong₂ SETS
+postulate iso-cong₂' : Universe.HasCong₂ SETS
 

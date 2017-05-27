@@ -5,9 +5,9 @@ open import Level
 open import Function hiding (_∋_;const)
 open import Data.Unit
 open import Data.Product
-open import FibSetoid
+open import Semantics.RefGraph
+open import Semantics.TwoGraph
 open import Univ.HLevel
-
 \end{code}
 
 %<*Cx>

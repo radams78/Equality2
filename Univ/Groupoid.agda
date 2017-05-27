@@ -1,8 +1,8 @@
 module Univ.Groupoid where
 open import Level
-open import FibSetoid
 open import Univ.Univ
 open import Univ.Sets
+open import Semantics.Universe
 
 -- Groupoids
 
@@ -27,30 +27,34 @@ GROUPOID = record {
   EqFib = _∼⟪_⟫_ }
 
 --TODO Common pattern
-postulate eqU-cong₂ : FibSetoid.HasCong₂ GROUPOID
+postulate eqU-cong₂ : Universe.HasCong₂ GROUPOID
 
 postulate path-cong : ∀ {A A' B B' a a' b b' φ φ'} {A* : A ⇔ A'} {B* : B ⇔ B'} → 
                     a ∼⟪ A* ⟫ a' → φ ∼⟪ eqU-cong A* B* ⟫ φ' → b ∼⟪ B* ⟫ b' → 
                     path a φ b ≃ path a' φ' b'
 
 --TODO Extract cube type
-postulate eqU-cong₃ : ∀ {A B C D : FibSetoid.Square GROUPOID}
-                      {H₁ : TwoGraph.Square.nw {r = FibSetoid.twoGraph GROUPOID} A ⇔ TwoGraph.Square.nw {r = FibSetoid.twoGraph GROUPOID} C} {H₁' : TwoGraph.Square.ne {r = FibSetoid.twoGraph GROUPOID} A ⇔ TwoGraph.Square.ne {r = FibSetoid.twoGraph GROUPOID} C}
-                      {H₂ : TwoGraph.Square.sw {r = FibSetoid.twoGraph GROUPOID} A ⇔ TwoGraph.Square.sw {r = FibSetoid.twoGraph GROUPOID} C} {H₂' : TwoGraph.Square.se {r = FibSetoid.twoGraph GROUPOID} A ⇔ TwoGraph.Square.se {r = FibSetoid.twoGraph GROUPOID} C}
-                      {K₁ : TwoGraph.Square.nw {r = FibSetoid.twoGraph GROUPOID} B ⇔ TwoGraph.Square.nw {r = FibSetoid.twoGraph GROUPOID} D} {K₁' : TwoGraph.Square.ne {r = FibSetoid.twoGraph GROUPOID} B ⇔ TwoGraph.Square.ne {r = FibSetoid.twoGraph GROUPOID} D}
-                      {K₂ : TwoGraph.Square.sw {r = FibSetoid.twoGraph GROUPOID} B ⇔ TwoGraph.Square.sw {r = FibSetoid.twoGraph GROUPOID} D} {K₂' : TwoGraph.Square.se {r = FibSetoid.twoGraph GROUPOID} B ⇔ TwoGraph.Square.se {r = FibSetoid.twoGraph GROUPOID} D}
-                      {Aₑ* : TwoGraph.Fill (FibSetoid.twoGraph GROUPOID) A}
-                      {Bₑ* : TwoGraph.Fill (FibSetoid.twoGraph GROUPOID) B}
-                      {Cₑ* : TwoGraph.Fill (FibSetoid.twoGraph GROUPOID) C}
-                      {Dₑ* : TwoGraph.Fill (FibSetoid.twoGraph GROUPOID) D}
-                      {H₁* : TwoGraph.Square.north {r = FibSetoid.twoGraph GROUPOID} A ∼⟪ eqU-cong H₁ H₁' ⟫ TwoGraph.Square.north {r = FibSetoid.twoGraph GROUPOID} C}
-                      {H₂* : TwoGraph.Square.south {r = FibSetoid.twoGraph GROUPOID} A ∼⟪ eqU-cong H₂ H₂' ⟫ TwoGraph.Square.south  {r = FibSetoid.twoGraph GROUPOID} C}
-                      {Hₑ : TwoGraph.Square.west  {r = FibSetoid.twoGraph GROUPOID} A ∼⟪ eqU-cong H₁ H₂ ⟫ TwoGraph.Square.west  {r = FibSetoid.twoGraph GROUPOID} C}
-                      {Hₑ' : TwoGraph.Square.east  {r = FibSetoid.twoGraph GROUPOID} A ∼⟪ eqU-cong H₁' H₂' ⟫ TwoGraph.Square.east  {r = FibSetoid.twoGraph GROUPOID} C}
-                      {K₁* : TwoGraph.Square.north  {r = FibSetoid.twoGraph GROUPOID} B ∼⟪ eqU-cong K₁ K₁' ⟫ TwoGraph.Square.north  {r = FibSetoid.twoGraph GROUPOID} D}
-                      {K₂* : TwoGraph.Square.south  {r = FibSetoid.twoGraph GROUPOID} B ∼⟪ eqU-cong K₂ K₂' ⟫ TwoGraph.Square.south  {r = FibSetoid.twoGraph GROUPOID} D}
-                      {Kₑ : TwoGraph.Square.west  {r = FibSetoid.twoGraph GROUPOID} B ∼⟪ eqU-cong K₁ K₂ ⟫ TwoGraph.Square.west  {r = FibSetoid.twoGraph GROUPOID} D}
-                      {Kₑ' : TwoGraph.Square.east  {r = FibSetoid.twoGraph GROUPOID} B ∼⟪ eqU-cong K₁' K₂' ⟫ TwoGraph.Square.east  {r = FibSetoid.twoGraph GROUPOID} D} → 
+postulate eqU-cong₃ : ∀ {A B C D : Universe.Square GROUPOID}
+                      {H₁ : Universe.Square.nw {r = GROUPOID} A ⇔ Universe.Square.nw {r = GROUPOID} C}
+                      {H₁' : Universe.Square.ne {r = GROUPOID} A ⇔ Universe.Square.ne {r = GROUPOID} C}
+                      {H₂ : Universe.Square.sw {r = GROUPOID} A ⇔ Universe.Square.sw {r = GROUPOID} C}
+                      {H₂' : Universe.Square.se {r = GROUPOID} A ⇔ Universe.Square.se {r = GROUPOID} C}
+                      {K₁ : Universe.Square.nw {r = GROUPOID} B ⇔ Universe.Square.nw {r = GROUPOID} D}
+                      {K₁' : Universe.Square.ne {r = GROUPOID} B ⇔ Universe.Square.ne {r = GROUPOID} D}
+                      {K₂ : Universe.Square.sw {r = GROUPOID} B ⇔ Universe.Square.sw {r = GROUPOID} D}
+                      {K₂' : Universe.Square.se {r = GROUPOID} B ⇔ Universe.Square.se {r = GROUPOID} D}
+                      {Aₑ* : Universe.Fill GROUPOID A}
+                      {Bₑ* : Universe.Fill GROUPOID B}
+                      {Cₑ* : Universe.Fill GROUPOID C}
+                      {Dₑ* : Universe.Fill GROUPOID D}
+                      {H₁* : Universe.Square.north {r = GROUPOID} A ∼⟪ eqU-cong H₁ H₁' ⟫ Universe.Square.north {r = GROUPOID} C}
+                      {H₂* : Universe.Square.south {r = GROUPOID} A ∼⟪ eqU-cong H₂ H₂' ⟫ Universe.Square.south {r = GROUPOID} C}
+                      {Hₑ : Universe.Square.west {r = GROUPOID} A ∼⟪ eqU-cong H₁ H₂ ⟫ Universe.Square.west {r = GROUPOID} C}
+                      {Hₑ' : Universe.Square.east {r = GROUPOID} A ∼⟪ eqU-cong H₁' H₂' ⟫ Universe.Square.east {r = GROUPOID} C}
+                      {K₁* : Universe.Square.north {r = GROUPOID} B ∼⟪ eqU-cong K₁ K₁' ⟫ Universe.Square.north {r = GROUPOID} D}
+                      {K₂* : Universe.Square.south {r = GROUPOID} B ∼⟪ eqU-cong K₂ K₂' ⟫ Universe.Square.south {r = GROUPOID} D}
+                      {Kₑ : Universe.Square.west {r = GROUPOID} B ∼⟪ eqU-cong K₁ K₂ ⟫ Universe.Square.west {r = GROUPOID} D}
+                      {Kₑ' : Universe.Square.east {r = GROUPOID} B ∼⟪ eqU-cong K₁' K₂' ⟫ Universe.Square.east {r = GROUPOID} D} → 
                       Aₑ* ∼⟪ path-cong H₁* (eqU-cong₂ Hₑ Hₑ') H₂* ⟫₀ Cₑ* → 
                       Bₑ* ∼⟪ path-cong K₁* (eqU-cong₂ Kₑ Kₑ') K₂* ⟫₀ Dₑ* → 
                       eqU-cong₂ Aₑ* Bₑ* ∼⟪ path-cong (eqU-cong₂ H₁* K₁*) (eqU-cong₂ (eqU-cong₂ Hₑ Kₑ) (eqU-cong₂ Hₑ' Kₑ')) (eqU-cong₂ H₂* K₂*) ⟫₀ eqU-cong₂ Cₑ* Dₑ*
